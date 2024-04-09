@@ -1,15 +1,31 @@
 require("dotenv").config();
 
 const express = require("express");
-const { createServer } = require("node:http");
+const cors = require("cors");
+
+const { createServer } = require("http");
+const { Server } = require("socket.io");
 
 const app = express();
-const server = createServer(app);
+app.use(express.json());
+app.use(cors());
 
-app.get("/", (req, res) => {
-  res.send("<h1>Hello world</h1>");
+const httpServer = createServer(app);
+const io = new Server(httpServer, {
+  cors: {
+    origin: "*",
+  },
 });
 
-server.listen(process.env.PORT, () => {
-  console.log("server running");
+io.on("connection", (socket) => {
+  console.log(`User Connected: ${socket.id}`);
+
+  socket.on("send_msg", (data) => {
+    console.log(data);
+    socket.broadcast.emit("r_msg", data);
+  });
+});
+
+httpServer.listen(process.env.PORT, () => {
+  console.log("server is running");
 });
