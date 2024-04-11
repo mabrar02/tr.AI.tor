@@ -17,12 +17,44 @@ const io = new Server(httpServer, {
   },
 });
 
+const rooms = {};
+
 io.on("connection", (socket) => {
   console.log(`User Connected: ${socket.id}`);
 
-  socket.on("send_msg", (data) => {
-    console.log(data);
-    socket.broadcast.emit("r_msg", data);
+  const updatePlayers = (roomId) => {
+    io.to(roomId).emit("update_players", Object.values(rooms[roomId].players));
+    console.log(rooms);
+  };
+
+  socket.on("host_room", (roomId) => {
+    rooms[roomId] = { players: {} };
+    socket.join(roomId);
+    rooms[roomId].players[socket.id] = "Host";
+    updatePlayers(roomId);
+    console.log(`Room hosted: ${roomId}`);
+  });
+
+  socket.on("join_room", (roomId) => {
+    if (rooms[roomId]) {
+      socket.join(roomId);
+      rooms[roomId].players[socket.id] = "Player";
+      updatePlayers(roomId);
+      console.log(`User ${socket.id} joined room: ${roomId}`);
+    }
+  });
+
+  socket.on("disconnect", () => {
+    console.log(`User DCed: ${socket.id}`);
+    for (const roomId in rooms) {
+      if (
+        rooms.hasOwnProperty(roomId) &&
+        rooms[roomId].players.hasOwnProperty(socket.id)
+      ) {
+        delete rooms[roomId].players[socket.id];
+        updatePlayers(roomId);
+      }
+    }
   });
 });
 
