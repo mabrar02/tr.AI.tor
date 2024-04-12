@@ -27,20 +27,23 @@ io.on("connection", (socket) => {
     console.log(rooms);
   };
 
-  socket.on("host_room", (roomId) => {
+  socket.on("host_room", ({ roomId, username }) => {
     rooms[roomId] = { players: {} };
     socket.join(roomId);
-    rooms[roomId].players[socket.id] = "Host";
+    rooms[roomId].players[socket.id] = { username, host: true };
     updatePlayers(roomId);
     console.log(`Room hosted: ${roomId}`);
   });
 
-  socket.on("join_room", (roomId) => {
+  socket.on("join_room", ({ roomId, username }, callback) => {
     if (rooms[roomId]) {
       socket.join(roomId);
-      rooms[roomId].players[socket.id] = "Player";
+      rooms[roomId].players[socket.id] = { username, host: false };
       updatePlayers(roomId);
-      console.log(`User ${socket.id} joined room: ${roomId}`);
+      callback(true);
+      console.log(`User ${username} joined room: ${roomId}`);
+    } else {
+      callback(false);
     }
   });
 
