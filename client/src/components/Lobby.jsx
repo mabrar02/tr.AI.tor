@@ -3,7 +3,7 @@ import io from "socket.io-client";
 
 const socket = io("http://localhost:4000");
 
-function Lobby() {
+function Lobby({ onStartGame }) {
   const [isHost, setIsHost] = useState(false);
   const [inLobby, setInLobby] = useState(false);
   const [joinGame, setJoinGame] = useState(false);
