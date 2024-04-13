@@ -77,6 +77,10 @@ function Lobby({ onStartGame }) {
     setJoinGame(false);
   };
 
+  const handleStartGame = () => {
+    onStartGame();
+  };
+
   return (
     <div className="flex flex-col items-center w-100% bg-red-300">
       <div className="mb-6">
@@ -132,6 +136,11 @@ function Lobby({ onStartGame }) {
               </li>
             ))}
           </ul>
+          {isHost && (
+            <button onClick={handleStartGame} className="bg-amber-400">
+              Start Game
+            </button>
+          )}
         </div>
       )}
     </div>
