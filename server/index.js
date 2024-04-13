@@ -17,50 +17,8 @@ const io = new Server(httpServer, {
   },
 });
 
-const rooms = {};
-
-io.on("connection", (socket) => {
-  console.log(`User Connected: ${socket.id}`);
-
-  const updatePlayers = (roomId) => {
-    io.to(roomId).emit("update_players", Object.values(rooms[roomId].players));
-    console.log(rooms);
-  };
-
-  socket.on("host_room", ({ roomId, username }) => {
-    rooms[roomId] = { players: {} };
-    socket.join(roomId);
-    rooms[roomId].players[socket.id] = { username, host: true };
-    updatePlayers(roomId);
-    console.log(`Room hosted: ${roomId}`);
-  });
-
-  socket.on("join_room", ({ roomId, username }, callback) => {
-    if (rooms[roomId]) {
-      socket.join(roomId);
-      rooms[roomId].players[socket.id] = { username, host: false };
-      updatePlayers(roomId);
-      callback(true);
-      console.log(`User ${username} joined room: ${roomId}`);
-    } else {
-      callback(false);
-    }
-  });
-
-  socket.on("disconnect", () => {
-    console.log(`User DCed: ${socket.id}`);
-    for (const roomId in rooms) {
-      if (
-        rooms.hasOwnProperty(roomId) &&
-        rooms[roomId].players.hasOwnProperty(socket.id)
-      ) {
-        delete rooms[roomId].players[socket.id];
-        updatePlayers(roomId);
-      }
-    }
-  });
-});
+require("./socket")(io);
 
 httpServer.listen(process.env.PORT, () => {
-  console.log("server is running");
+  console.log(`Server running on port ${process.env.PORT}`);
 });
