@@ -17,8 +17,13 @@ function Lobby({ onStartGame }) {
       setPlayers(players);
     });
 
+    socket.on("game_started", () => {
+      onStartGame();
+    });
+
     return () => {
       socket.off("update_players");
+      socket.off("game_started");
     };
   }, []);
 
@@ -78,6 +83,7 @@ function Lobby({ onStartGame }) {
   };
 
   const handleStartGame = () => {
+    socket.emit("start_game", joinCode);
     onStartGame();
   };
 

@@ -1,5 +1,6 @@
 const roomHandlers = require("./handlers/roomHandlers");
 const playerHandlers = require("./handlers/playerHandlers");
+const phaseHandlers = require("./handlers/phaseHandlers");
 
 module.exports = function initializeSocket(io) {
   const rooms = {};
@@ -9,5 +10,6 @@ module.exports = function initializeSocket(io) {
 
     roomHandlers(socket, io, rooms);
     playerHandlers(socket, io, rooms);
+    phaseHandlers(socket, io, rooms);
   });
 };
