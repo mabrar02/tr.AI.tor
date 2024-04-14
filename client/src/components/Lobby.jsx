@@ -88,24 +88,25 @@ function Lobby({ onStartGame }) {
   };
 
   return (
-    <div className="flex flex-col items-center w-100% bg-red-300">
+    <div className="flex flex-col items-center w-100% bg-red-500">
       <div className="mb-6">
-        <h1>TR.AI.TOR</h1>
+        <h1 className="text-4xl"><b>TR.AI.TOR</b></h1>
       </div>
 
       {!joinGame && !inLobby && (
         <div className="flex flex-col gap-y-2 text-center">
-          <h2>Username</h2>
+          <h2 className="font-bold">Username</h2>
           <input
             type="text"
-            className="bg-slate-300"
+            placeholder="Enter your username"
+            className="w-64 py-2 px-4 bg-gray-200 text-gray-800 border border-gray-300 rounded-lg hover:bg-gray-300 mb-4"
             value={userName}
             onChange={(e) => setUserName(e.target.value)}
           ></input>
-          <button className="bg-blue-200" onClick={tryJoinGame}>
+          <button className="bg-yellow-500 hover:bg-yellow-600 font-bold py-2 px-4 rounded-lg shadow-md" onClick={tryJoinGame}>
             Join Game
           </button>
-          <button className="bg-blue-200" onClick={handleHostRoom}>
+          <button className="bg-yellow-500 hover:bg-yellow-600 font-bold py-2 px-4 rounded-lg shadow-md" onClick={handleHostRoom}>
             Host Game
           </button>
         </div>
