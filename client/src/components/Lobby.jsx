@@ -3,6 +3,11 @@ import io from "socket.io-client";
 
 const socket = io("http://localhost:4000");
 
+function getRandomColor() {
+  //Generates random color for lobby players (bkg of text)
+  return '#' + Math.floor(Math.random() * 16777215).toString(16);
+}
+
 function Lobby({ onStartGame }) {
   const [isHost, setIsHost] = useState(false);
   const [inLobby, setInLobby] = useState(false);
@@ -103,10 +108,10 @@ function Lobby({ onStartGame }) {
             value={userName}
             onChange={(e) => setUserName(e.target.value)}
           ></input>
-          <button className="bg-yellow-500 hover:bg-yellow-600 font-bold py-2 px-4 rounded-lg shadow-md" onClick={tryJoinGame}>
+          <button className="bg-yellow-500 hover:bg-yellow-600 font-bold py-2 px-4 rounded-lg shadow-md transform transition-all hover:scale-105" onClick={tryJoinGame}>
             Join Game
           </button>
-          <button className="bg-yellow-500 hover:bg-yellow-600 font-bold py-2 px-4 rounded-lg shadow-md" onClick={handleHostRoom}>
+          <button className="bg-yellow-500 hover:bg-yellow-600 font-bold py-2 px-4 rounded-lg shadow-md transform transition-all hover:scale-105" onClick={handleHostRoom}>
             Host Game
           </button>
         </div>
@@ -114,19 +119,20 @@ function Lobby({ onStartGame }) {
 
       {joinGame && !inLobby && (
         <div className="flex flex-col text-center gap-y-2">
-          <h2>Room Code</h2>
+          <h2 className="font-bold">Room Code</h2>
           <input
             type="text"
-            className="bg-slate-300"
+            placeholder="Enter room code"
+            className="w-64 py-2 px-4 bg-gray-200 text-gray-800 border border-gray-300 rounded-lg hover:bg-gray-300 mb-4"
             value={joinCode}
             onChange={(e) => setJoinCode(e.target.value.toUpperCase())}
           ></input>
 
-          <button className="bg-blue-200" onClick={handleJoinRoom}>
+          <button className="bg-yellow-500 hover:bg-yellow-600 font-bold py-2 px-4 rounded-lg shadow-md transform transition-all hover:scale-105" onClick={handleJoinRoom}>
             Join
           </button>
 
-          <button className="bg-blue-200" onClick={() => setJoinGame(false)}>
+          <button className="bg-yellow-500 hover:bg-yellow-600 font-bold py-2 px-4 rounded-lg shadow-md transform transition-all hover:scale-105" onClick={() => setJoinGame(false)}>
             Back
           </button>
         </div>
@@ -134,19 +140,22 @@ function Lobby({ onStartGame }) {
 
       {inLobby && (
         <div>
-          <h2>Room Code: {joinCode}</h2>
-          <p>Players:</p>
-          <ul>
+          <h2 className="text-xl font-bold flex justify-center mb-4">ROOM CODE: {joinCode}</h2>
+          <p className="font-bold mb-2">Players:</p>
+          <ul className="-mx-2">
             {players.map((player, index) => (
-              <li key={index}>
-                {player.username} {player.host && <span>(HOST)</span>}
+              //Need players to consistently show distinctive colors, right now it shows diff colors for diff people
+              <li key={index} className="font-bold rounded-lg py-2 px-5 inline-block border border-black shadow shadow-lg mb-4 mx-1" style={{ backgroundColor: getRandomColor() }}>
+                {player.username} {player.host && <span className="font-bold">(HOST)</span>}
               </li>
             ))}
           </ul>
           {isHost && (
-            <button onClick={handleStartGame} className="bg-amber-400">
-              Start Game
-            </button>
+            <div className="flex justify-center">
+              <button onClick={handleStartGame} className="bg-yellow-500 hover:bg-yellow-600 font-bold py-2 px-4 rounded-lg shadow-md transform transition-all hover:scale-105 w-48">
+                Start Game
+              </button>
+            </div>
           )}
         </div>
       )}
