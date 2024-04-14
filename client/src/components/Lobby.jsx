@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useGameRoom } from "../contexts/GameRoomContext";
 import io from "socket.io-client";
 
 const socket = io("http://localhost:4000");
@@ -9,21 +10,27 @@ function getRandomColor() {
 }
 
 function Lobby({ onStartGame }) {
-  const [isHost, setIsHost] = useState(false);
+  const {
+    isHost,
+    setHostStatus,
+    players,
+    updatePlayers,
+    joinCode,
+    setJoinCodeValue,
+    userName,
+    setUserNameValue,
+  } = useGameRoom();
+
   const [inLobby, setInLobby] = useState(false);
   const [joinGame, setJoinGame] = useState(false);
 
-  const [players, setPlayers] = useState([]);
-  const [joinCode, setJoinCode] = useState("");
-  const [userName, setUserName] = useState("");
-
   useEffect(() => {
     socket.on("update_players", (players) => {
-      setPlayers(players);
+      updatePlayers(players);
     });
 
     socket.on("game_started", () => {
-      onStartGame();
+      onStartGame("prompts");
     });
 
     return () => {
@@ -34,10 +41,10 @@ function Lobby({ onStartGame }) {
 
   const handleHostRoom = () => {
     if (userName.length != 0) {
-      setIsHost(true);
+      setHostStatus(true);
       setInLobby(true);
       const code = generateRoomCode();
-      setJoinCode(code);
+      setJoinCodeValue(code);
       socket.emit("host_room", { roomId: code, username: userName });
     } else {
       alert("Please enter a username");
@@ -81,15 +88,9 @@ function Lobby({ onStartGame }) {
     }
   };
 
-  const backBtnOnClick = () => {
-    setIsHost(false);
-    setInLobby(false);
-    setJoinGame(false);
-  };
-
   const handleStartGame = () => {
     socket.emit("start_game", joinCode);
-    onStartGame();
+    onStartGame("prompts");
   };
 
   return (
@@ -106,7 +107,7 @@ function Lobby({ onStartGame }) {
             placeholder="Enter your username"
             className="w-64 py-2 px-4 bg-gray-200 text-gray-800 border border-gray-300 rounded-lg hover:bg-gray-300 mb-4"
             value={userName}
-            onChange={(e) => setUserName(e.target.value)}
+            onChange={(e) => setUserNameValue(e.target.value)}
           ></input>
           <button className="bg-yellow-500 hover:bg-yellow-600 font-bold py-2 px-4 rounded-lg shadow-md transform transition-all hover:scale-105" onClick={tryJoinGame}>
             Join Game
@@ -125,7 +126,7 @@ function Lobby({ onStartGame }) {
             placeholder="Enter room code"
             className="w-64 py-2 px-4 bg-gray-200 text-gray-800 border border-gray-300 rounded-lg hover:bg-gray-300 mb-4"
             value={joinCode}
-            onChange={(e) => setJoinCode(e.target.value.toUpperCase())}
+            onChange={(e) => setJoinCodeValue(e.target.value.toUpperCase())}
           ></input>
 
           <button className="bg-yellow-500 hover:bg-yellow-600 font-bold py-2 px-4 rounded-lg shadow-md transform transition-all hover:scale-105" onClick={handleJoinRoom}>
