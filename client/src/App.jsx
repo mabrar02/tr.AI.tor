@@ -1,19 +1,25 @@
 import React from "react";
-import { useGamePhase } from "./contexts/GamePhaseContext";
+import { useGameRoom } from "./contexts/GameRoomContext";
 import Lobby from "./components/Lobby";
 import AnswerPrompts from "./components/AnswerPrompts";
 
 const App = () => {
-  const { gamePhase, transitionToGamePhase } = useGamePhase();
+  const {
+    gamePhase,
+    transitionToGamePhase,
+    isHost,
+    setHostStatus,
+    players,
+    updatePlayers,
+    joinCode,
+    setJoinCodeValue,
+    userName,
+    setUserNameValue,
+  } = useGameRoom();
 
-  const handleStartGame = () => {
-    transitionToGamePhase("prompts");
-  };
-
-  console.log(gamePhase);
   return (
     <div>
-      {gamePhase === "lobby" && <Lobby onStartGame={handleStartGame} />}
+      {gamePhase === "lobby" && <Lobby onStartGame={transitionToGamePhase} />}
       {gamePhase === "prompts" && <AnswerPrompts />}
     </div>
   );
