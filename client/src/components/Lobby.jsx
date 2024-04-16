@@ -98,7 +98,7 @@ function Lobby({ onStartGame }) {
       <div className="mb-6">
         <h1 className="text-4xl"><b>TR.AI.TOR</b></h1>
       </div>
-
+      
       {!joinGame && !inLobby && (
         <div className="flex flex-col gap-y-2 text-center">
           <h2 className="font-bold">Username</h2>
@@ -109,6 +109,7 @@ function Lobby({ onStartGame }) {
             value={userName}
             onChange={(e) => setUserNameValue(e.target.value)}
           ></input>
+
           <button className="bg-yellow-500 hover:bg-yellow-600 font-bold py-2 px-4 rounded-lg shadow-md transform transition-all hover:scale-105" onClick={tryJoinGame}>
             Join Game
           </button>
