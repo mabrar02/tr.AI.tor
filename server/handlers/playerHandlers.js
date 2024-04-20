@@ -4,14 +4,12 @@ module.exports = function playerHandlers(socket, io, rooms) {
     console.log(rooms);
   };
 
-  socket.on("submit_answer", (roomId, answer) => {
-    io.to(roomId).emit("answer_submitted", { playerId: socket.id, answer });
-  });
+  socket.on("submit_answer", ({ roomId, answer }) => {
+    rooms[roomId].answers[socket.id] = answer;
+    rooms[roomId].numSubmitted++;
 
-  socket.on("vote_answer", (roomId, playerIdVotedFor) => {
-    io.to(roomId).emit("vote_submitted", {
-      voterId: socket.id,
-      playerIdVotedFor,
-    });
+    if (rooms[roomId].numSubmitted == rooms[roomId].numPlayers) {
+      io.to(roomId).emit("voting_phase", {});
+    }
   });
 };
