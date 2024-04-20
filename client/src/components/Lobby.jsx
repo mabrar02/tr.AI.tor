@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 import { useGameRoom } from "../contexts/GameRoomContext";
 import io from "socket.io-client";
 
@@ -94,9 +95,10 @@ function Lobby({ onStartGame }) {
   };
 
   return (
-    <div className="flex flex-col items-center w-100% bg-red-500">
-      <div className="mb-6">
-        <h1 className="text-4xl"><b>TR.AI.TOR</b></h1>
+    
+    <div className="flex flex-col items-center justify-center relative w-screen h-screen bg-red-500">
+      <div className="-mb-52">
+        <h1 className="text-5xl -mt-72"><b>TR.AI.TOR</b></h1>
       </div>
       
       {!joinGame && !inLobby && (
@@ -154,7 +156,10 @@ function Lobby({ onStartGame }) {
           </ul>
           {isHost && (
             <div className="flex justify-center">
-              <button onClick={handleStartGame} className="bg-yellow-500 hover:bg-yellow-600 font-bold py-2 px-4 rounded-lg shadow-md transform transition-all hover:scale-105 w-48">
+              <button 
+              onClick={handleStartGame} 
+              className="bg-yellow-500 hover:bg-yellow-600 font-bold py-2 px-4 rounded-lg shadow-md transform transition-all hover:scale-105 w-48"
+              >
                 Start Game
               </button>
             </div>
