@@ -5,7 +5,12 @@ module.exports = function roomHandlers(socket, io, rooms) {
   };
 
   socket.on("host_room", ({ roomId, username }) => {
-    rooms[roomId] = { players: {} };
+    rooms[roomId] = {
+      players: {},
+      answers: {},
+      numSubmitted: 0,
+      numPlayers: 1,
+    };
     socket.join(roomId);
     rooms[roomId].players[socket.id] = { username, host: true };
     updatePlayers(roomId);
@@ -17,6 +22,7 @@ module.exports = function roomHandlers(socket, io, rooms) {
     if (rooms[roomId]) {
       socket.join(roomId);
       rooms[roomId].players[socket.id] = { username, host: false };
+      rooms[roomId].numPlayers++;
       updatePlayers(roomId);
       callback(true);
       console.log(`User ${username} joined room: ${roomId}`);
@@ -33,6 +39,7 @@ module.exports = function roomHandlers(socket, io, rooms) {
         rooms[roomId].players.hasOwnProperty(socket.id)
       ) {
         delete rooms[roomId].players[socket.id];
+        rooms[roomId].numPlayers--;
         updatePlayers(roomId);
       }
     }

@@ -1,12 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useGameRoom } from "../contexts/GameRoomContext";
 
-function getRandomColor() {
-  //Generates random color for lobby players (bkg of text)
-  return '#' + Math.floor(Math.random() * 16777215).toString(16);
-}
-
-function Lobby({ onStartGame }) {
+function Lobby() {
   const {
     gamePhase,
     transitionToGamePhase,
@@ -31,7 +26,7 @@ function Lobby({ onStartGame }) {
     });
 
     socket?.on("game_started", () => {
-      onStartGame("prompts");
+      transitionToGamePhase("prompts");
     });
 
     return () => {
@@ -39,6 +34,11 @@ function Lobby({ onStartGame }) {
       socket?.off("game_started");
     };
   }, [socket]);
+
+  function getRandomColor() {
+    //Generates random color for lobby players (bkg of text)
+    return "#" + Math.floor(Math.random() * 16777215).toString(16);
+  }
 
   const handleHostRoom = () => {
     if (userName.length != 0) {
@@ -90,16 +90,17 @@ function Lobby({ onStartGame }) {
   };
 
   const handleStartGame = () => {
-    socket?.emit("start_game", joinCode);
-    onStartGame("prompts");
+    socket.emit("start_game", joinCode);
   };
 
   return (
     <div className="flex flex-col items-center w-100% bg-red-500">
       <div className="mb-6">
-        <h1 className="text-4xl"><b>TR.AI.TOR</b></h1>
+        <h1 className="text-4xl">
+          <b>TR.AI.TOR</b>
+        </h1>
       </div>
-      
+
       {!joinGame && !inLobby && (
         <div className="flex flex-col gap-y-2 text-center">
           <h2 className="font-bold">Username</h2>
@@ -111,10 +112,16 @@ function Lobby({ onStartGame }) {
             onChange={(e) => setUserNameValue(e.target.value)}
           ></input>
 
-          <button className="bg-yellow-500 hover:bg-yellow-600 font-bold py-2 px-4 rounded-lg shadow-md transform transition-all hover:scale-105" onClick={tryJoinGame}>
+          <button
+            className="bg-yellow-500 hover:bg-yellow-600 font-bold py-2 px-4 rounded-lg shadow-md transform transition-all hover:scale-105"
+            onClick={tryJoinGame}
+          >
             Join Game
           </button>
-          <button className="bg-yellow-500 hover:bg-yellow-600 font-bold py-2 px-4 rounded-lg shadow-md transform transition-all hover:scale-105" onClick={handleHostRoom}>
+          <button
+            className="bg-yellow-500 hover:bg-yellow-600 font-bold py-2 px-4 rounded-lg shadow-md transform transition-all hover:scale-105"
+            onClick={handleHostRoom}
+          >
             Host Game
           </button>
         </div>
@@ -131,11 +138,17 @@ function Lobby({ onStartGame }) {
             onChange={(e) => setJoinCodeValue(e.target.value.toUpperCase())}
           ></input>
 
-          <button className="bg-yellow-500 hover:bg-yellow-600 font-bold py-2 px-4 rounded-lg shadow-md transform transition-all hover:scale-105" onClick={handleJoinRoom}>
+          <button
+            className="bg-yellow-500 hover:bg-yellow-600 font-bold py-2 px-4 rounded-lg shadow-md transform transition-all hover:scale-105"
+            onClick={handleJoinRoom}
+          >
             Join
           </button>
 
-          <button className="bg-yellow-500 hover:bg-yellow-600 font-bold py-2 px-4 rounded-lg shadow-md transform transition-all hover:scale-105" onClick={() => setJoinGame(false)}>
+          <button
+            className="bg-yellow-500 hover:bg-yellow-600 font-bold py-2 px-4 rounded-lg shadow-md transform transition-all hover:scale-105"
+            onClick={() => setJoinGame(false)}
+          >
             Back
           </button>
         </div>
@@ -143,19 +156,29 @@ function Lobby({ onStartGame }) {
 
       {inLobby && (
         <div>
-          <h2 className="text-xl font-bold flex justify-center mb-4">ROOM CODE: {joinCode}</h2>
+          <h2 className="text-xl font-bold flex justify-center mb-4">
+            ROOM CODE: {joinCode}
+          </h2>
           <p className="font-bold mb-2">Players:</p>
           <ul className="-mx-2">
             {players.map((player, index) => (
               //Need players to consistently show distinctive colors, right now it shows diff colors for diff people
-              <li key={index} className="font-bold rounded-lg py-2 px-5 inline-block border border-black shadow shadow-lg mb-4 mx-1" style={{ backgroundColor: getRandomColor() }}>
-                {player.username} {player.host && <span className="font-bold">(HOST)</span>}
+              <li
+                key={index}
+                className="font-bold rounded-lg py-2 px-5 inline-block border border-black shadow shadow-lg mb-4 mx-1"
+                style={{ backgroundColor: getRandomColor() }}
+              >
+                {player.username}{" "}
+                {player.host && <span className="font-bold">(HOST)</span>}
               </li>
             ))}
           </ul>
           {isHost && (
             <div className="flex justify-center">
-              <button onClick={handleStartGame} className="bg-yellow-500 hover:bg-yellow-600 font-bold py-2 px-4 rounded-lg shadow-md transform transition-all hover:scale-105 w-48">
+              <button
+                onClick={handleStartGame}
+                className="bg-yellow-500 hover:bg-yellow-600 font-bold py-2 px-4 rounded-lg shadow-md transform transition-all hover:scale-105 w-48"
+              >
                 Start Game
               </button>
             </div>
