@@ -1,8 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useGameRoom } from "../contexts/GameRoomContext";
-import io from "socket.io-client";
-
-const socket = io("http://localhost:4000");
 
 function getRandomColor() {
   //Generates random color for lobby players (bkg of text)
@@ -11,6 +8,8 @@ function getRandomColor() {
 
 function Lobby({ onStartGame }) {
   const {
+    gamePhase,
+    transitionToGamePhase,
     isHost,
     setHostStatus,
     players,
@@ -19,25 +18,27 @@ function Lobby({ onStartGame }) {
     setJoinCodeValue,
     userName,
     setUserNameValue,
+    promptInput,
+    setPromptInputValue,
+    socket
   } = useGameRoom();
-
   const [inLobby, setInLobby] = useState(false);
   const [joinGame, setJoinGame] = useState(false);
 
   useEffect(() => {
-    socket.on("update_players", (players) => {
+    socket?.on("update_players", (players) => {
       updatePlayers(players);
     });
 
-    socket.on("game_started", () => {
+    socket?.on("game_started", () => {
       onStartGame("prompts");
     });
 
     return () => {
-      socket.off("update_players");
-      socket.off("game_started");
+      socket?.off("update_players");
+      socket?.off("game_started");
     };
-  }, []);
+  }, [socket]);
 
   const handleHostRoom = () => {
     if (userName.length != 0) {
@@ -45,7 +46,7 @@ function Lobby({ onStartGame }) {
       setInLobby(true);
       const code = generateRoomCode();
       setJoinCodeValue(code);
-      socket.emit("host_room", { roomId: code, username: userName });
+      socket?.emit("host_room", { roomId: code, username: userName });
     } else {
       alert("Please enter a username");
     }
@@ -56,7 +57,7 @@ function Lobby({ onStartGame }) {
       alert("Please enter a 4-letter code to join the room.");
       return;
     }
-    socket.emit(
+    socket?.emit(
       "join_room",
       { roomId: joinCode, username: userName },
       (roomExists) => {
@@ -89,7 +90,7 @@ function Lobby({ onStartGame }) {
   };
 
   const handleStartGame = () => {
-    socket.emit("start_game", joinCode);
+    socket?.emit("start_game", joinCode);
     onStartGame("prompts");
   };
 
