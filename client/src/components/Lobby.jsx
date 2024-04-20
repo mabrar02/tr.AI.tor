@@ -1,10 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useGameRoom } from "../contexts/GameRoomContext";
-import io from "socket.io-client";
 
-const socket = io("http://localhost:4000");
-
-function Lobby({ onStartGame }) {
+function Lobby({ onStartGame, socket }) {
   const {
     isHost,
     setHostStatus,
@@ -85,7 +82,6 @@ function Lobby({ onStartGame }) {
 
   const handleStartGame = () => {
     socket.emit("start_game", joinCode);
-    onStartGame("prompts");
   };
 
   return (
