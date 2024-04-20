@@ -15,8 +15,8 @@ module.exports = function phaseHandlers(socket, io, rooms) {
   });
 
   socket.on("request_prompt", (roomId) => {
+    rooms[roomId].numSubmitted = 0;
     const prompt = getRandomPrompt();
-    console.log(prompt);
 
     io.to(roomId).emit("get_prompt", {
       prompt: prompt,

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useGameRoom } from "../contexts/GameRoomContext";
 
-function Lobby({ onStartGame, socket }) {
+function Lobby({ socket }) {
   const {
     isHost,
     setHostStatus,
@@ -11,6 +11,7 @@ function Lobby({ onStartGame, socket }) {
     setJoinCodeValue,
     userName,
     setUserNameValue,
+    transitionToGamePhase,
   } = useGameRoom();
 
   const [inLobby, setInLobby] = useState(false);
@@ -22,7 +23,7 @@ function Lobby({ onStartGame, socket }) {
     });
 
     socket.on("game_started", () => {
-      onStartGame("prompts");
+      transitionToGamePhase("prompts");
     });
 
     return () => {
