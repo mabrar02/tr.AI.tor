@@ -5,6 +5,7 @@ function Voting({ socket }) {
   const { isHost, players, updatePlayers, joinCode, userName } = useGameRoom();
 
   const [playerAnswers, setPlayerAnswers] = useState({});
+  const [prompt, setPrompt] = useState("");
 
   useEffect(() => {
     if (isHost) {
@@ -17,8 +18,9 @@ function Voting({ socket }) {
       updatePlayers(players);
     });
 
-    socket.on("get_answers", (answers) => {
-      setPlayerAnswers(answers);
+    socket.on("get_answers", (answersRes) => {
+      setPlayerAnswers(answersRes.answers);
+      setPrompt(answersRes.prompt);
     });
 
     return () => {
@@ -29,6 +31,7 @@ function Voting({ socket }) {
 
   return (
     <div>
+      <h1>PROMPT: {prompt}</h1>
       <div className="flex-row justify-center">
         {Object.keys(playerAnswers).map((playerId) => (
           <div key={playerId} className="bg-slate-300 w-[20rem] m-4">

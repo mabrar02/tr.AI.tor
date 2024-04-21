@@ -17,6 +17,7 @@ module.exports = function phaseHandlers(socket, io, rooms) {
   socket.on("request_prompt", (roomId) => {
     rooms[roomId].numSubmitted = 0;
     const prompt = getRandomPrompt();
+    rooms[roomId].currentPrompt = prompt;
 
     io.to(roomId).emit("get_prompt", {
       prompt: prompt,
@@ -24,6 +25,7 @@ module.exports = function phaseHandlers(socket, io, rooms) {
   });
 
   socket.on("request_answers", (roomId) => {
+    const prompt = rooms[roomId].currentPrompt;
     const answers = rooms[roomId].answers;
     const answersWithUserInfo = {};
 
@@ -38,7 +40,9 @@ module.exports = function phaseHandlers(socket, io, rooms) {
         };
       }
     }
-    console.log(answersWithUserInfo);
-    io.to(roomId).emit("get_answers", answersWithUserInfo);
+    io.to(roomId).emit("get_answers", {
+      prompt: prompt,
+      answers: answersWithUserInfo,
+    });
   });
 };
