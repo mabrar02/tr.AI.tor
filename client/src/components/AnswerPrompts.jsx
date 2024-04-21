@@ -31,7 +31,8 @@ function AnswerPrompts({ socket }) {
     });
 
     socket.on("voting_phase", () => {
-      transitionToGamePhase("voting");
+      console.log(players);
+      transitionToGamePhase("responses");
     });
 
     return () => {

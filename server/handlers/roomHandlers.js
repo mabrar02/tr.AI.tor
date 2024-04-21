@@ -7,12 +7,11 @@ module.exports = function roomHandlers(socket, io, rooms) {
   socket.on("host_room", ({ roomId, username }) => {
     rooms[roomId] = {
       players: {},
-      answers: {},
       numSubmitted: 0,
       numPlayers: 1,
     };
     socket.join(roomId);
-    rooms[roomId].players[socket.id] = { username, host: true };
+    rooms[roomId].players[socket.id] = { username, host: true, character: "", answer: "", filteredAnswer: ""};
     updatePlayers(roomId);
     console.log(`Room hosted: ${roomId}`);
   });
@@ -21,7 +20,7 @@ module.exports = function roomHandlers(socket, io, rooms) {
     console.log(rooms);
     if (rooms[roomId]) {
       socket.join(roomId);
-      rooms[roomId].players[socket.id] = { username, host: false };
+      rooms[roomId].players[socket.id] = { username, host: false, character: "", answer: "", filteredAnswer: ""};
       rooms[roomId].numPlayers++;
       updatePlayers(roomId);
       callback(true);

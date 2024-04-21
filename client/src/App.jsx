@@ -24,10 +24,8 @@ const App = () => {
 
   return (
     <div>
-      {gamePhase === "lobby" && <Lobby onStartGame={transitionToGamePhase} />}
-      {gamePhase === "prompts" && <AnswerPrompts />}
-      {gamePhase === "responses" && <SeeResponses />}
       {gamePhase === "lobby" && <Lobby socket={socket} />}
+      {gamePhase === "responses" && <SeeResponses />}
       {gamePhase === "prompts" && <AnswerPrompts socket={socket} />}
       {gamePhase === "voting" && <Voting socket={socket} />}
     </div>

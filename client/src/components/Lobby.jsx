@@ -17,6 +17,7 @@ function Lobby() {
     setPromptInputValue,
     socket
   } = useGameRoom();
+
   const [inLobby, setInLobby] = useState(false);
   const [joinGame, setJoinGame] = useState(false);
 

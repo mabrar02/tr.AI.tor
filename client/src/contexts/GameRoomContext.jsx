@@ -6,8 +6,8 @@ const GameRoomContext = createContext();
 export const useGameRoom = () => useContext(GameRoomContext);
 
 export const GameRoomProvider = ({ children }) => {
-  const [gamePhase, setGamePhase] = useState("responses");
-//  const [gamePhase, setGamePhase] = useState("lobby");
+//const [gamePhase, setGamePhase] = useState("responses");
+  const [gamePhase, setGamePhase] = useState("lobby");
   const [isHost, setIsHost] = useState(false);
   const [players, setPlayers] = useState([]);
   const [joinCode, setJoinCode] = useState("");
