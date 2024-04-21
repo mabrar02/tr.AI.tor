@@ -2,10 +2,8 @@ import React from "react";
 import { useGameRoom } from "./contexts/GameRoomContext";
 import Lobby from "./components/Lobby";
 import AnswerPrompts from "./components/AnswerPrompts";
-import io from "socket.io-client";
 import Voting from "./components/Voting";
-
-const socket = io("http://localhost:4000");
+import SeeResponses from "./components/SeeResponses";
 
 const App = () => {
   const {
@@ -19,13 +17,14 @@ const App = () => {
     setJoinCodeValue,
     userName,
     setUserNameValue,
+    socket
   } = useGameRoom();
 
   return (
     <div>
       {gamePhase === "lobby" && <Lobby socket={socket} />}
+      {gamePhase === "responses" && <SeeResponses />}
       {gamePhase === "prompts" && <AnswerPrompts socket={socket} />}
-
       {gamePhase === "voting" && <Voting socket={socket} />}
     </div>
   );
