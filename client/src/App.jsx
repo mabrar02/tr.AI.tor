@@ -17,8 +17,6 @@ const App = () => {
     setJoinCodeValue,
     userName,
     setUserNameValue,
-    promptInput,
-    setPromptInputValue,
     socket
   } = useGameRoom();
 

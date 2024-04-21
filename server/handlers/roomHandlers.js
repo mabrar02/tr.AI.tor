@@ -9,6 +9,7 @@ module.exports = function roomHandlers(socket, io, rooms) {
       players: {},
       numSubmitted: 0,
       numPlayers: 1,
+      characters: [],
     };
     socket.join(roomId);
     rooms[roomId].players[socket.id] = { username, host: true, character: "", answer: "", filteredAnswer: ""};

@@ -12,7 +12,6 @@ export const GameRoomProvider = ({ children }) => {
   const [players, setPlayers] = useState([]);
   const [joinCode, setJoinCode] = useState("");
   const [userName, setUserName] = useState("");
-  const [promptInput, setPromptInput] = useState("");
   const [socket, setSocket] = useState(null);
 
   useEffect(() => {
@@ -43,10 +42,6 @@ export const GameRoomProvider = ({ children }) => {
     setUserName(name);
   };
   
-  const setPromptInputValue = (input) => {
-    setPromptInput(input);
-  };
-
   return (
     <GameRoomContext.Provider
       value={{
@@ -60,8 +55,6 @@ export const GameRoomProvider = ({ children }) => {
         setJoinCodeValue,
         userName,
         setUserNameValue,
-        promptInput,
-        setPromptInputValue,
         socket
       }}
     >

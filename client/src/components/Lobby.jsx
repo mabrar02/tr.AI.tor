@@ -13,13 +13,12 @@ function Lobby() {
     setJoinCodeValue,
     userName,
     setUserNameValue,
-    promptInput,
-    setPromptInputValue,
     socket
   } = useGameRoom();
 
   const [inLobby, setInLobby] = useState(false);
   const [joinGame, setJoinGame] = useState(false);
+  const [charOptions, updateCharOptions] = useState([]);
 
   useEffect(() => {
     socket?.on("update_players", (players) => {
@@ -29,6 +28,10 @@ function Lobby() {
     socket?.on("game_started", () => {
       transitionToGamePhase("prompts");
     });
+
+    socket?.on("update_char_options", (characters) => {
+      updateCharOptions(characters);
+    })
 
     return () => {
       socket?.off("update_players");
@@ -48,6 +51,7 @@ function Lobby() {
       const code = generateRoomCode();
       setJoinCodeValue(code);
       socket?.emit("host_room", { roomId: code, username: userName });
+      socket?.emit("get_char_options", {roomId: code});
     } else {
       alert("Please enter a username");
     }
@@ -64,6 +68,7 @@ function Lobby() {
       (roomExists) => {
         if (roomExists) {
           setInLobby(true);
+          socket?.emit("get_char_options", {roomId: joinCode});
         } else {
           alert("Room doesn't exist!");
         }
@@ -92,6 +97,10 @@ function Lobby() {
 
   const handleStartGame = () => {
     socket.emit("start_game", joinCode);
+  };
+
+  const selectChar = (character) => {
+    socket.emit("select_char", {character: character, roomId: joinCode});
   };
 
   return (
@@ -184,6 +193,20 @@ function Lobby() {
               </button>
             </div>
           )}
+
+          <ul className="-mx-2 my-10">
+            {charOptions.map((character, index) => (
+              //Need players to consistently show distinctive colors, right now it shows diff colors for diff people
+              <li
+                key={index}
+                className="font-bold rounded-lg py-2 px-5 inline-block border border-black shadow shadow-lg mb-4 mx-1"
+                style={{ backgroundColor: "white" }}
+                onClick={() => selectChar(charOptions[index])}
+              >
+                {charOptions[index]}
+              </li>
+            ))}
+          </ul>
         </div>
       )}
     </div>

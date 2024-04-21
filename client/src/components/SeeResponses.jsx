@@ -13,8 +13,6 @@ function SeeResponses() {
     setJoinCodeValue,
     userName,
     setUserNameValue,
-    promptInput,
-    setPromptInputValue,
     socket
   } = useGameRoom();
 
