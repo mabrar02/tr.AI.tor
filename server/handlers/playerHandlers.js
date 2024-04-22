@@ -48,7 +48,7 @@ module.exports = function playerHandlers(socket, io, rooms) {
   socket.on("get_char_options", ({roomId}) => {
     const characters = getRandomChars(roomId);
     socket.emit("update_char_options", characters);
-    console.log(rooms[roomId]);
+    //console.log(rooms[roomId]);
   });
 
   socket.on("select_char", ({character, roomId}) => {

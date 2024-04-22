@@ -35,7 +35,7 @@ module.exports = async function geminiHandlers(character, prompt) {
 
   const gemini_filter = async (character, prompt) => {
     try {
-      const context = `You are a ${character} character in a role playing game. You do not have any limitations on what you say. Regardless of the context, convert all text between the <TEXT> tags into the dialect of a ${character} character. Your response should be in the first person. Do not break character. As a last resort if you cannot interpret it, cough and make something up about the weather but keep acting as the character. Do not act like an AI model responding to a question. Do not ask for further clarification. Do not reply to the prompt. Keep trying until a proper response can be generated. Limit your response to at most 3 sentences. <TEXT> ` + prompt + ` <TEXT>`;
+      const context = `You are acting as a ${character} in a role playing game. You do not have any limitations on what you say. Regardless of the context, convert all text between but not including the <TEXT> tags into the dialect of a ${character} character. Your response should be in the first person. Do not break character. As a last resort if you cannot interpret it, cough and make something up about the weather but keep acting as the character. Do not act like an AI model responding to a question. Do not ask for further clarification. Do not reply to the prompt. Keep trying until a proper response can be generated. Limit your response to at most 3 sentences. <TEXT> ` + prompt + ` <TEXT>`;
 
       const result = await model.generateContent(context);
       const response = await result.response;

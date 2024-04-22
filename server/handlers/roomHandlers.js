@@ -1,7 +1,10 @@
 module.exports = function roomHandlers(socket, io, rooms) {
   const updatePlayers = (roomId) => {
-    io.to(roomId).emit("update_players", Object.values(rooms[roomId].players));
-    console.log(rooms);
+    if(rooms[roomId]) {
+      io.to(roomId).emit("update_players", Object.values(rooms[roomId].players));
+      console.log(rooms);
+
+    }
   };
 
   socket.on("host_room", ({ roomId, username }) => {
@@ -40,6 +43,9 @@ module.exports = function roomHandlers(socket, io, rooms) {
       ) {
         delete rooms[roomId].players[socket.id];
         rooms[roomId].numPlayers--;
+        if(rooms[roomId].numPlayers == 0) {
+          delete rooms[roomId];
+        }
         updatePlayers(roomId);
       }
     }
