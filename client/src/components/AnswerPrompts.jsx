@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useGameRoom } from "../contexts/GameRoomContext";
 
-function AnswerPrompts({ socket }) {
+function AnswerPrompts() {
   const {
     isHost,
     players,
@@ -10,9 +10,11 @@ function AnswerPrompts({ socket }) {
     userName,
     transitionToGamePhase,
     index,
+    prompt,
+    socket,
+    setPrompt
   } = useGameRoom();
 
-  const [prompt, setPrompt] = useState("");
   const [answer, setAnswer] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [timer, setTimer] = useState(90);
@@ -21,20 +23,20 @@ function AnswerPrompts({ socket }) {
 
   useEffect(() => {
     if (isHost) {
-      socket.emit("request_prompt", joinCode);
+      socket?.emit("request_prompt", joinCode);
+
+      return () => {
+        socket?.off("request_prompt");
+      };
     };
 
 
-  }, []);
+  }, [socket]);
 
+  // For timer
   useEffect(() => {
-
     const intervalId = setInterval(() => {
       setTimer(timer => {
-        if (timer <= 1) {
-          transitionToGamePhase("responses");
-          return 0;
-        }
         return timer - 1;
       });
     }, 1000);
@@ -42,37 +44,46 @@ function AnswerPrompts({ socket }) {
     return () => clearInterval(intervalId);
   }, []);
 
+  // To transition after timer end
   useEffect(() => {
-    socket.on("get_prompt", (promptRes) => {
+    if(timer < 1) {
+      transitionToGamePhase("voting");
+    }
+  }, [timer]);
+
+
+  useEffect(() => {
+    socket?.on("get_prompt", (promptRes) => {
       setPrompt(promptRes.prompt);
     });
 
-    socket.on("voting_phase", () => {
+    socket?.on("voting_phase", () => {
       console.log(players);
       if(timer > 20) {
-        setTimer(20); // After all players submit, set timer to 20 seconds
+        setTimer(1); // After all players submit, set timer to 20 seconds
       }
     });
 
-    socket.on("answer_regenerated", () => {
+    socket?.on("answer_regenerated", () => {
       setUpdatingResponse(false);
     });
 
     return () => {
-      socket.off("get_prompt");
-      socket.off("voting_phase");
+      socket?.off("get_prompt");
+      socket?.off("voting_phase");
+      socket?.off("answer_regenerated");
     };
-  }, []);
+  }, [socket]);
 
   const submitAnswer = () => {
     console.log(answer);
     setSubmitted(true);
-    socket.emit("submit_answer", { roomId: joinCode, answer });
+    socket?.emit("submit_answer", { roomId: joinCode, answer });
   };
 
   const regenerateAnswer = () => {
     if(regenCount > 0) {
-      socket.emit("regenerate_answer", {roomId: joinCode});
+      socket?.emit("regenerate_answer", {roomId: joinCode});
       setRegenCount(regenCount-1);
       setUpdatingResponse(true);
     }
@@ -82,7 +93,7 @@ function AnswerPrompts({ socket }) {
     <div>
       <div className="flex justify-center">
         <div className="bg-blue-400 w-[15rem] h-[10rem] text-center">
-          <h2>Time left: {timer}!</h2>
+          <h2>Time left: <br></br><b>{timer}!</b></h2>
         </div>
         {!submitted && (
           <div className="bg-lime-400 w-[15rem] h-[10rem] text-center">

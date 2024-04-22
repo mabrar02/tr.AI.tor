@@ -14,6 +14,7 @@ export const GameRoomProvider = ({ children }) => {
   const [userName, setUserName] = useState("");
   const [socket, setSocket] = useState(null);
   const [index, setIndex] = useState(0);
+  const [prompt, setPrompt] = useState("");
 
   useEffect(() => {
     const newSocket = io('http://localhost:4000');
@@ -73,7 +74,9 @@ export const GameRoomProvider = ({ children }) => {
         setUserNameValue,
         socket,
         index,
-        setIndex
+        setIndex,
+        prompt,
+        setPrompt
       }}
     >
       {children}
