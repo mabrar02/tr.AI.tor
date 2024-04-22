@@ -17,7 +17,9 @@ const App = () => {
     setJoinCodeValue,
     userName,
     setUserNameValue,
-    socket
+    socket,
+    index,
+    setIndex
   } = useGameRoom();
 
   return (
