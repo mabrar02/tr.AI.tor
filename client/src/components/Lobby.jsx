@@ -37,6 +37,7 @@ function Lobby() {
     return () => {
       socket?.off("update_players");
       socket?.off("game_started");
+      socket?.off("update_char_options");
     };
   }, [socket]);
 
@@ -186,7 +187,10 @@ function Lobby() {
           </ul>
           {isHost && (
             <div className="flex justify-center">
-              <button onClick={handleStartGame} className="bg-yellow-500 hover:bg-yellow-600 font-bold py-2 px-4 rounded-lg shadow-md transform transition-all hover:scale-105 w-48">
+              <button
+                onClick={handleStartGame}
+                className="bg-yellow-500 hover:bg-yellow-600 font-bold py-2 px-4 rounded-lg shadow-md transform transition-all hover:scale-105 w-48"
+              >
                 Start Game
               </button>
             </div>
