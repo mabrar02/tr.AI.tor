@@ -16,15 +16,6 @@ function SeeResponses() {
     socket
   } = useGameRoom();
 
-  useEffect(() => {
-    socket?.on("update_players", (players) => {
-      updatePlayers(players);
-    });
-
-    return () => {
-      socket?.off("update_players");
-    };
-  }, [socket]);
 
   return (
     <div>

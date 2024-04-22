@@ -1,12 +1,15 @@
 module.exports = function roomHandlers(socket, io, rooms) {
   const updatePlayers = (roomId) => {
-    if(rooms[roomId]) {
-      io.to(roomId).emit("update_players", Object.values(rooms[roomId].players));
-      console.log(rooms);
-
+      if(rooms[roomId]) {
+        const playerTemp = Object.values(rooms[roomId].players);
+        const socketIdTemp = Object.keys(rooms[roomId].players);
+        const idx = socketIdTemp.indexOf(socket.id);
+        io.to(roomId).emit("update_players", playerTemp);
+        socket.emit("update_index", idx);
+    //    console.log(rooms);
     }
   };
-
+  
   socket.on("host_room", ({ roomId, username }) => {
     rooms[roomId] = {
       players: {},

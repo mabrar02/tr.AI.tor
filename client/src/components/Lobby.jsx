@@ -21,9 +21,6 @@ function Lobby() {
   const [charOptions, updateCharOptions] = useState([]);
 
   useEffect(() => {
-    socket?.on("update_players", (players) => {
-      updatePlayers(players);
-    });
 
     socket?.on("game_started", () => {
       transitionToGamePhase("prompts");
@@ -34,8 +31,8 @@ function Lobby() {
     })
 
     return () => {
-      socket?.off("update_players");
       socket?.off("game_started");
+      socket?.off("update_char_options");
     };
   }, [socket]);
 

@@ -13,16 +13,11 @@ function Voting({ socket }) {
   }, []);
 
   useEffect(() => {
-    socket.on("update_players", (players) => {
-      updatePlayers(players);
-    });
-
     socket.on("get_answers", (answers) => {
       setPlayerAnswers(answers);
     });
 
     return () => {
-      socket.off("update_players");
       socket.off("get_answers");
     };
   }, []);
