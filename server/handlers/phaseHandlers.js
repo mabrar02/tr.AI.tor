@@ -22,4 +22,23 @@ module.exports = function phaseHandlers(socket, io, rooms) {
       prompt: prompt,
     });
   });
+
+  socket.on("request_answers", (roomId) => {
+    const answers = rooms[roomId].answers;
+    const answersWithUserInfo = {};
+
+    for (const playerId in answers) {
+      if (answers.hasOwnProperty(playerId)) {
+        const username = rooms[roomId].players[playerId].username;
+
+        answersWithUserInfo[playerId] = {
+          id: playerId,
+          answer: answers[playerId],
+          username: username,
+        };
+      }
+    }
+    console.log(answersWithUserInfo);
+    io.to(roomId).emit("get_answers", answersWithUserInfo);
+  });
 };
