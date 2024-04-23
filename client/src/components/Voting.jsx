@@ -1,3 +1,12 @@
+<<<<<<< HEAD
+import React from "react";
+import { useGameRoom } from "../contexts/GameRoomContext";
+
+function Voting({ socket }) {
+  const { isHost, players, updatePlayers, joinCode, userName } = useGameRoom();
+  return <div>Voting</div>;
+
+=======
 import React, { useState, useEffect } from "react";
 import { useGameRoom } from "../contexts/GameRoomContext";
 
@@ -116,6 +125,7 @@ function Voting({ socket }) {
 
 
   );
+>>>>>>> main
 }
 
 export default Voting;
