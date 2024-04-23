@@ -13,6 +13,8 @@ export const GameRoomProvider = ({ children }) => {
   const [joinCode, setJoinCode] = useState("");
   const [userName, setUserName] = useState("");
   const [socket, setSocket] = useState(null);
+  const [index, setIndex] = useState(0);
+  const [prompt, setPrompt] = useState("");
 
   useEffect(() => {
     const newSocket = io('http://localhost:4000');
@@ -21,6 +23,21 @@ export const GameRoomProvider = ({ children }) => {
     return () => newSocket.close();
 
   }, []);
+
+  useEffect(() => {
+    socket?.on("update_players", (players) => {
+      updatePlayers(players);
+    });
+   
+    socket?.on("update_index", (idx) => {
+      setIndex(idx);
+    });
+    
+    return () => {
+      socket?.off("update_players");
+      socket?.off("update_index");
+    };
+  }, [socket]);
 
   const transitionToGamePhase = (phase) => {
     setGamePhase(phase);
@@ -55,7 +72,11 @@ export const GameRoomProvider = ({ children }) => {
         setJoinCodeValue,
         userName,
         setUserNameValue,
-        socket
+        socket,
+        index,
+        setIndex,
+        prompt,
+        setPrompt
       }}
     >
       {children}

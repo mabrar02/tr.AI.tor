@@ -1,9 +1,15 @@
 module.exports = function roomHandlers(socket, io, rooms) {
   const updatePlayers = (roomId) => {
-    io.to(roomId).emit("update_players", Object.values(rooms[roomId].players));
-    console.log(rooms);
+      if(rooms[roomId]) {
+        const playerTemp = Object.values(rooms[roomId].players);
+        const socketIdTemp = Object.keys(rooms[roomId].players);
+        const idx = socketIdTemp.indexOf(socket.id);
+        io.to(roomId).emit("update_players", playerTemp);
+        socket.emit("update_index", idx);
+    //    console.log(rooms);
+    }
   };
-
+  
   socket.on("host_room", ({ roomId, username }) => {
     rooms[roomId] = {
       players: {},
@@ -12,7 +18,7 @@ module.exports = function roomHandlers(socket, io, rooms) {
       characters: [],
     };
     socket.join(roomId);
-    rooms[roomId].players[socket.id] = { username, host: true, character: "", answer: "", filteredAnswer: ""};
+    rooms[roomId].players[socket.id] = { username, host: true, character: "", answer: "", filteredAnswer: "", role: "", vote: ""};
     updatePlayers(roomId);
     console.log(`Room hosted: ${roomId}`);
   });
@@ -21,7 +27,7 @@ module.exports = function roomHandlers(socket, io, rooms) {
     console.log(rooms);
     if (rooms[roomId]) {
       socket.join(roomId);
-      rooms[roomId].players[socket.id] = { username, host: false, character: "", answer: "", filteredAnswer: ""};
+      rooms[roomId].players[socket.id] = { username, host: false, character: "", answer: "", filteredAnswer: "", role: "", vote: ""};
       rooms[roomId].numPlayers++;
       updatePlayers(roomId);
       callback(true);
@@ -40,6 +46,9 @@ module.exports = function roomHandlers(socket, io, rooms) {
       ) {
         delete rooms[roomId].players[socket.id];
         rooms[roomId].numPlayers--;
+        if(rooms[roomId].numPlayers == 0) {
+          delete rooms[roomId];
+        }
         updatePlayers(roomId);
       }
     }
