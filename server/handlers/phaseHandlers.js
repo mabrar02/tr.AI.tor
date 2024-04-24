@@ -13,7 +13,6 @@ module.exports = function phaseHandlers(socket, io, rooms) {
   socket.on("start_game", (roomId) => {
     io.to(roomId).emit("game_started", {});
     const randTraitor = Math.floor(Math.random() * rooms[roomId].numPlayers);
-
     let i = 0;
     Object.keys(rooms[roomId].players).forEach((key) => {
       if (i == randTraitor) {
@@ -31,9 +30,9 @@ module.exports = function phaseHandlers(socket, io, rooms) {
     const prompt = getRandomPrompt();
     rooms[roomId].currentPrompt = prompt;
 
-    io.to(roomId).emit("get_prompt", {
-      prompt: prompt,
-    });
+    console.log(prompt);
+
+    io.to(roomId).emit("get_prompt", prompt);
   });
 
   socket.on("request_answers", (roomId) => {

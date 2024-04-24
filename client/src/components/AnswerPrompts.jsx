@@ -16,6 +16,7 @@ function AnswerPrompts() {
   } = useGameRoom();
 
   const [answer, setAnswer] = useState("");
+  const [filteredAnswer, setFilteredAnswer] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [timer, setTimer] = useState(90);
   const [regenCount, setRegenCount] = useState(3);
@@ -50,8 +51,8 @@ function AnswerPrompts() {
   }, [timer]);
 
   useEffect(() => {
-    socket?.on("get_prompt", (promptRes) => {
-      setPrompt(promptRes.prompt);
+    socket?.on("get_prompt", (prompt) => {
+      setPrompt(prompt);
     });
 
     socket?.on("voting_phase", () => {
@@ -61,14 +62,20 @@ function AnswerPrompts() {
       }
     });
 
-    socket?.on("answer_regenerated", () => {
+    socket?.on("answer_regenerated", (content) => {
+      setFilteredAnswer(content);
       setUpdatingResponse(false);
+    });
+
+    socket?.on("answer_submitted", (content) => {
+      setFilteredAnswer(content);
     });
 
     return () => {
       socket?.off("get_prompt");
       socket?.off("voting_phase");
       socket?.off("answer_regenerated");
+      socket?.off("answer_submitted");
     };
   }, [socket]);
 
@@ -120,7 +127,7 @@ function AnswerPrompts() {
       {submitted && (
         <div className="flex flex-col items-center w-[40rem] justify-center bg-black text-white">
           <p>Your filtered answer:</p>
-          <p>{players[index].filteredAnswer}</p>
+          <p>{filteredAnswer}</p>
           <button
             className={`${
               regenCount == 0 ? "bg-yellow-800" : "bg-yellow-200"

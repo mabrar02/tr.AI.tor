@@ -23,7 +23,7 @@ module.exports = function playerHandlers(socket, io, rooms) {
         rooms[roomId].characters.push(characters[randIndex]);
       }
     }
-    // Default to first selected
+
     rooms[roomId].players[socket.id].character = randChars[0];
     return randChars;
   };
@@ -47,6 +47,8 @@ module.exports = function playerHandlers(socket, io, rooms) {
     rooms[roomId].players[socket.id].filteredAnswer = content;
     updatePlayers(roomId);
 
+    io.to(socket.id).emit("answer_submitted", content);
+
     if (rooms[roomId].numSubmitted == rooms[roomId].numPlayers) {
       io.to(roomId).emit("voting_phase", {});
     }
@@ -58,23 +60,26 @@ module.exports = function playerHandlers(socket, io, rooms) {
       rooms[roomId].players[socket.id].character,
       rooms[roomId].players[socket.id].answers
     );
-    console.log(content);
 
     rooms[roomId].players[socket.id].filteredAnswer = content;
 
     updatePlayers(roomId);
-    socket.emit("answer_regenerated");
+    socket.emit("answer_regenerated", content);
   });
 
   socket.on("get_char_options", ({ roomId }) => {
     for (const playerId in rooms[roomId].players) {
       if (rooms[roomId].players.hasOwnProperty(playerId)) {
         const player = rooms[roomId].players[playerId];
+        let chars = [];
         if (player.role !== "Traitor") {
-          const characters = getRandomChars(roomId);
-          console.log("char options for", playerId);
-          io.to(playerId).emit("update_char_options", characters);
+          chars = getRandomChars(roomId);
         }
+
+        io.to(playerId).emit("update_char_options", {
+          role: player.role,
+          characters: chars,
+        });
       }
     }
   });

@@ -156,7 +156,6 @@ function Lobby() {
           <p className="font-bold mb-2">Players:</p>
           <ul className="-mx-2">
             {players.map((player, index) => (
-              //Need players to consistently show distinctive colors, right now it shows diff colors for diff people
               <li
                 key={index}
                 className="font-bold rounded-lg py-2 px-5 inline-block border border-black shadow shadow-lg mb-4 mx-1"
