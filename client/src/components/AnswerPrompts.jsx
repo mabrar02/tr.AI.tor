@@ -57,7 +57,7 @@ function AnswerPrompts() {
     socket?.on("voting_phase", () => {
       console.log(players);
       if (timer > 20) {
-        setTimer(1); // After all players submit, set timer to 20 seconds
+        setTimer(10); // After all players submit, set timer to 20 seconds
       }
     });
 
@@ -74,8 +74,8 @@ function AnswerPrompts() {
 
   const submitAnswer = () => {
     console.log(answer);
-    setSubmitted(true);
     socket?.emit("submit_answer", { roomId: joinCode, answer });
+    setSubmitted(true);
   };
 
   const regenerateAnswer = () => {

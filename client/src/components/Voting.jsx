@@ -1,22 +1,35 @@
 import React, { useState, useEffect } from "react";
 import { useGameRoom } from "../contexts/GameRoomContext";
 
-function Voting() {
-  const { isHost, players, updatePlayers, joinCode, userName, socket, prompt } =
-    useGameRoom();
+function Voting({ socket }) {
+  const {
+    isHost,
+    players,
+    updatePlayers,
+    joinCode,
+    transitionToGamePhase,
+    userName,
+    prompt,
+  } = useGameRoom();
 
   const [timer, setTimer] = useState(10);
+  const [phase, setPhase] = useState("Voting");
   const [selected, selectSelect] = useState("");
   const [tallyVotes, updateTallyVotes] = useState({});
-  const [timesUp, setTimesUp] = useState(false);
+  const [voteText, setVoteText] = useState("");
 
   useEffect(() => {
     socket?.on("get_tally_votes", (votee_dict) => {
       updateTallyVotes(votee_dict);
     });
 
+    socket?.on("vote_decision", (decision) => {
+      voteDecision(decision);
+    });
+
     return () => {
       socket?.off("get_tally_votes");
+      socket?.off("vote_decision");
     };
   }, []);
 
@@ -26,7 +39,6 @@ function Voting() {
       setTimer((timer) => {
         if (timer == 0) {
           clearInterval(intervalId);
-          setTimesUp(true);
         } else {
           return timer - 1;
         }
@@ -38,8 +50,14 @@ function Voting() {
 
   // To transition after timer end
   useEffect(() => {
-    if (timer == 0 && isHost) {
-      socket.emit("tally_votes", joinCode);
+    if (timer == 0 && phase == "Voting") {
+      if (isHost) {
+        socket.emit("tally_votes", joinCode);
+      }
+      setTimer(10);
+      setPhase("Post-Votes");
+    } else if (timer == 0 && phase == "Post-Votes") {
+      transitionToGamePhase("prompts");
     }
   }, [timer]);
 
@@ -51,13 +69,29 @@ function Voting() {
     socket.emit("send_vote", { roomId: joinCode, vote: selected });
   };
 
+  const voteDecision = ({ decision, player }) => {
+    if (decision) {
+      setVoteText(`${player} has been found as the traitor!`);
+    } else {
+      setVoteText("No conclusive traitor was found... try again.");
+      if (isHost) {
+        socket.emit("reset_votes", joinCode);
+      }
+      players.forEach((player) => {
+        player.filteredAnswer = "";
+        player.vote = "";
+      });
+    }
+  };
+
   function getRandomColor() {
     //Generates random color for lobby players (bkg of text)
     return "#" + Math.floor(Math.random() * 16777215).toString(16);
   }
+
   return (
     <div>
-      {timer > 0 && (
+      {phase == "Voting" && (
         <div>
           Time left: {timer} Prompt: {prompt}
           <div className="flex-row justify-center">
@@ -85,16 +119,15 @@ function Voting() {
         </div>
       )}
 
-      {timesUp && (
+      {phase == "Post-Votes" && (
         <div>
-          Prompt: {prompt}
+          Time left: {timer} Prompt: {prompt}
           <div className="flex-row justify-center">
             The results are in!<br></br>
             {Object.entries(tallyVotes).map(([votee, value]) => (
               <div
                 key={votee}
-                className="font-bold rounded-lg py-2 px-5 inline-block border border-black shadow shadow-lg mb-4 mx-1"
-                style={{ backgroundColor: getRandomColor() }}
+                className="font-bold rounded-lg py-2 px-5 inline-block border border-black shadow shadow-lg mb-4 mx-1 bg-white"
               >
                 <p>Player: {votee}</p>
                 {Object.entries(value).map(([key, value2]) => (
@@ -105,6 +138,9 @@ function Voting() {
                 ))}
               </div>
             ))}
+          </div>
+          <div className="bg-yellow-500 font-bold py-2 px-4 rounded-lg shadow-md transform transition-all">
+            {voteText}
           </div>
         </div>
       )}
