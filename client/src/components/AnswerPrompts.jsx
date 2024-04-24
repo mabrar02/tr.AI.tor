@@ -12,7 +12,7 @@ function AnswerPrompts() {
     index,
     prompt,
     socket,
-    setPrompt
+    setPrompt,
   } = useGameRoom();
 
   const [answer, setAnswer] = useState("");
@@ -24,19 +24,17 @@ function AnswerPrompts() {
   useEffect(() => {
     if (isHost) {
       socket?.emit("request_prompt", joinCode);
+    }
 
-      return () => {
-        socket?.off("request_prompt");
-      };
+    return () => {
+      socket?.off("request_prompt");
     };
-
-
   }, [socket]);
 
   // For timer
   useEffect(() => {
     const intervalId = setInterval(() => {
-      setTimer(timer => {
+      setTimer((timer) => {
         return timer - 1;
       });
     }, 1000);
@@ -46,11 +44,10 @@ function AnswerPrompts() {
 
   // To transition after timer end
   useEffect(() => {
-    if(timer < 1) {
+    if (timer < 1) {
       transitionToGamePhase("voting");
     }
   }, [timer]);
-
 
   useEffect(() => {
     socket?.on("get_prompt", (promptRes) => {
@@ -59,7 +56,7 @@ function AnswerPrompts() {
 
     socket?.on("voting_phase", () => {
       console.log(players);
-      if(timer > 20) {
+      if (timer > 20) {
         setTimer(1); // After all players submit, set timer to 20 seconds
       }
     });
@@ -82,9 +79,9 @@ function AnswerPrompts() {
   };
 
   const regenerateAnswer = () => {
-    if(regenCount > 0) {
-      socket?.emit("regenerate_answer", {roomId: joinCode});
-      setRegenCount(regenCount-1);
+    if (regenCount > 0) {
+      socket?.emit("regenerate_answer", { roomId: joinCode });
+      setRegenCount(regenCount - 1);
       setUpdatingResponse(true);
     }
   };
@@ -93,7 +90,10 @@ function AnswerPrompts() {
     <div>
       <div className="flex justify-center">
         <div className="bg-blue-400 w-[15rem] h-[10rem] text-center">
-          <h2>Time left: <br></br><b>{timer}!</b></h2>
+          <h2>
+            Time left: <br></br>
+            <b>{timer}!</b>
+          </h2>
         </div>
         {!submitted && (
           <div className="bg-lime-400 w-[15rem] h-[10rem] text-center">
@@ -109,7 +109,7 @@ function AnswerPrompts() {
             </button>
           </div>
         )}
-        
+
         {submitted && (
           <div className="bg-cyan-600 w-[15rem] h-[10rem] text-center text-white">
             You've submitted! Waiting on all other player submissions...
@@ -117,15 +117,20 @@ function AnswerPrompts() {
         )}
       </div>
 
-        {submitted && (
-          <div className="flex flex-col items-center w-[40rem] justify-center bg-black text-white">
-            <p>Your filtered answer:</p>
-            <p>{players[index].filteredAnswer}</p>
-            <button className={`${regenCount == 0 ? 'bg-yellow-800' : 'bg-yellow-200'} px-10 py-2 text-black`} onClick={regenerateAnswer}>
-              {updatingResponse ? '...' : 'Regenerate Answer'} (x{regenCount})
-            </button>
-          </div>
-        )}
+      {submitted && (
+        <div className="flex flex-col items-center w-[40rem] justify-center bg-black text-white">
+          <p>Your filtered answer:</p>
+          <p>{players[index].filteredAnswer}</p>
+          <button
+            className={`${
+              regenCount == 0 ? "bg-yellow-800" : "bg-yellow-200"
+            } px-10 py-2 text-black`}
+            onClick={regenerateAnswer}
+          >
+            {updatingResponse ? "..." : "Regenerate Answer"} (x{regenCount})
+          </button>
+        </div>
+      )}
     </div>
   );
 }

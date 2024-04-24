@@ -1,20 +1,18 @@
-
 const { getFips } = require("crypto");
 const geminiHandlers = require("./geminiHandlers");
 const fs = require("fs");
 
 const characters = JSON.parse(fs.readFileSync("characters.json", "utf-8"));
 
-
 module.exports = function playerHandlers(socket, io, rooms) {
   const updatePlayers = (roomId) => {
-      if(rooms[roomId]) {
-        const playerTemp = Object.values(rooms[roomId].players);
-        const socketIdTemp = Object.keys(rooms[roomId].players);
-        const idx = socketIdTemp.indexOf(socket.id);
-        io.to(roomId).emit("update_players", playerTemp);
-        socket.emit("update_index", idx);
-        console.log(rooms);
+    if (rooms[roomId]) {
+      const playerTemp = Object.values(rooms[roomId].players);
+      const socketIdTemp = Object.keys(rooms[roomId].players);
+      const idx = socketIdTemp.indexOf(socket.id);
+      io.to(roomId).emit("update_players", playerTemp);
+      socket.emit("update_index", idx);
+      console.log(rooms);
     }
   };
 
@@ -22,7 +20,7 @@ module.exports = function playerHandlers(socket, io, rooms) {
     const randChars = [];
     for (let i = 0; i < 3; i++) {
       const randIndex = Math.floor(Math.random() * characters.length);
-      if(rooms[roomId].characters.includes(characters[randIndex])) {
+      if (rooms[roomId].characters.includes(characters[randIndex])) {
         i--;
       } else {
         randChars[i] = characters[randIndex];
@@ -45,7 +43,10 @@ module.exports = function playerHandlers(socket, io, rooms) {
     rooms[roomId].players[socket.id].answers = answer;
     rooms[roomId].numSubmitted++;
 
-    const content = await getFilteredResponse(rooms[roomId].players[socket.id].character, answer);
+    const content = await getFilteredResponse(
+      rooms[roomId].players[socket.id].character,
+      answer
+    );
     //console.log(content);
 
     rooms[roomId].players[socket.id].filteredAnswer = content;
@@ -58,7 +59,10 @@ module.exports = function playerHandlers(socket, io, rooms) {
 
   socket.on("regenerate_answer", async ({ roomId }) => {
     console.log(roomId);
-    const content = await getFilteredResponse(rooms[roomId].players[socket.id].character, rooms[roomId].players[socket.id].answers);
+    const content = await getFilteredResponse(
+      rooms[roomId].players[socket.id].character,
+      rooms[roomId].players[socket.id].answers
+    );
     console.log(content);
 
     rooms[roomId].players[socket.id].filteredAnswer = content;
@@ -67,20 +71,25 @@ module.exports = function playerHandlers(socket, io, rooms) {
     socket.emit("answer_regenerated");
   });
 
-  socket.on("get_char_options", ({roomId}) => {
-    const characters = getRandomChars(roomId);
-    socket.emit("update_char_options", characters);
-    //console.log(rooms[roomId]);
+  socket.on("get_char_options", ({ roomId }) => {
+    for (const playerId in rooms[roomId].players) {
+      if (rooms[roomId].players.hasOwnProperty(playerId)) {
+        const player = rooms[roomId].players[playerId];
+        if (player.role !== "Imposter") {
+          const characters = getRandomChars(roomId);
+          console.log("char options for", playerId);
+          io.to(playerId).emit("update_char_options", characters);
+        }
+      }
+    }
   });
 
-  socket.on("select_char", ({character, roomId}) => {
+  socket.on("select_char", ({ character, roomId }) => {
     rooms[roomId].players[socket.id].character = character;
-    console.log(rooms[roomId]);
   });
 
-
-  socket.on("send_vote", ({roomId, vote}) => {
+  socket.on("send_vote", ({ roomId, vote }) => {
     rooms[roomId].players[socket.id].vote = vote;
     console.log(rooms[roomId].players);
-  })
+  });
 };

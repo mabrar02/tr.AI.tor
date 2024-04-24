@@ -23,8 +23,6 @@ module.exports = function phaseHandlers(socket, io, rooms) {
       }
       i++;
     });
-
-    console.log(rooms[roomId].players);
   });
 
   socket.on("request_prompt", (roomId) => {

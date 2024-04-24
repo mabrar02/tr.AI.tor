@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useGameRoom } from "../contexts/GameRoomContext";
 
-function Voting({ socket }) {
-  const { isHost, players, updatePlayers, joinCode, userName, prompt } =
+function Voting() {
+  const { isHost, players, updatePlayers, joinCode, userName, socket, prompt } =
     useGameRoom();
 
   const [timer, setTimer] = useState(10);
