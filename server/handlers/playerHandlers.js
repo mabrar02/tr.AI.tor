@@ -8,11 +8,7 @@ module.exports = function playerHandlers(socket, io, rooms) {
   const updatePlayers = (roomId) => {
     if (rooms[roomId]) {
       const playerTemp = Object.values(rooms[roomId].players);
-      const socketIdTemp = Object.keys(rooms[roomId].players);
-      const idx = socketIdTemp.indexOf(socket.id);
       io.to(roomId).emit("update_players", playerTemp);
-      socket.emit("update_index", idx);
-      console.log(rooms);
     }
   };
 
@@ -47,7 +43,6 @@ module.exports = function playerHandlers(socket, io, rooms) {
       rooms[roomId].players[socket.id].character,
       answer
     );
-    //console.log(content);
 
     rooms[roomId].players[socket.id].filteredAnswer = content;
     updatePlayers(roomId);
@@ -75,7 +70,7 @@ module.exports = function playerHandlers(socket, io, rooms) {
     for (const playerId in rooms[roomId].players) {
       if (rooms[roomId].players.hasOwnProperty(playerId)) {
         const player = rooms[roomId].players[playerId];
-        if (player.role !== "Imposter") {
+        if (player.role !== "Traitor") {
           const characters = getRandomChars(roomId);
           console.log("char options for", playerId);
           io.to(playerId).emit("update_char_options", characters);

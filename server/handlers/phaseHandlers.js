@@ -17,7 +17,7 @@ module.exports = function phaseHandlers(socket, io, rooms) {
     let i = 0;
     Object.keys(rooms[roomId].players).forEach((key) => {
       if (i == randTraitor) {
-        rooms[roomId].players[key].role = "Imposter";
+        rooms[roomId].players[key].role = "Traitor";
       } else {
         rooms[roomId].players[key].role = "Innocent";
       }
@@ -36,28 +36,23 @@ module.exports = function phaseHandlers(socket, io, rooms) {
   });
 
   socket.on("request_answers", (roomId) => {
-    const prompt = rooms[roomId].currentPrompt;
     const answers = rooms[roomId].answers;
     const answersWithUserInfo = {};
+
+    for (const playerId in answers) {
+      if (answers.hasOwnProperty(playerId)) {
+        const username = rooms[roomId].players[playerId].username;
+
+        answersWithUserInfo[playerId] = {
+          id: playerId,
+          answer: answers[playerId],
+          username: username,
+        };
+      }
+    }
+    console.log(answersWithUserInfo);
+    io.to(roomId).emit("get_answers", answersWithUserInfo);
   });
-  //  socket.on("request_answers", (roomId) => {
-  //    const answers = rooms[roomId].answers;
-  //    const answersWithUserInfo = {};
-  //
-  //    for (const playerId in answers) {
-  //      if (answers.hasOwnProperty(playerId)) {
-  //        const username = rooms[roomId].players[playerId].username;
-  //
-  //        answersWithUserInfo[playerId] = {
-  //          id: playerId,
-  //          answer: answers[playerId],
-  //          username: username,
-  //        };
-  //      }
-  //    }
-  //    console.log(answersWithUserInfo);
-  //    io.to(roomId).emit("get_answers", answersWithUserInfo);
-  //  });
 
   socket.on("tally_votes", (roomId) => {
     const votee_dict = {};

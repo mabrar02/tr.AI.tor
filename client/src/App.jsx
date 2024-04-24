@@ -27,8 +27,8 @@ const App = () => {
     <div>
       {gamePhase === "lobby" && <Lobby />}
       {gamePhase === "characters" && <CharacterSelect />}
-      {gamePhase === "responses" && <SeeResponses />}
       {gamePhase === "prompts" && <AnswerPrompts />}
+      {gamePhase === "responses" && <SeeResponses />}
       {gamePhase === "voting" && <Voting />}
     </div>
   );
