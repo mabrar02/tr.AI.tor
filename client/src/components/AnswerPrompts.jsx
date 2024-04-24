@@ -60,14 +60,14 @@ function AnswerPrompts() {
     socket?.on("voting_phase", () => {
       console.log(players);
       if(timer > 20) {
-        setTimer(1); // After all players submit, set timer to 20 seconds
+        setTimer(10); // After all players submit, set timer to 20 seconds
       }
     });
 
     socket?.on("answer_regenerated", () => {
       setUpdatingResponse(false);
     });
-
+    
     return () => {
       socket?.off("get_prompt");
       socket?.off("voting_phase");
@@ -77,8 +77,8 @@ function AnswerPrompts() {
 
   const submitAnswer = () => {
     console.log(answer);
-    setSubmitted(true);
     socket?.emit("submit_answer", { roomId: joinCode, answer });
+    setSubmitted(true);
   };
 
   const regenerateAnswer = () => {
