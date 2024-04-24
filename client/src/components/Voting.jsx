@@ -33,6 +33,18 @@ function Voting({ socket }) {
     };
   }, []);
 
+  // return (
+  //   <div>
+  //     <h1>PROMPT: {prompt}</h1>
+  //     <div className="flex-row justify-center">
+  //       {Object.keys(playerAnswers).map((playerId) => (
+  //         <div key={playerId} className="bg-slate-300 w-[20rem] m-4">
+  //           <p>Player: {playerAnswers[playerId].username}</p>
+  //           <p>Answer: {playerAnswers[playerId].answer}</p>
+  //         </div>
+  //       ))}
+  //     </div>
+  //   </div>
   // For timer
   useEffect(() => {
     const intervalId = setInterval(() => {
