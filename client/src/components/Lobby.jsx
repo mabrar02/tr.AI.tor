@@ -84,7 +84,7 @@ function Lobby() {
   };
 
   const handleStartGame = () => {
-    socket.emit("start_game", joinCode);
+    socket?.emit("start_game", joinCode);
   };
 
   return (

@@ -70,7 +70,7 @@ module.exports = function playerHandlers(socket, io, rooms) {
     for (const playerId in rooms[roomId].players) {
       if (rooms[roomId].players.hasOwnProperty(playerId)) {
         const player = rooms[roomId].players[playerId];
-        if (player.role !== "Traitor") {
+        if (player.role !== "Imposter") {
           const characters = getRandomChars(roomId);
           console.log("char options for", playerId);
           io.to(playerId).emit("update_char_options", characters);

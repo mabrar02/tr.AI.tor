@@ -37,7 +37,7 @@ function CharacterSelect() {
   }, []);
 
   const selectChar = (character) => {
-    socket.emit("select_char", { character: character, roomId: joinCode });
+    socket?.emit("select_char", { character: character, roomId: joinCode });
   };
 
   return (

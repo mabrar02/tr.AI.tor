@@ -17,7 +17,7 @@ module.exports = function phaseHandlers(socket, io, rooms) {
     let i = 0;
     Object.keys(rooms[roomId].players).forEach((key) => {
       if (i == randTraitor) {
-        rooms[roomId].players[key].role = "Traitor";
+        rooms[roomId].players[key].role = "Imposter";
       } else {
         rooms[roomId].players[key].role = "Innocent";
       }
@@ -76,8 +76,8 @@ module.exports = function phaseHandlers(socket, io, rooms) {
     });
 
     Object.keys(rooms[roomId].players).forEach((key) => {
-      if (Object.keys(votee_dict).includes(players[key].username)) {
-        votee_dict[players[key].username]["role"] =
+      if (Object.keys(votee_dict).includes(rooms[roomId].players[key].username)) {
+        votee_dict[rooms[roomId].players[key].username]["role"] =
           rooms[roomId].players[key].role;
       }
     });

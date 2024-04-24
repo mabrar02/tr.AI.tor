@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useGameRoom } from "../contexts/GameRoomContext";
 
-function Voting({ socket }) {
+function Voting() {
   const {
     isHost,
     players,
@@ -10,6 +10,7 @@ function Voting({ socket }) {
     transitionToGamePhase,
     userName,
     prompt,
+    socket,
   } = useGameRoom();
 
   const [timer, setTimer] = useState(10);
@@ -64,7 +65,7 @@ function Voting({ socket }) {
   useEffect(() => {
     if (timer == 0 && phase == "Voting") {
       if (isHost) {
-        socket.emit("tally_votes", joinCode);
+        socket?.emit("tally_votes", joinCode);
       }
       setTimer(10);
       setPhase("Post-Votes");
@@ -78,7 +79,7 @@ function Voting({ socket }) {
   };
 
   const sendVote = () => {
-    socket.emit("send_vote", { roomId: joinCode, vote: selected });
+    socket?.emit("send_vote", { roomId: joinCode, vote: selected });
   };
 
   const voteDecision = ({ decision, player }) => {
@@ -87,7 +88,7 @@ function Voting({ socket }) {
     } else {
       setVoteText("No conclusive traitor was found... try again.");
       if (isHost) {
-        socket.emit("reset_votes", joinCode);
+        socket?.emit("reset_votes", joinCode);
       }
       players.forEach((player) => {
         player.filteredAnswer = "";
