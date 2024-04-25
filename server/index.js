@@ -11,9 +11,15 @@ app.use(express.json());
 app.use(cors());
 
 const httpServer = createServer(app);
+
+const allowedOrigins = [
+  process.env.FRONTEND_DEPLOYMENT,
+  process.env.FRONTEND_DEPLOYMENT_LOCAL,
+];
+
 const io = new Server(httpServer, {
   cors: {
-    origin: process.env.FRONTEND_DEPLOYMENT,
+    origin: allowedOrigins,
   },
 });
 
