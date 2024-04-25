@@ -46,7 +46,7 @@ function AnswerPrompts() {
   // To transition after timer end
   useEffect(() => {
     if (timer < 1) {
-      transitionToGamePhase("voting");
+      transitionToGamePhase("responses");
     }
   }, [timer]);
 
@@ -55,7 +55,7 @@ function AnswerPrompts() {
       setPrompt(prompt);
     });
 
-    socket?.on("voting_phase", () => {
+    socket?.on("see_responses", () => {
       console.log(players);
       if (timer > 20) {
         setTimer(10); // After all players submit, set timer to 20 seconds
@@ -73,7 +73,7 @@ function AnswerPrompts() {
 
     return () => {
       socket?.off("get_prompt");
-      socket?.off("voting_phase");
+      socket?.off("see_responses");
       socket?.off("answer_regenerated");
       socket?.off("answer_submitted");
     };

@@ -15,27 +15,28 @@ function CharacterSelect() {
   const [role, setRole] = useState([]);
 
   useEffect(() => {
-    if (isHost) {
-      console.log(joinCode);
-      socket?.emit("get_char_options", { roomId: joinCode });
-    }
-
     socket?.on("update_char_options", (res) => {
       setRole(res.role);
       setCharOptions(res.characters);
     });
 
     return () => {
-      socket?.off("get_char_options");
       socket?.off("update_char_options");
     };
   }, [socket]);
 
   useEffect(() => {
+    if (isHost) {
+      console.log(joinCode);
+      socket?.emit("get_char_options", { roomId: joinCode });
+    }
     const timer = setTimeout(() => {
       transitionToGamePhase("prompts");
-    }, 2000);
-    return () => clearTimeout(timer);
+    }, 8000);
+    return () => {
+      socket?.off("get_char_options");
+      clearTimeout(timer);
+    };
   }, []);
 
   const selectChar = (character) => {
