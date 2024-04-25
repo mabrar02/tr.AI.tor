@@ -91,12 +91,16 @@ function AnswerPrompts() {
 
   return (
     <div>
-      <div className="flex justify-center">
-        <div className="bg-blue-400 w-[15rem] h-[10rem] text-center">
-          <h2>Time left: <br></br><b>{timer}!</b></h2>
+      <div className="flex flex-col items-center w-full h-screen bg-red-500">
+        <div className="font-bold text-5xl w-full h-[5rem] text-center relative">
+          <h2 className="pt-12">Time left: <br></br><b>{timer}!</b></h2>
+          <div className="absolute top-0 left-0 w-full h-10 bg-yellow-600">
+            <div className="h-full bg-yellow-200 animate-timer" style = {{ width: `${timer}%`}}></div>
+          </div>
         </div>
+
         {!submitted && (
-          <div className="bg-lime-400 w-[15rem] h-[10rem] text-center">
+          <div className="mt-60 text-1xl bg-lime-400 w-[15rem] h-[10rem] text-center">
             <h1>PROMPT: {prompt}</h1>
             <input
               type="test"
@@ -104,7 +108,7 @@ function AnswerPrompts() {
               onChange={(e) => setAnswer(e.target.value)}
             ></input>
 
-            <button className="bg-blue-200" onClick={submitAnswer}>
+            <button className="bg-yellow-400 hover:bg-yellow-600 font-bold py-2 px-4 rounded-lg border-b-4 border-l-2 border-yellow-700 shadow-md transform transition-all hover:scale-105 active:border-yellow-600" onClick={submitAnswer}>
               Submit Answer
             </button>
           </div>
