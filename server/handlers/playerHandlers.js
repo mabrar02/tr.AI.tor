@@ -11,7 +11,7 @@ module.exports = function playerHandlers(socket, io, rooms) {
     }
   };
 
-  const getRandomChars = (roomId) => {
+  const getRandomChars = (roomId, playerId) => {
     const randChars = [];
     let tempChars = characters;
 
@@ -26,7 +26,7 @@ module.exports = function playerHandlers(socket, io, rooms) {
       tempChars = tempChars.filter((item) => item !== randChars[i]);
     }
 
-    rooms[roomId].players[socket.id].character = randChars[0];
+    rooms[roomId].players[playerId].character = randChars[0];
     return randChars;
   };
 
@@ -36,7 +36,7 @@ module.exports = function playerHandlers(socket, io, rooms) {
         const player = rooms[roomId].players[playerId];
         let chars = [];
         if (player.role !== "Traitor") {
-          chars = getRandomChars(roomId);
+          chars = getRandomChars(roomId, playerId);
         }
 
         io.to(playerId).emit("update_char_options", {
@@ -45,6 +45,7 @@ module.exports = function playerHandlers(socket, io, rooms) {
         });
       }
     }
+
   });
 
   const getFilteredResponse = async (character, answer) => {
