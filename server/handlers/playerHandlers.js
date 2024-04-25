@@ -14,19 +14,33 @@ module.exports = function playerHandlers(socket, io, rooms) {
 
   const getRandomChars = (roomId) => {
     const randChars = [];
+
     for (let i = 0; i < 3; i++) {
       const randIndex = Math.floor(Math.random() * characters.length);
-      if (rooms[roomId].characters.includes(characters[randIndex])) {
-        i--;
-      } else {
-        randChars[i] = characters[randIndex];
-        rooms[roomId].characters.push(characters[randIndex]);
-      }
+      randChars[i] = characters[randIndex];
+      rooms[roomId].characters.push(characters[randIndex]);
     }
 
     rooms[roomId].players[socket.id].character = randChars[0];
     return randChars;
   };
+
+  socket.on("get_char_options", ({ roomId }) => {
+    for (const playerId in rooms[roomId].players) {
+      if (rooms[roomId].players.hasOwnProperty(playerId)) {
+        const player = rooms[roomId].players[playerId];
+        let chars = [];
+        if (player.role !== "Traitor") {
+          chars = getRandomChars(roomId);
+        }
+
+        io.to(playerId).emit("update_char_options", {
+          role: player.role,
+          characters: chars,
+        });
+      }
+    }
+  });
 
   const getFilteredResponse = async (character, answer) => {
     const geminiFilter = await geminiHandlers(character, answer);
@@ -65,23 +79,6 @@ module.exports = function playerHandlers(socket, io, rooms) {
 
     updatePlayers(roomId);
     socket.emit("answer_regenerated", content);
-  });
-
-  socket.on("get_char_options", ({ roomId }) => {
-    for (const playerId in rooms[roomId].players) {
-      if (rooms[roomId].players.hasOwnProperty(playerId)) {
-        const player = rooms[roomId].players[playerId];
-        let chars = [];
-        if (player.role !== "Traitor") {
-          chars = getRandomChars(roomId);
-        }
-
-        io.to(playerId).emit("update_char_options", {
-          role: player.role,
-          characters: chars,
-        });
-      }
-    }
   });
 
   socket.on("select_char", ({ character, roomId }) => {
