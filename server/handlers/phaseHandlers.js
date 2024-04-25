@@ -75,8 +75,8 @@ module.exports = function phaseHandlers(socket, io, rooms) {
     });
 
     Object.keys(rooms[roomId].players).forEach((key) => {
-      if (Object.keys(votee_dict).includes(players[key].username)) {
-        votee_dict[players[key].username]["role"] =
+      if (Object.keys(votee_dict).includes(rooms[roomId].players[key].username)) {
+        votee_dict[rooms[roomId].players[key].username]["role"] =
           rooms[roomId].players[key].role;
       }
     });
@@ -97,7 +97,7 @@ module.exports = function phaseHandlers(socket, io, rooms) {
 
     // Need to define multiple imposter case
     Object.entries(most_voted).forEach(([player, role]) => {
-      if (role == "Imposter" && most_votes >= rooms[roomId].numPlayers - 1) {
+      if (role == "Traitor" && most_votes >= rooms[roomId].numPlayers - 1) {
         io.to(roomId).emit("vote_decision", { decision: true, player: player });
       } else {
         io.to(roomId).emit("vote_decision", { decision: false, player: "" });
