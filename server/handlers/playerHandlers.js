@@ -97,6 +97,5 @@ module.exports = function playerHandlers(socket, io, rooms) {
 
   socket.on("send_vote", ({ roomId, vote }) => {
     rooms[roomId].players[socket.id].vote = vote;
-    console.log(rooms[roomId].players);
   });
 };

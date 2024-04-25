@@ -1,5 +1,5 @@
-import React, { useContext, useEffect, useState } from "react";
-import { GameRoomProvider, useGameRoom } from "../contexts/GameRoomContext";
+import React, { useEffect, useState } from "react";
+import { useGameRoom } from "../contexts/GameRoomContext";
 
 function SeeResponses() {
   const {
@@ -21,7 +21,7 @@ function SeeResponses() {
   useEffect(() => {
     const timer = setTimeout(() => {
       setCurrentResIndex((prevIndex) => prevIndex + 1);
-    }, 5000);
+    }, 3000);
 
     return () => clearTimeout(timer);
   }, [currentResIndex]);

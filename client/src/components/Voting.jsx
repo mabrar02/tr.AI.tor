@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useGameRoom } from "../contexts/GameRoomContext";
 
-function Voting({ socket }) {
+function Voting() {
   const {
     isHost,
     players,
     updatePlayers,
     joinCode,
+    socket,
     transitionToGamePhase,
     userName,
     prompt,
@@ -31,21 +32,8 @@ function Voting({ socket }) {
       socket?.off("get_tally_votes");
       socket?.off("vote_decision");
     };
-  }, []);
+  }, [socket]);
 
-  // return (
-  //   <div>
-  //     <h1>PROMPT: {prompt}</h1>
-  //     <div className="flex-row justify-center">
-  //       {Object.keys(playerAnswers).map((playerId) => (
-  //         <div key={playerId} className="bg-slate-300 w-[20rem] m-4">
-  //           <p>Player: {playerAnswers[playerId].username}</p>
-  //           <p>Answer: {playerAnswers[playerId].answer}</p>
-  //         </div>
-  //       ))}
-  //     </div>
-  //   </div>
-  // For timer
   useEffect(() => {
     const intervalId = setInterval(() => {
       setTimer((timer) => {
@@ -87,7 +75,7 @@ function Voting({ socket }) {
     } else {
       setVoteText("No conclusive traitor was found... try again.");
       if (isHost) {
-        socket.emit("reset_votes", joinCode);
+        socket.emit("reset_round", joinCode);
       }
       players.forEach((player) => {
         player.filteredAnswer = "";
@@ -95,11 +83,6 @@ function Voting({ socket }) {
       });
     }
   };
-
-  function getRandomColor() {
-    //Generates random color for lobby players (bkg of text)
-    return "#" + Math.floor(Math.random() * 16777215).toString(16);
-  }
 
   return (
     <div>

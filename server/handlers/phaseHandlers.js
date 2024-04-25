@@ -105,7 +105,7 @@ module.exports = function phaseHandlers(socket, io, rooms) {
     });
   });
 
-  socket.on("reset_votes", (roomId) => {
+  socket.on("reset_round", (roomId) => {
     Object.values(rooms[roomId].players).forEach((value) => {
       value["vote"] = "";
       value["answer"] = "";
