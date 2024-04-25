@@ -36,7 +36,6 @@ module.exports = function playerHandlers(socket, io, rooms) {
         const player = rooms[roomId].players[playerId];
         let chars = [];
         if (player.role !== "Traitor") {
-          console.log("getting chars");
           chars = getRandomChars(roomId);
         }
 
