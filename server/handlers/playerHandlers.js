@@ -1,4 +1,3 @@
-const { getFips } = require("crypto");
 const geminiHandlers = require("./geminiHandlers");
 const fs = require("fs");
 
@@ -14,19 +13,40 @@ module.exports = function playerHandlers(socket, io, rooms) {
 
   const getRandomChars = (roomId) => {
     const randChars = [];
+    let tempChars = characters;
+
     for (let i = 0; i < 3; i++) {
-      const randIndex = Math.floor(Math.random() * characters.length);
-      if (rooms[roomId].characters.includes(characters[randIndex])) {
-        i--;
-      } else {
-        randChars[i] = characters[randIndex];
-        rooms[roomId].characters.push(characters[randIndex]);
+      const randIndex = Math.floor(Math.random() * tempChars.length);
+      randChars[i] = tempChars[randIndex];
+
+      if (!rooms[roomId].characters.includes(characters[randIndex])) {
+        rooms[roomId].characters.push(tempChars[randIndex]);
       }
+
+      tempChars = tempChars.filter((item) => item !== randChars[i]);
     }
-    // Default to first selected
+
     rooms[roomId].players[socket.id].character = randChars[0];
     return randChars;
   };
+
+  socket.on("get_char_options", ({ roomId }) => {
+    for (const playerId in rooms[roomId].players) {
+      if (rooms[roomId].players.hasOwnProperty(playerId)) {
+        const player = rooms[roomId].players[playerId];
+        let chars = [];
+        if (player.role !== "Traitor") {
+          console.log("getting chars");
+          chars = getRandomChars(roomId);
+        }
+
+        io.to(playerId).emit("update_char_options", {
+          role: player.role,
+          characters: chars,
+        });
+      }
+    }
+  });
 
   const getFilteredResponse = async (character, answer) => {
     const geminiFilter = await geminiHandlers(character, answer);
@@ -39,16 +59,22 @@ module.exports = function playerHandlers(socket, io, rooms) {
     rooms[roomId].players[socket.id].answers = answer;
     rooms[roomId].numSubmitted++;
 
-    const content = await getFilteredResponse(
-      rooms[roomId].players[socket.id].character,
-      answer
-    );
+    if (rooms[roomId].players[socket.id].role === "Traitor") {
+      rooms[roomId].players[socket.id].filteredAnswer = answer;
+      io.to(socket.id).emit("answer_submitted", answer);
+    } else {
+      const content = await getFilteredResponse(
+        rooms[roomId].players[socket.id].character,
+        answer
+      );
+      rooms[roomId].players[socket.id].filteredAnswer = content;
+      io.to(socket.id).emit("answer_submitted", content);
+    }
 
-    rooms[roomId].players[socket.id].filteredAnswer = content;
     updatePlayers(roomId);
 
     if (rooms[roomId].numSubmitted == rooms[roomId].numPlayers) {
-      io.to(roomId).emit("voting_phase", {});
+      io.to(roomId).emit("see_responses", {});
     }
   });
 
@@ -58,25 +84,11 @@ module.exports = function playerHandlers(socket, io, rooms) {
       rooms[roomId].players[socket.id].character,
       rooms[roomId].players[socket.id].answers
     );
-    console.log(content);
 
     rooms[roomId].players[socket.id].filteredAnswer = content;
 
     updatePlayers(roomId);
-    socket.emit("answer_regenerated");
-  });
-
-  socket.on("get_char_options", ({ roomId }) => {
-    for (const playerId in rooms[roomId].players) {
-      if (rooms[roomId].players.hasOwnProperty(playerId)) {
-        const player = rooms[roomId].players[playerId];
-        if (player.role !== "Imposter") {
-          const characters = getRandomChars(roomId);
-          console.log("char options for", playerId);
-          io.to(playerId).emit("update_char_options", characters);
-        }
-      }
-    }
+    socket.emit("answer_regenerated", content);
   });
 
   socket.on("select_char", ({ character, roomId }) => {
@@ -85,6 +97,5 @@ module.exports = function playerHandlers(socket, io, rooms) {
 
   socket.on("send_vote", ({ roomId, vote }) => {
     rooms[roomId].players[socket.id].vote = vote;
-    console.log(rooms[roomId].players);
   });
 };

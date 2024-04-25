@@ -13,9 +13,11 @@ function AnswerPrompts() {
     prompt,
     socket,
     setPrompt,
+    role,
   } = useGameRoom();
 
   const [answer, setAnswer] = useState("");
+  const [filteredAnswer, setFilteredAnswer] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [timer, setTimer] = useState(90);
   const [regenCount, setRegenCount] = useState(3);
@@ -45,30 +47,36 @@ function AnswerPrompts() {
   // To transition after timer end
   useEffect(() => {
     if (timer < 1) {
-      transitionToGamePhase("voting");
+      transitionToGamePhase("responses");
     }
   }, [timer]);
 
   useEffect(() => {
-    socket?.on("get_prompt", (promptRes) => {
-      setPrompt(promptRes.prompt);
+    socket?.on("get_prompt", (prompt) => {
+      setPrompt(prompt);
     });
 
-    socket?.on("voting_phase", () => {
+    socket?.on("see_responses", () => {
       console.log(players);
       if (timer > 20) {
         setTimer(10); // After all players submit, set timer to 20 seconds
       }
     });
 
-    socket?.on("answer_regenerated", () => {
+    socket?.on("answer_regenerated", (content) => {
+      setFilteredAnswer(content);
       setUpdatingResponse(false);
+    });
+
+    socket?.on("answer_submitted", (content) => {
+      setFilteredAnswer(content);
     });
 
     return () => {
       socket?.off("get_prompt");
-      socket?.off("voting_phase");
+      socket?.off("see_responses");
       socket?.off("answer_regenerated");
+      socket?.off("answer_submitted");
     };
   }, [socket]);
 
@@ -119,16 +127,25 @@ function AnswerPrompts() {
 
       {submitted && (
         <div className="flex flex-col items-center w-[40rem] justify-center bg-black text-white">
-          <p>Your filtered answer:</p>
-          <p>{players[index].filteredAnswer}</p>
-          <button
-            className={`${
-              regenCount == 0 ? "bg-yellow-800" : "bg-yellow-200"
-            } px-10 py-2 text-black`}
-            onClick={regenerateAnswer}
-          >
-            {updatingResponse ? "..." : "Regenerate Answer"} (x{regenCount})
-          </button>
+          {role === "Traitor" ? (
+            <div>
+              <p>Your answer will NOT be filtered:</p>
+              <p>{filteredAnswer}</p>
+            </div>
+          ) : (
+            <div>
+              <p>Your filtered answer:</p>
+              <p>{filteredAnswer}</p>
+              <button
+                className={`${
+                  regenCount == 0 ? "bg-yellow-800" : "bg-yellow-200"
+                } px-10 py-2 text-black`}
+                onClick={regenerateAnswer}
+              >
+                {updatingResponse ? "..." : "Regenerate Answer"} (x{regenCount})
+              </button>
+            </div>
+          )}
         </div>
       )}
     </div>

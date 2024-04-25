@@ -1,5 +1,5 @@
-import React, { useContext , useEffect, useState} from "react";
-import { GameRoomProvider, useGameRoom } from "../contexts/GameRoomContext";
+import React, { useEffect, useState } from "react";
+import { useGameRoom } from "../contexts/GameRoomContext";
 
 function SeeResponses() {
   const {
@@ -13,46 +13,42 @@ function SeeResponses() {
     setJoinCodeValue,
     userName,
     setUserNameValue,
-    socket
+    socket,
   } = useGameRoom();
 
+  const [currentResIndex, setCurrentResIndex] = useState(0);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setCurrentResIndex((prevIndex) => prevIndex + 1);
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, [currentResIndex]);
+
+  useEffect(() => {
+    if (currentResIndex === players.length) {
+      transitionToGamePhase("voting");
+    }
+  }, [currentResIndex]);
 
   return (
     <div>
       <div className="flex justify-center">
         <div className="bg-red-500 w-[15rem] h-[5rem] text-center">
-          <h1>PLAYER RESPONSES: {gamePhase} </h1>
+          <h1>PLAYER RESPONSES: </h1>
         </div>
       </div>
       <div>
-            <p className="font-bold mb-2">Players:</p>
-
-
-            <div class="flex">
-              <div class="flex-2 bg-orange-500 p-4 text-black">Players
-              
-                <ul className="mx-5 ">
-                  {players.map((player, index) => (
-                    //Need players to consistently show distinctive colors, right now it shows diff colors for diff people
-                    <li key={index} className="font-bold rounded-lg py-2 px-5 border border-black shadow shadow-lg mb-4 mx-1 wx-5" style={{ backgroundColor: "white" /*getRandomColor()*/ }}>
-                      {player.username} {player.host && <span className="font-bold">(HOST)</span>}
-                    </li>
-                  ))}
-                </ul>
-              
-              
-              </div>
-              <div class="flex-1 bg-green-500 p-4 text-black">Responses
-               {players.map((player, index) => (
-                    <li key={index} className="font-bold rounded-lg py-2 px-5 border border-black shadow shadow-lg mb-4 mx-1 wx-5" style={{ backgroundColor: "white" /*getRandomColor()*/, listStyleType:'none'}}>
-                      {player.filteredAnswer}
-                    </li>
-                  ))}
-              
-              </div>
-            </div>
-
-
+        <div className="flex-1 bg-green-500 p-4 text-black">
+          <div
+            className="font-bold rounded-lg py-2 px-5 border border-black shadow shadow-lg mb-4 mx-1 wx-5"
+            style={{ backgroundColor: "white" }}
+          >
+            {players[currentResIndex]?.filteredAnswer}
+          </div>
+          <p>Written by: {players[currentResIndex]?.username}</p>
+        </div>
       </div>
     </div>
   );

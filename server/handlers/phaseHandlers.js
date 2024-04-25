@@ -13,7 +13,6 @@ module.exports = function phaseHandlers(socket, io, rooms) {
   socket.on("start_game", (roomId) => {
     io.to(roomId).emit("game_started", {});
     const randTraitor = Math.floor(Math.random() * rooms[roomId].numPlayers);
-
     let i = 0;
     Object.keys(rooms[roomId].players).forEach((key) => {
       if (i == randTraitor) {
@@ -31,9 +30,9 @@ module.exports = function phaseHandlers(socket, io, rooms) {
     const prompt = getRandomPrompt();
     rooms[roomId].currentPrompt = prompt;
 
-    io.to(roomId).emit("get_prompt", {
-      prompt: prompt,
-    });
+    console.log(prompt);
+
+    io.to(roomId).emit("get_prompt", prompt);
   });
 
   socket.on("request_answers", (roomId) => {
@@ -98,7 +97,7 @@ module.exports = function phaseHandlers(socket, io, rooms) {
 
     // Need to define multiple imposter case
     Object.entries(most_voted).forEach(([player, role]) => {
-      if (role == "Imposter" && most_votes >= rooms[roomId].numPlayers - 1) {
+      if (role == "Traitor" && most_votes >= rooms[roomId].numPlayers - 1) {
         io.to(roomId).emit("vote_decision", { decision: true, player: player });
       } else {
         io.to(roomId).emit("vote_decision", { decision: false, player: "" });
@@ -106,7 +105,7 @@ module.exports = function phaseHandlers(socket, io, rooms) {
     });
   });
 
-  socket.on("reset_votes", (roomId) => {
+  socket.on("reset_round", (roomId) => {
     Object.values(rooms[roomId].players).forEach((value) => {
       value["vote"] = "";
       value["answer"] = "";
