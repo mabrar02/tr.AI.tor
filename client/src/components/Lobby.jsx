@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { motion } from "framer-motion";
 import { useGameRoom } from "../contexts/GameRoomContext";
+import { motion, AnimatePresence } from "framer-motion";
 
 function Lobby() {
   const {
@@ -106,7 +106,7 @@ function Lobby() {
   };
 
   return (
-    <div className="flex flex-col items-center w-100% h-screen bg-red-500 pt-80">
+    <div className="flex flex-col items-center w-100% h-screen bg-red-500 pt-32">
       <div className="mb-6">
         <h1 className="text-6xl">
           <b>TR.AI.TOR</b>
@@ -172,23 +172,28 @@ function Lobby() {
 
           <p className="font-bold text-xl mb-2">Players:</p>
           <ul className="-mx-2">
+            <AnimatePresence>
             {players.map((player, index) => (
               //Need players to consistently show distinctive colors, right now it shows diff colors for diff people
-              <li
+              <motion.li
                 key={index}
-                className="font-bold rounded-lg py-2 px-10 inline-block border-b-4 border-l-2 border border-black shadow shadow-lg mb-4 mx-1"
+                initial={{ opacity: 0}}
+                animate={{ opacity: 1}}
+                exit={{ opacity: 0}}
+                className="text-center font-bold rounded-lg py-2 px-10 border-b-4 border-l-2 border border-black shadow shadow-lg mb-2 mx-1"
                 style={{ backgroundColor: getRandomColor() }}
               >
                 {player.username}{" "}
                 {player.host && <span className="font-bold">(HOST)</span>}
-              </li>
+              </motion.li>
             ))}
+            </AnimatePresence>
           </ul>
           {isHost && (
-            <div className="flex justify-center pt-32">
+            <div className="flex justify-center pt-20">
               <button
                 onClick={handleStartGame}
-                className="bg-yellow-400 hover:bg-yellow-600 font-bold py-2 px-12 rounded-lg border-b-4 border-l-2 border-yellow-700 shadow-md transform transition-all hover:scale-105 active:border-yellow-600 mb-6"
+                className="bg-yellow-400 hover:bg-yellow-600 font-bold py-2 px-12 rounded-lg border-b-4 border-l-2 border-yellow-700 shadow-md transform transition-all hover:scale-105 active:border-yellow-600 mb-2"
               >
                 Start Game
               </button>

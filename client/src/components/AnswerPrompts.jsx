@@ -100,15 +100,16 @@ function AnswerPrompts() {
         </div>
 
         {!submitted && (
-          <div className="mt-60 text-1xl bg-lime-400 w-[15rem] h-[10rem] text-center">
-            <h1>PROMPT: {prompt}</h1>
+          <div className="font-bold mt-60 text-xl bg-lime-400 w-[40rem] h-[10rem] text-center">
+            <h1 className="">PROMPT: {prompt}</h1>
             <input
+              className="mt-2"
               type="test"
               value={answer}
               onChange={(e) => setAnswer(e.target.value)}
             ></input>
 
-            <button className="bg-yellow-400 hover:bg-yellow-600 font-bold py-2 px-4 rounded-lg border-b-4 border-l-2 border-yellow-700 shadow-md transform transition-all hover:scale-105 active:border-yellow-600" onClick={submitAnswer}>
+            <button className="mt-4 mx-auto block bg-yellow-400 hover:bg-yellow-600 font-bold py-2 px-4 rounded-lg border-b-4 border-l-2 border-yellow-700 shadow-md transform transition-all hover:scale-105 active:border-yellow-600" onClick={submitAnswer}>
               Submit Answer
             </button>
           </div>
