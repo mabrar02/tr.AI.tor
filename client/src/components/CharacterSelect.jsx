@@ -10,13 +10,14 @@ function CharacterSelect() {
     userName,
     socket,
     transitionToGamePhase,
+    role,
+    setRoleValue,
   } = useGameRoom();
   const [charOptions, setCharOptions] = useState([]);
-  const [role, setRole] = useState([]);
 
   useEffect(() => {
     socket?.on("update_char_options", (res) => {
-      setRole(res.role);
+      setRoleValue(res.role);
       setCharOptions(res.characters);
     });
 
@@ -32,7 +33,7 @@ function CharacterSelect() {
     }
     const timer = setTimeout(() => {
       transitionToGamePhase("prompts");
-    }, 8000);
+    }, 2000);
     return () => {
       socket?.off("get_char_options");
       clearTimeout(timer);

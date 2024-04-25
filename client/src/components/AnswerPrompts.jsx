@@ -13,6 +13,7 @@ function AnswerPrompts() {
     prompt,
     socket,
     setPrompt,
+    role,
   } = useGameRoom();
 
   const [answer, setAnswer] = useState("");
@@ -126,16 +127,25 @@ function AnswerPrompts() {
 
       {submitted && (
         <div className="flex flex-col items-center w-[40rem] justify-center bg-black text-white">
-          <p>Your filtered answer:</p>
-          <p>{filteredAnswer}</p>
-          <button
-            className={`${
-              regenCount == 0 ? "bg-yellow-800" : "bg-yellow-200"
-            } px-10 py-2 text-black`}
-            onClick={regenerateAnswer}
-          >
-            {updatingResponse ? "..." : "Regenerate Answer"} (x{regenCount})
-          </button>
+          {role === "Traitor" ? (
+            <div>
+              <p>Your answer will NOT be filtered:</p>
+              <p>{filteredAnswer}</p>
+            </div>
+          ) : (
+            <div>
+              <p>Your filtered answer:</p>
+              <p>{filteredAnswer}</p>
+              <button
+                className={`${
+                  regenCount == 0 ? "bg-yellow-800" : "bg-yellow-200"
+                } px-10 py-2 text-black`}
+                onClick={regenerateAnswer}
+              >
+                {updatingResponse ? "..." : "Regenerate Answer"} (x{regenCount})
+              </button>
+            </div>
+          )}
         </div>
       )}
     </div>
