@@ -47,7 +47,7 @@ function CharacterSelect() {
   return (
     <div>
       {role === "Traitor" ? (
-        <p>You are the traitor! Try to blend in</p>
+        <p>You are the traitor! Try to blend in.</p>
       ) : (
         <ul className="-mx-2 my-10">
           {charOptions.map((character, index) => (

@@ -12,16 +12,23 @@ const getRandomPrompt = () => {
 module.exports = function phaseHandlers(socket, io, rooms) {
   socket.on("start_game", (roomId) => {
     io.to(roomId).emit("game_started", {});
-    const randTraitor = Math.floor(Math.random() * rooms[roomId].numPlayers);
     let i = 0;
+
+    let randTraitor1 = Math.floor(Math.random() * rooms[roomId].numPlayers);
+    let randTraitor2;
+    do {
+      randTraitor2 = (rooms[roomId].numPlayers > 5) ? Math.floor(Math.random() * rooms[roomId].numPlayers) : -1;
+    } while (randTraitor1 === randTraitor2);
     Object.keys(rooms[roomId].players).forEach((key) => {
-      if (i == randTraitor) {
+      if (i == randTraitor1 || i == randTraitor2) {
         rooms[roomId].players[key].role = "Traitor";
+        rooms[roomId].numTraitors += 1;
       } else {
         rooms[roomId].players[key].role = "Innocent";
       }
       i++;
     });
+
   });
 
   socket.on("request_prompt", (roomId) => {
@@ -96,15 +103,20 @@ module.exports = function phaseHandlers(socket, io, rooms) {
     });
 
     console.log(votee_dict);
+    console.log(rooms[roomId].players);
 
     // Need to define multiple imposter case
-    Object.entries(most_voted).forEach(([player, role]) => {
-      if (role == "Traitor" && most_votes >= rooms[roomId].numPlayers - 1) {
-        io.to(roomId).emit("vote_decision", { decision: true, player: player });
-      } else {
-        io.to(roomId).emit("vote_decision", { decision: false, player: "" });
-      }
-    });
+    if(Object.keys(most_voted).length !== 0) {
+      Object.entries(most_voted).forEach(([player, role]) => {
+        if (role == "Traitor" && most_votes >= rooms[roomId].numPlayers - 1) {
+          io.to(roomId).emit("vote_decision", { decision: true, player: player });
+        } else {
+          io.to(roomId).emit("vote_decision", { decision: false, player: "" });
+        }
+      });
+    } else {
+      io.to(roomId).emit("vote_decision", { decision: false, player: "" });
+    }
   });
 
   socket.on("reset_round", (roomId) => {

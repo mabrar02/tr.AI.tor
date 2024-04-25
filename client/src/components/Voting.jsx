@@ -11,6 +11,9 @@ function Voting() {
     userName,
     prompt,
     socket,
+    roundNum,
+    setRoundValue,
+    setGameOver,
   } = useGameRoom();
 
   const [timer, setTimer] = useState(10);
@@ -54,11 +57,8 @@ function Voting() {
       if (isHost) {
         socket?.emit("tally_votes", joinCode);
       }
-      setTimer(10);
       setPhase("Post-Votes");
-    } else if (timer == 0 && phase == "Post-Votes") {
-      transitionToGamePhase("prompts");
-    }
+   }
   }, [timer]);
 
   const selectResponse = (index) => {
@@ -72,16 +72,43 @@ function Voting() {
   const voteDecision = ({ decision, player }) => {
     if (decision) {
       setVoteText(`${player} has been found as the traitor!`);
-    } else {
-      setVoteText("No conclusive traitor was found... try again.");
-      if (isHost) {
-        socket.emit("reset_round", joinCode);
+      
+      if(players.length > 5) {
+        // multiple traitors
+      } else {
+        setGameOver({innowin: true})
+        setTimeout(() => {
+          transitionToGamePhase("ending");
+        }, 5000);
       }
-      players.forEach((player) => {
-        player.filteredAnswer = "";
-        player.vote = "";
-      });
+
+    } else {
+      console.log(roundNum);
+      if(roundNum == 3) {
+        setVoteText("No conclusive traitor was found... game over.");
+        setGameOver({innowin: false});
+        setTimeout(() => {
+          transitionToGamePhase("ending");
+        }, 5000);
+
+      } else {
+        setVoteText("No conclusive traitor was found... try again.");
+        if (isHost) {
+          socket.emit("reset_round", joinCode);
+        }
+        players.forEach((player) => {
+          player.filteredAnswer = "";
+          player.vote = "";
+        });
+
+        setTimeout(() => {
+          transitionToGamePhase("prompts");
+        }, 10000);
+ 
+      }
     }
+
+
   };
 
   return (
@@ -116,7 +143,7 @@ function Voting() {
 
       {phase == "Post-Votes" && (
         <div>
-          Time left: {timer} Prompt: {prompt}
+          Prompt: {prompt}
           <div className="flex-row justify-center">
             The results are in!<br></br>
             {Object.entries(tallyVotes).map(([votee, value]) => (

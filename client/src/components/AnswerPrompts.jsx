@@ -14,6 +14,8 @@ function AnswerPrompts() {
     socket,
     setPrompt,
     role,
+    roundNum,
+    setRoundValue,
   } = useGameRoom();
 
   const [answer, setAnswer] = useState("");
@@ -54,6 +56,8 @@ function AnswerPrompts() {
   useEffect(() => {
     socket?.on("get_prompt", (prompt) => {
       setPrompt(prompt);
+      setRoundValue(roundNum+1);
+
     });
 
     socket?.on("see_responses", () => {
@@ -96,6 +100,7 @@ function AnswerPrompts() {
 
   return (
     <div>
+      <h1>Round {roundNum}!</h1>
       <div className="flex justify-center">
         <div className="bg-blue-400 w-[15rem] h-[10rem] text-center">
           <h2>
@@ -134,16 +139,18 @@ function AnswerPrompts() {
             </div>
           ) : (
             <div>
-              <p>Your filtered answer:</p>
+              <p className="text-center">Your filtered answer:</p>
               <p>{filteredAnswer}</p>
-              <button
-                className={`${
-                  regenCount == 0 ? "bg-yellow-800" : "bg-yellow-200"
-                } px-10 py-2 text-black`}
-                onClick={regenerateAnswer}
-              >
-                {updatingResponse ? "..." : "Regenerate Answer"} (x{regenCount})
-              </button>
+              <div className="text-center">
+                <button
+                  className={`${
+                    regenCount == 0 || updatingResponse ? "bg-yellow-800" : "bg-yellow-200"
+                  } px-10 py-2 text-black my-2`}
+                  onClick={regenerateAnswer}
+                >
+                  {updatingResponse ? "..." : "Regenerate Answer"} (x{regenCount})
+                </button>
+              </div>
             </div>
           )}
         </div>

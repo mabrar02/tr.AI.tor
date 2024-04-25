@@ -5,6 +5,7 @@ import CharacterSelect from "./components/CharacterSelect";
 import AnswerPrompts from "./components/AnswerPrompts";
 import Voting from "./components/Voting";
 import SeeResponses from "./components/SeeResponses";
+import Ending from "./components/Ending";
 
 const App = () => {
   const {
@@ -21,6 +22,10 @@ const App = () => {
     socket,
     index,
     setIndex,
+    roundNum,
+    setRoundValue,
+    gameOver,
+    setGameOver,
   } = useGameRoom();
 
   return (
@@ -30,6 +35,7 @@ const App = () => {
       {gamePhase === "prompts" && <AnswerPrompts />}
       {gamePhase === "responses" && <SeeResponses />}
       {gamePhase === "voting" && <Voting />}
+      {gamePhase === "ending" && <Ending />}
     </div>
   );
 };

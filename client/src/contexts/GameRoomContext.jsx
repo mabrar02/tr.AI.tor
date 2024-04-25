@@ -14,6 +14,8 @@ export const GameRoomProvider = ({ children }) => {
   const [socket, setSocket] = useState(null);
   const [prompt, setPrompt] = useState("");
   const [role, setRole] = useState("Innocent");
+  const [roundNum, setRoundNum] = useState(0);
+  const [gameOver, setGameOver] = useState({});
 
   useEffect(() => {
     const newSocket = io("http://localhost:4000");
@@ -56,6 +58,10 @@ export const GameRoomProvider = ({ children }) => {
     setRole(gameRole);
   };
 
+  const setRoundValue = (roundNum) => {
+    setRoundNum(roundNum);
+  };
+
   return (
     <GameRoomContext.Provider
       value={{
@@ -74,6 +80,10 @@ export const GameRoomProvider = ({ children }) => {
         setPrompt,
         role,
         setRoleValue,
+        roundNum,
+        setRoundValue,
+        gameOver,
+        setGameOver,
       }}
     >
       {children}
