@@ -100,7 +100,7 @@ function AnswerPrompts() {
 
   return (
     <div>
-      <div className="flex flex-col items-center w-full h-screen bg-red-500">
+      <div className="flex flex-col items-center w-full h-screen ">
         <div className="font-bold text-3xl w-full h-[5rem] text-center relative">
           <h2 className="bg-gray-900 text-white">
             Time left: <b>{timer + "s"}</b>

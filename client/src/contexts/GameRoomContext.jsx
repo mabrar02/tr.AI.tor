@@ -1,3 +1,4 @@
+import { useInstantLayoutTransition } from "framer-motion";
 import React, { createContext, useState, useContext, useEffect } from "react";
 import io from "socket.io-client";
 
@@ -16,6 +17,7 @@ export const GameRoomProvider = ({ children }) => {
   const [role, setRole] = useState("Innocent");
   const [roundNum, setRoundNum] = useState(0);
   const [gameOver, setGameOver] = useState({});
+  const [inLobby, setInLobby] = useState(false);
 
   useEffect(() => {
     const newSocket = io("http://localhost:4000");
@@ -84,6 +86,8 @@ export const GameRoomProvider = ({ children }) => {
         setRoundValue,
         gameOver,
         setGameOver,
+        inLobby,
+        setInLobby,
       }}
     >
       {children}

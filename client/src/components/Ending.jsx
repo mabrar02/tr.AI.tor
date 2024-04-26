@@ -16,18 +16,18 @@ function Ending() {
   } = useGameRoom();
 
   useEffect(() => {
-    socket?.on("game_started", () => {
-      setRoundValue(0);
-      transitionToGamePhase("characters");
+    socket?.on("players_return_to_lobby", () => {
+      transitionToGamePhase("lobby");
     });
 
     return () => {
-      socket?.off("game_started");
+      socket?.off("players_return_to_lobby");
     };
   }, [socket]);
 
-  const handleStartGame = () => {
-    socket?.emit("start_game", joinCode);
+
+  const returnToLobby = () => {
+    socket.emit("return_to_lobby", joinCode);
   };
 
   return (
@@ -74,9 +74,9 @@ function Ending() {
       {isHost && (
         <button
           className="bg-yellow-500 hover:bg-yellow-600 font-bold py-2 px-4 rounded-lg shadow-md transform transition-all hover:scale-105"
-          onClick={handleStartGame}
+          onClick={() => returnToLobby()}
         >
-          Play Again
+          Return to Lobby
         </button>
       )}
 

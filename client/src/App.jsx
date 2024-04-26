@@ -26,6 +26,8 @@ const App = () => {
     setRoundValue,
     gameOver,
     setGameOver,
+    inLobby,
+    setInLobby,
   } = useGameRoom();
 
   return (

@@ -131,4 +131,10 @@ module.exports = function phaseHandlers(socket, io, rooms) {
       value["filteredAnswer"] = "";
     });
   });
+
+  socket.on("return_to_lobby", (roomid) => {
+    io.to(roomid).emit("players_return_to_lobby");
+  });
+
+
 };

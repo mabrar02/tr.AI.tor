@@ -15,9 +15,10 @@ function Lobby() {
     userName,
     setUserNameValue,
     socket,
+    inLobby,
+    setInLobby,
   } = useGameRoom();
 
-  const [inLobby, setInLobby] = useState(false);
   const [joinGame, setJoinGame] = useState(false);
 
   useEffect(() => {
@@ -89,7 +90,7 @@ function Lobby() {
   };
 
   return (
-    <div className="flex flex-col items-center w-100% h-screen bg-red-500 pt-32">
+    <div className="flex flex-col items-center w-100% h-screen pt-32">
       <div className="mb-6">
         <h1 className="text-6xl">
           <b>TR.AI.TOR</b>
