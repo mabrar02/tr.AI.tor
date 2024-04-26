@@ -93,20 +93,19 @@ function AnswerPrompts() {
   return (
     <div>
       <div className="flex flex-col items-center w-full h-screen bg-red-500">
-        <div className="font-bold text-5xl w-full h-[5rem] text-center relative">
-          <h2 className="pt-12">Time left: <br></br><b>{timer}!</b></h2>
-          <div 
-          className="absolute top-0 left-0 w-full h-10 bg-yellow-600">
+        <div className="font-bold text-3xl w-full h-[5rem] text-center relative">
+          <h2 className="bg-gray-900 text-white">Time left: <b>{timer + "s"}</b></h2>
+          <div className="absolute bot-0 left-0 w-full h-10 bg-yellow-600 shadow-md">
             <motion.div
             initial={{ width: "100%" }} //Initial width (full width)
             animate={{ width: `${timer}%` }} //Animated width based on the timer 
-            className="h-full bg-yellow-300 animate-timer" style = {{ width: `${timer}%`}}>
+            className="h-full bg-yellow-300 animate-timer border-b-4 border-l-2 border-yellow-500" style = {{ width: `${timer}%`}}>
             </motion.div>
           </div>
         </div>
 
         {!submitted && (
-          <div className="font-bold mt-60 text-xl bg-lime-400 w-[40rem] h-[10rem] text-center">
+          <div className="font-bold mt-60 text-xl bg-orange-400 w-[40rem] h-[10rem] text-center">
             <h1 className="">PROMPT: {prompt}</h1>
             <input
               className="mt-2"
