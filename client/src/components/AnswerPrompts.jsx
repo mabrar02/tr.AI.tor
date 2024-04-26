@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useGameRoom } from "../contexts/GameRoomContext";
+import { motion } from "framer-motion";
 
 function AnswerPrompts() {
   const {
@@ -94,8 +95,13 @@ function AnswerPrompts() {
       <div className="flex flex-col items-center w-full h-screen bg-red-500">
         <div className="font-bold text-5xl w-full h-[5rem] text-center relative">
           <h2 className="pt-12">Time left: <br></br><b>{timer}!</b></h2>
-          <div className="absolute top-0 left-0 w-full h-10 bg-yellow-600">
-            <div className="h-full bg-yellow-200 animate-timer" style = {{ width: `${timer}%`}}></div>
+          <div 
+          className="absolute top-0 left-0 w-full h-10 bg-yellow-600">
+            <motion.div
+            initial={{ width: "100%" }} //Initial width (full width)
+            animate={{ width: `${timer}%` }} //Animated width based on the timer 
+            className="h-full bg-yellow-300 animate-timer" style = {{ width: `${timer}%`}}>
+            </motion.div>
           </div>
         </div>
 

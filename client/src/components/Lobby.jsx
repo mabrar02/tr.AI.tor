@@ -177,9 +177,10 @@ function Lobby() {
               //Need players to consistently show distinctive colors, right now it shows diff colors for diff people
               <motion.li
                 key={index}
-                initial={{ opacity: 0}}
-                animate={{ opacity: 1}}
-                exit={{ opacity: 0}}
+                initial={{ opacity: 0.5, scale: 0.5}}
+                animate={{ opacity: 1, scale: 1}}
+                transition={{ ease: "easeOut", duration: 0.2 }}
+               
                 className="text-center font-bold rounded-lg py-2 px-10 border-b-4 border-l-2 border border-black shadow shadow-lg mb-2 mx-1"
                 style={{ backgroundColor: getRandomColor() }}
               >
