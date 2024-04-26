@@ -17,7 +17,10 @@ module.exports = function phaseHandlers(socket, io, rooms) {
     let randTraitor1 = Math.floor(Math.random() * rooms[roomId].numPlayers);
     let randTraitor2;
     do {
-      randTraitor2 = (rooms[roomId].numPlayers > 5) ? Math.floor(Math.random() * rooms[roomId].numPlayers) : -1;
+      randTraitor2 =
+        rooms[roomId].numPlayers > 5
+          ? Math.floor(Math.random() * rooms[roomId].numPlayers)
+          : -1;
     } while (randTraitor1 === randTraitor2);
     Object.keys(rooms[roomId].players).forEach((key) => {
       if (i == randTraitor1 || i == randTraitor2) {
@@ -28,7 +31,6 @@ module.exports = function phaseHandlers(socket, io, rooms) {
       }
       i++;
     });
-
   });
 
   socket.on("request_prompt", (roomId) => {
@@ -106,10 +108,13 @@ module.exports = function phaseHandlers(socket, io, rooms) {
     console.log(rooms[roomId].players);
 
     // Need to define multiple imposter case
-    if(Object.keys(most_voted).length !== 0) {
+    if (Object.keys(most_voted).length !== 0) {
       Object.entries(most_voted).forEach(([player, role]) => {
         if (role == "Traitor" && most_votes >= rooms[roomId].numPlayers - 1) {
-          io.to(roomId).emit("vote_decision", { decision: true, player: player });
+          io.to(roomId).emit("vote_decision", {
+            decision: true,
+            player: player,
+          });
         } else {
           io.to(roomId).emit("vote_decision", { decision: false, player: "" });
         }

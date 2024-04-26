@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useGameRoom } from "../contexts/GameRoomContext";
+import { motion } from "framer-motion";
 
 function AnswerPrompts() {
   const {
@@ -56,8 +57,7 @@ function AnswerPrompts() {
   useEffect(() => {
     socket?.on("get_prompt", (prompt) => {
       setPrompt(prompt);
-      setRoundValue(roundNum+1);
-
+      setRoundValue(roundNum + 1);
     });
 
     socket?.on("see_responses", () => {
@@ -100,14 +100,21 @@ function AnswerPrompts() {
 
   return (
     <div>
-      <h1>Round {roundNum}!</h1>
-      <div className="flex justify-center">
-        <div className="bg-blue-400 w-[15rem] h-[10rem] text-center">
-          <h2>
-            Time left: <br></br>
-            <b>{timer}!</b>
+      <div className="flex flex-col items-center w-full h-screen bg-red-500">
+        <div className="font-bold text-3xl w-full h-[5rem] text-center relative">
+          <h2 className="bg-gray-900 text-white">
+            Time left: <b>{timer + "s"}</b>
           </h2>
+          <div className="absolute bot-0 left-0 w-full h-10 bg-yellow-600 shadow-md">
+            <motion.div
+              initial={{ width: "100%" }} //Initial width (full width)
+              animate={{ width: `${timer}%` }} //Animated width based on the timer
+              className="h-full bg-yellow-300 animate-timer border-b-4 border-l-2 border-yellow-500"
+              style={{ width: `${timer}%` }}
+            ></motion.div>
+          </div>
         </div>
+
         {!submitted && (
           <div className="bg-lime-400 w-[15rem] h-[10rem] text-center">
             <h1>PROMPT: {prompt}</h1>
@@ -144,11 +151,14 @@ function AnswerPrompts() {
               <div className="text-center">
                 <button
                   className={`${
-                    regenCount == 0 || updatingResponse ? "bg-yellow-800" : "bg-yellow-200"
+                    regenCount == 0 || updatingResponse
+                      ? "bg-yellow-800"
+                      : "bg-yellow-200"
                   } px-10 py-2 text-black my-2`}
                   onClick={regenerateAnswer}
                 >
-                  {updatingResponse ? "..." : "Regenerate Answer"} (x{regenCount})
+                  {updatingResponse ? "..." : "Regenerate Answer"} (x
+                  {regenCount})
                 </button>
               </div>
             </div>

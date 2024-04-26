@@ -18,7 +18,7 @@ export const GameRoomProvider = ({ children }) => {
   const [gameOver, setGameOver] = useState({});
 
   useEffect(() => {
-    const newSocket = io("https://ace-memento-418917.nn.r.appspot.com");
+    const newSocket = io("http://localhost:4000");
     setSocket(newSocket);
 
     return () => newSocket.close();
