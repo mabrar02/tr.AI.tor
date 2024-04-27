@@ -57,6 +57,7 @@ module.exports = function playerHandlers(socket, io, rooms) {
   };
 
   socket.on("submit_answer", async ({ roomId, answer }) => {
+    console.log(answer);
     rooms[roomId].players[socket.id].answers = answer;
     rooms[roomId].numSubmitted++;
 

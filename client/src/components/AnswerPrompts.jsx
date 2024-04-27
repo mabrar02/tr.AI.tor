@@ -59,6 +59,7 @@ function AnswerPrompts() {
     });
 
     return () => {
+      socket?.off("timer_expired");
       socket?.off("get_prompt");
       socket?.off("answer_regenerated");
       socket?.off("answer_submitted");

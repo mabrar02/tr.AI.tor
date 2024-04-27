@@ -135,10 +135,9 @@ module.exports = function phaseHandlers(socket, io, rooms) {
 
         io.to(roomId).emit("timer_update", rooms[roomId].timer);
       } else {
-        io.to(roomId).emit("timer_expired");
-
         rooms[roomId].timerActive = false;
         clearInterval(interval);
+        io.to(roomId).emit("timer_expired");
       }
     }, 1000);
   };
@@ -155,6 +154,12 @@ module.exports = function phaseHandlers(socket, io, rooms) {
         break;
       case "prompts":
         time = 90;
+        break;
+      case "voting":
+        time = 10;
+        break;
+      case "post-votes":
+        time = 10;
         break;
     }
 
