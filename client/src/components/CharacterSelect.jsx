@@ -10,7 +10,9 @@ function CharacterSelect() {
     userName,
     socket,
     transitionToGamePhase,
+    gamePhase,
     role,
+    timer,
     setRoleValue,
   } = useGameRoom();
   const [charOptions, setCharOptions] = useState([]);
@@ -19,6 +21,10 @@ function CharacterSelect() {
     socket?.on("update_char_options", (res) => {
       setRoleValue(res.role);
       setCharOptions(res.characters);
+    });
+
+    socket?.on("timer_expired", () => {
+      transitionToGamePhase("prompts");
     });
 
     return () => {
@@ -30,13 +36,15 @@ function CharacterSelect() {
     if (isHost) {
       console.log(joinCode);
       socket?.emit("get_char_options", { roomId: joinCode });
+      socket?.emit("start_timer", { roomId: joinCode, phase: gamePhase });
     }
-    const timer = setTimeout(() => {
-      transitionToGamePhase("prompts");
-    }, 2000);
+    // const timer = setTimeout(() => {
+    //   transitionToGamePhase("prompts");
+    // }, 2000);
     return () => {
       socket?.off("get_char_options");
-      clearTimeout(timer);
+      socket?.off("start_timer");
+      // clearTimeout(timer);
     };
   }, []);
 
@@ -62,6 +70,7 @@ function CharacterSelect() {
           ))}
         </ul>
       )}
+      <p>{timer}</p>
     </div>
   );
 }

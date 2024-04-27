@@ -18,6 +18,7 @@ export const GameRoomProvider = ({ children }) => {
   const [roundNum, setRoundNum] = useState(0);
   const [gameOver, setGameOver] = useState({});
   const [inLobby, setInLobby] = useState(false);
+  const [timer, setTimer] = useState(0);
 
   useEffect(() => {
     const newSocket = io("http://localhost:4000");
@@ -31,10 +32,19 @@ export const GameRoomProvider = ({ children }) => {
       updatePlayers(players);
     });
 
+    socket?.on("timer_update", (time) => {
+      updateTimer(time);
+    });
+
     return () => {
       socket?.off("update_players");
+      socket?.off("timer_update");
     };
   }, [socket]);
+
+  const updateTimer = (updatedTime) => {
+    setTimer(updatedTime);
+  };
 
   const transitionToGamePhase = (phase) => {
     setGamePhase(phase);
@@ -88,6 +98,8 @@ export const GameRoomProvider = ({ children }) => {
         setGameOver,
         inLobby,
         setInLobby,
+        timer,
+        updateTimer,
       }}
     >
       {children}

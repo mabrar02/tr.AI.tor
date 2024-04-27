@@ -136,5 +136,32 @@ module.exports = function phaseHandlers(socket, io, rooms) {
     io.to(roomid).emit("players_return_to_lobby");
   });
 
+  const startTimer = (roomId) => {
+    const interval = setInterval(() => {
+      if (rooms[roomId].timer > 0) {
+        rooms[roomId].timer -= 1;
 
+        io.to(roomId).emit("timer_update", rooms[roomId].timer);
+      } else {
+        io.to(roomId).emit("timer_expired");
+        rooms[roomId].timerActive = false;
+        clearInterval(interval);
+      }
+    }, 1000);
+  };
+
+  socket.on("start_timer", ({ roomId, phase }) => {
+    if (rooms[roomId].timerActive) return;
+    let time = 0;
+    switch (phase) {
+      case "characters":
+        time = 10;
+        break;
+    }
+
+    rooms[roomId].timerActive = true;
+    rooms[roomId].timer = time;
+    startTimer(roomId);
+    io.to(roomId).emit("timer_update", rooms[roomId].timer);
+  });
 };
