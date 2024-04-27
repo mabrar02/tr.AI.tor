@@ -32,12 +32,7 @@ function AnswerPrompts() {
       socket?.emit("request_prompt", joinCode);
       socket?.emit("start_timer", { roomId: joinCode, phase: gamePhase });
     }
-
-    return () => {
-      socket?.off("request_prompt");
-      socket?.off("start_timer");
-    };
-  }, [socket]);
+  }, []);
 
   useEffect(() => {
     socket?.on("get_prompt", (prompt) => {

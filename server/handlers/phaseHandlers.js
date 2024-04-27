@@ -173,4 +173,17 @@ module.exports = function phaseHandlers(socket, io, rooms) {
     rooms[roomId].timer = time;
     io.to(roomId).emit("timer_update", rooms[roomId].timer);
   });
+
+  socket.on("start_showing_responses", (roomId) => {
+    let index = 0;
+
+    const interval = setInterval(() => {
+      if (index <= rooms[roomId].numPlayers) {
+        index++;
+      } else {
+        clearInterval(interval);
+      }
+      io.to(roomId).emit("show_response_index", index);
+    }, 3000);
+  });
 };
