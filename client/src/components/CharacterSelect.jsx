@@ -34,6 +34,7 @@ function CharacterSelect() {
 
     return () => {
       socket?.off("update_char_options");
+      socket?.off("timer_expired");
     };
   }, [socket]);
 

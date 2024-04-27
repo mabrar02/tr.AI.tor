@@ -14,18 +14,10 @@ module.exports = function phaseHandlers(socket, io, rooms) {
     io.to(roomId).emit("game_started", {});
     let i = 0;
 
-    let randTraitor1 = Math.floor(Math.random() * rooms[roomId].numPlayers);
-    let randTraitor2;
-    do {
-      randTraitor2 =
-        rooms[roomId].numPlayers > 5
-          ? Math.floor(Math.random() * rooms[roomId].numPlayers)
-          : -1;
-    } while (randTraitor1 === randTraitor2);
+    let randTraitor = Math.floor(Math.random() * rooms[roomId].numPlayers);
     Object.keys(rooms[roomId].players).forEach((key) => {
-      if (i == randTraitor1 || i == randTraitor2) {
+      if (i == randTraitor) {
         rooms[roomId].players[key].role = "Traitor";
-        rooms[roomId].numTraitors += 1;
       } else {
         rooms[roomId].players[key].role = "Innocent";
       }
@@ -144,6 +136,7 @@ module.exports = function phaseHandlers(socket, io, rooms) {
         io.to(roomId).emit("timer_update", rooms[roomId].timer);
       } else {
         io.to(roomId).emit("timer_expired");
+
         rooms[roomId].timerActive = false;
         clearInterval(interval);
       }
@@ -154,6 +147,9 @@ module.exports = function phaseHandlers(socket, io, rooms) {
     if (rooms[roomId].timerActive) return;
     let time = 0;
     switch (phase) {
+      case "lobby":
+        time = 5;
+        break;
       case "characters":
         time = 20;
         break;

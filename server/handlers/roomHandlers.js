@@ -14,6 +14,8 @@ module.exports = function roomHandlers(socket, io, rooms) {
       characters: [],
       round: 0,
       prompts: [],
+      timerActive: false,
+      timer: 0,
     };
     socket.join(roomId);
     rooms[roomId].players[socket.id] = {
