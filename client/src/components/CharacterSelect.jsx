@@ -64,24 +64,30 @@ function CharacterSelect() {
           You've chosen to be a {selectedChar}, waiting for other players...
         </p>
       ) : (
-        <div>
+        <div className="bg-gray-800 p-10 rounded-lg border border-black flex flex-col justify-center items-center">
+          <p className="text-white font-semibold text-2xl">Choose your AI Character.</p>
           <ul className="-mx-2 my-10">
             {charOptions.map((character, index) => (
+              
               <li
                 key={index}
-                className={`font-bold rounded-lg py-2 px-5 inline-block border border-black shadow shadow-lg mb-4 mx-1 ${
+                className={`mx-1.5 font-bold rounded-lg py-2 px-5 inline-block border-4 border-blue-300 shadow shadow-lg mb-4 mx-1 transform transition-all hover:scale-105 hover:border-blue-500 ${
                   charOptions[index] === selectedChar
-                    ? "bg-red-300"
+                    ? "bg-blue-200"
                     : "bg-white"
-                }`}
+                } hover:shadow-lg `}
                 onClick={() => setSelectedChar(charOptions[index])}
               >
-                {charOptions[index]}
+                <div className="flex items-center justify-center">
+
+                <div className="my-10 w-10 h-10 border border-black mb-20 bg-pink-600 rounded-lg"></div>
+                </div>
+                <span className="px-20">{charOptions[index]}</span>
               </li>
             ))}
           </ul>
           <button
-            className="bg-red-300"
+            className="bg-yellow-400 hover:bg-yellow-600 font-bold py-2 px-12 rounded-lg shadow-md border border-black transform transition-all hover:scale-105"
             onClick={() => {
               if (selectedChar !== null) {
                 setSubmitted(true);
