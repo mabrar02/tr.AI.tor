@@ -74,8 +74,12 @@ module.exports = function playerHandlers(socket, io, rooms) {
 
     updatePlayers(roomId);
 
-    if (rooms[roomId].numSubmitted == rooms[roomId].numPlayers) {
-      io.to(roomId).emit("see_responses", {});
+    if (
+      rooms[roomId].numSubmitted == rooms[roomId].numPlayers &&
+      rooms[roomId].timer > 12
+    ) {
+      rooms[roomId].timer = 10;
+      io.to(roomId).emit("timer_update", rooms[roomId].timer);
     }
   });
 
@@ -96,7 +100,10 @@ module.exports = function playerHandlers(socket, io, rooms) {
     rooms[roomId].players[socket.id].character = character;
     rooms[roomId].numSubmitted++;
 
-    if (rooms[roomId].numSubmitted == rooms[roomId].numPlayers) {
+    if (
+      rooms[roomId].numSubmitted == rooms[roomId].numPlayers &&
+      rooms[roomId].timer > 7
+    ) {
       rooms[roomId].timer = 5;
       io.to(roomId).emit("timer_update", rooms[roomId].timer);
     }

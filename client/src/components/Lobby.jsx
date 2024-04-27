@@ -162,7 +162,7 @@ function Lobby() {
 
       {inLobby && (
         <div>
-          {<p>{timer}</p>}
+          {timer > 0 && <p>{timer}</p>}
           <p className="font-bold text-xl mb-2">Players:</p>
           <ul className="-mx-2">
             <AnimatePresence>

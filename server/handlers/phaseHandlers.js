@@ -153,6 +153,9 @@ module.exports = function phaseHandlers(socket, io, rooms) {
       case "characters":
         time = 20;
         break;
+      case "prompts":
+        time = 90;
+        break;
     }
 
     rooms[roomId].timerActive = true;
@@ -162,7 +165,7 @@ module.exports = function phaseHandlers(socket, io, rooms) {
   });
 
   socket.on("set_timer", ({ roomId, time }) => {
-    rooms[roomid].timer = time;
+    rooms[roomId].timer = time;
     io.to(roomId).emit("timer_update", rooms[roomId].timer);
   });
 };
