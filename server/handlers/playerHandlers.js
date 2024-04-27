@@ -46,6 +46,7 @@ module.exports = function playerHandlers(socket, io, rooms) {
       }
     }
 
+    rooms[roomId].numSubmitted = 1;
   });
 
   const getFilteredResponse = async (character, answer) => {
@@ -93,6 +94,12 @@ module.exports = function playerHandlers(socket, io, rooms) {
 
   socket.on("select_char", ({ character, roomId }) => {
     rooms[roomId].players[socket.id].character = character;
+    rooms[roomId].numSubmitted++;
+
+    if (rooms[roomId].numSubmitted == rooms[roomId].numPlayers) {
+      rooms[roomId].timer = 5;
+      io.to(roomId).emit("timer_update", rooms[roomId].timer);
+    }
   });
 
   socket.on("send_vote", ({ roomId, vote }) => {
