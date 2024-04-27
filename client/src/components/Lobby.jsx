@@ -98,12 +98,24 @@ function Lobby() {
   };
 
   return (
-    <div className="flex flex-col items-center w-100% h-screen pt-32">
-      <div className="mb-6">
-        <h1 className="text-6xl">
-          <b>TR.AI.TOR</b>
-        </h1>
-      </div>
+    <div>
+      {inLobby && (
+        <div className="flex flex-row w-screen h-screen">
+          <div className="bg-green-300 w-1/4">
+            <p>players</p>
+          </div>
+          <div className="bg-yellow-300 w-1/2">
+            <h1 className="text-8xl">
+              <b>TR.AI.TOR</b>
+            </h1>
+          </div>
+          <div className="bg-red-400 w-1/4 flex justify-end">
+            <div className="bg-white flex h-fit">
+              <b>code</b>
+            </div>
+          </div>
+        </div>
+      )}
 
       {!joinGame && !inLobby && (
         <div className="flex flex-col gap-y-2 text-center mb-60">
@@ -160,7 +172,7 @@ function Lobby() {
         </div>
       )}
 
-      {inLobby && (
+      {/* {inLobby && (
         <div>
           {timer > 0 && <p>{timer}</p>}
           <p className="font-bold text-xl mb-2">Players:</p>
@@ -202,7 +214,7 @@ function Lobby() {
             </span>
           </h1>
         </div>
-      )}
+      )}  */}
     </div>
   );
 }
