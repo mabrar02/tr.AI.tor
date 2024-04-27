@@ -16,6 +16,8 @@ function CharacterSelect() {
     setRoleValue,
   } = useGameRoom();
   const [charOptions, setCharOptions] = useState([]);
+  const [selectedChar, setSelectedChar] = useState(null);
+  const [submitted, setSubmitted] = useState(false);
 
   useEffect(() => {
     socket?.on("update_char_options", (res) => {
@@ -24,6 +26,9 @@ function CharacterSelect() {
     });
 
     socket?.on("timer_expired", () => {
+      if (selectedChar !== null) {
+        selectChar(selectedChar);
+      }
       transitionToGamePhase("prompts");
     });
 
@@ -38,13 +43,10 @@ function CharacterSelect() {
       socket?.emit("get_char_options", { roomId: joinCode });
       socket?.emit("start_timer", { roomId: joinCode, phase: gamePhase });
     }
-    // const timer = setTimeout(() => {
-    //   transitionToGamePhase("prompts");
-    // }, 2000);
+
     return () => {
       socket?.off("get_char_options");
       socket?.off("start_timer");
-      // clearTimeout(timer);
     };
   }, []);
 
@@ -56,19 +58,41 @@ function CharacterSelect() {
     <div>
       {role === "Traitor" ? (
         <p>You are the traitor! Try to blend in.</p>
+      ) : submitted ? (
+        <p>
+          You've chosen to be a {selectedChar}, waiting for other players...
+        </p>
       ) : (
-        <ul className="-mx-2 my-10">
-          {charOptions.map((character, index) => (
-            <li
-              key={index}
-              className="font-bold rounded-lg py-2 px-5 inline-block border border-black shadow shadow-lg mb-4 mx-1"
-              style={{ backgroundColor: "white" }}
-              onClick={() => selectChar(charOptions[index])}
-            >
-              {charOptions[index]}
-            </li>
-          ))}
-        </ul>
+        <div>
+          <ul className="-mx-2 my-10">
+            {charOptions.map((character, index) => (
+              <li
+                key={index}
+                className={`font-bold rounded-lg py-2 px-5 inline-block border border-black shadow shadow-lg mb-4 mx-1 ${
+                  charOptions[index] === selectedChar
+                    ? "bg-red-300"
+                    : "bg-white"
+                }`}
+                onClick={() => setSelectedChar(charOptions[index])}
+              >
+                {charOptions[index]}
+              </li>
+            ))}
+          </ul>
+          <button
+            className="bg-red-300"
+            onClick={() => {
+              if (selectedChar !== null) {
+                setSubmitted(true);
+                selectChar(selectedChar);
+              } else {
+                alert("Select a char before submit");
+              }
+            }}
+          >
+            Submit
+          </button>
+        </div>
       )}
       <p>{timer}</p>
     </div>

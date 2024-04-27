@@ -155,13 +155,18 @@ module.exports = function phaseHandlers(socket, io, rooms) {
     let time = 0;
     switch (phase) {
       case "characters":
-        time = 10;
+        time = 20;
         break;
     }
 
     rooms[roomId].timerActive = true;
     rooms[roomId].timer = time;
     startTimer(roomId);
+    io.to(roomId).emit("timer_update", rooms[roomId].timer);
+  });
+
+  socket.on("set_timer", ({ roomId, time }) => {
+    rooms[roomid].timer = time;
     io.to(roomId).emit("timer_update", rooms[roomId].timer);
   });
 };
