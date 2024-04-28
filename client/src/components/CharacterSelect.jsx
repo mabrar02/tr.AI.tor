@@ -58,13 +58,15 @@ function CharacterSelect() {
   return (
     <div>
       {role === "Traitor" ? (
-        <p>You are the traitor! Try to blend in.</p>
+    
+        <p className="font-bold text-5xl text-white bg-gray-800 py-20 px-20 border-2 border-red-700 outline outline-red-500 rounded-lg bg-gradient-to-b from-black to-red-950 w-full">
+          You are the traitor! Try to blend in.</p> //
       ) : submitted ? (
         <p>
           You've chosen to be a {selectedChar}, waiting for other players...
         </p>
       ) : (
-        <div className="bg-gray-800 p-10 rounded-lg border border-black flex flex-col justify-center items-center">
+        <div className="bg-gray-800 p-10 rounded-lg border-b-8 border-l-8 border-gray-900 border-black flex flex-col justify-center items-center">
           <p className="text-white font-semibold text-2xl">Choose your AI Character.</p>
           <ul className="-mx-2 my-10">
             {charOptions.map((character, index) => (
@@ -101,7 +103,7 @@ function CharacterSelect() {
           </button>
         </div>
       )}
-      <p>{timer}</p>
+      <p className="font-medium">{"Game starts in: " + timer}</p>
     </div>
   );
 }
