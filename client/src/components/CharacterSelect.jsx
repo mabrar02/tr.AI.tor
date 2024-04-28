@@ -73,9 +73,9 @@ function CharacterSelect() {
                 key={index}
                 className={`mx-1.5 font-bold rounded-lg py-2 px-5 inline-block border-4 border-blue-300 shadow shadow-lg mb-4 mx-1 transform transition-all hover:scale-105 hover:border-blue-500 ${
                   charOptions[index] === selectedChar
-                    ? "bg-blue-200"
+                    ? "bg-blue-200 border-blue-500"
                     : "bg-white"
-                } hover:shadow-lg `}
+                } hover:shadow-lg active:border-blue-400`}
                 onClick={() => setSelectedChar(charOptions[index])}
               >
                 <div className="flex items-center justify-center">
