@@ -22,7 +22,9 @@ function Lobby() {
 
   const [joinGame, setJoinGame] = useState(false);
 
-  const [playerNames, setPlayerNames] = useState(Array(8).fill('Player is offline'));
+  const [playerNames, setPlayerNames] = useState(
+    Array(8).fill("Player is offline")
+  );
 
   useEffect(() => {
     socket?.on("game_started", () => {
@@ -38,7 +40,6 @@ function Lobby() {
     socket?.on("players_updated", (updatedPlayers) => {
       setPlayerNames(updatedPlayers);
     });
-
 
     return () => {
       socket?.off("game_started");
@@ -70,7 +71,6 @@ function Lobby() {
       return;
     }
 
- 
     socket?.emit(
       "join_room",
       { roomId: joinCode, username: userName },
@@ -114,32 +114,61 @@ function Lobby() {
           <div className="bg-green-300 w-1/4 overflow-y-auto">
             <p className="px-4 py-2 font-bold">Players List</p>
             <ul className="max-h-full">
-            {playerNames.map((name, index) => (
+              {playerNames.map((name, index) => (
                 <li key={index} style={{ color: players[index]?.color }}>
-                <div className="bg-gray-200 p-2">{name}</div>
+                  <div className="bg-gray-200 p-2">{name}</div>
                 </li>
               ))}
             </ul>
           </div>
 
-          <div className="bg-yellow-300 w-1/2">
-            <h1 className="text-8xl">
-              <b>TR.AI.TOR</b>
-            </h1>
+          <div className="w-1/2">
+            <div className="flex flex-col h-full items-center justify-center -mt-16">
+              <div className="w-fit flex h-fit">
+                <h1 className="text-9xl bg-white p-10 border-4 border-black font-bold">
+                  <span>TR.</span>
+                  <span className="italic text-red-700">AI</span>
+                  <span>.TOR</span>
+                </h1>
+              </div>
+
+              <div className="mt-8 space-y-4">
+                {isHost && (
+                  <div className="flex">
+                    <button
+                      onClick={handleStartGame}
+                      className="text-2xl bg-yellow-400 hover:bg-yellow-600 font-bold py-6 px-16  rounded-lg border-b-4 border-l-2 border-yellow-700 shadow-md transform transition-all hover:scale-105 active:border-yellow-600 mb-2"
+                    >
+                      Start Game
+                    </button>
+                  </div>
+                )}
+
+                <div className="flex">
+                  <button
+                    onClick={() => console.log("test")}
+                    className="text-2xl bg-yellow-400 hover:bg-yellow-600 font-bold py-6 px-16 max-w-72 rounded-lg border-b-4 border-l-2 border-yellow-700 shadow-md transform transition-all hover:scale-105 active:border-yellow-600 mb-2"
+                  >
+                    Leave Game
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
 
-
           <div className="bg-red-400 w-1/4 flex justify-end">
-            <div className="bg-white flex flex-col justify-center items-center h-screen">
-              {joinCode.split('').map((letter, index) => (
-              <div key={index} className="text-4xl font-bold">{letter}</div>
-            ))}
+            <div className="bg-white flex flex-row justify-center items-center h-screen">
+              {joinCode.split("").map((letter, index) => (
+                <div key={index} className="text-4xl font-bold">
+                  {letter}
+                </div>
+              ))}
             </div>
           </div>
         </div>
       )}
 
-      {!joinGame && !inLobby && ( 
+      {!joinGame && !inLobby && (
         <div className="flex flex-col gap-y-2 text-center mb-60">
           <h2 className="font-bold">Username</h2>
           <input
