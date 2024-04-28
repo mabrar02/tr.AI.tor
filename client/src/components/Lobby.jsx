@@ -22,6 +22,8 @@ function Lobby() {
 
   const [joinGame, setJoinGame] = useState(false);
 
+  const [playerNames, setPlayerNames] = useState(Array(8).fill('Player is offline'));
+
   useEffect(() => {
     socket?.on("game_started", () => {
       transitionToGamePhase("characters");
@@ -33,8 +35,14 @@ function Lobby() {
       }
     });
 
+    socket?.on("players_updated", (updatedPlayers) => {
+      setPlayerNames(updatedPlayers);
+    });
+
+
     return () => {
       socket?.off("game_started");
+      socket?.off("players_updated");
       socket?.off("timer_expired");
     };
   }, [socket, isHost]);
@@ -61,6 +69,8 @@ function Lobby() {
       alert("Please enter a 4-letter code to join the room.");
       return;
     }
+
+ 
     socket?.emit(
       "join_room",
       { roomId: joinCode, username: userName },
@@ -101,23 +111,35 @@ function Lobby() {
     <div>
       {inLobby && (
         <div className="flex flex-row w-screen h-screen">
-          <div className="bg-green-300 w-1/4">
-            <p>players</p>
+          <div className="bg-green-300 w-1/4 overflow-y-auto">
+            <p className="px-4 py-2 font-bold">Players List</p>
+            <ul className="max-h-full">
+            {playerNames.map((name, index) => (
+                <li key={index} style={{ color: players[index]?.color }}>
+                <div className="bg-gray-200 p-2">{name}</div>
+                </li>
+              ))}
+            </ul>
           </div>
+
           <div className="bg-yellow-300 w-1/2">
             <h1 className="text-8xl">
               <b>TR.AI.TOR</b>
             </h1>
           </div>
+
+
           <div className="bg-red-400 w-1/4 flex justify-end">
-            <div className="bg-white flex h-fit">
-              <b>code</b>
+            <div className="bg-white flex flex-col justify-center items-center h-screen">
+              {joinCode.split('').map((letter, index) => (
+              <div key={index} className="text-4xl font-bold">{letter}</div>
+            ))}
             </div>
           </div>
         </div>
       )}
 
-      {!joinGame && !inLobby && (
+      {!joinGame && !inLobby && ( 
         <div className="flex flex-col gap-y-2 text-center mb-60">
           <h2 className="font-bold">Username</h2>
           <input
