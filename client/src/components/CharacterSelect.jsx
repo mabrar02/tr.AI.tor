@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useGameRoom } from "../contexts/GameRoomContext";
+import AIImage from "../assets/image.png";
+import { motion } from "framer-motion";
 
 function CharacterSelect() {
   const {
@@ -32,7 +34,7 @@ function CharacterSelect() {
       }
       setTransition(true);
       const timer = setTimeout(() => {
-        transitionToGamePhase("prompts")
+        transitionToGamePhase("prompts");
       }, 2000);
     });
 
@@ -75,47 +77,81 @@ function CharacterSelect() {
           You've chosen to be a {selectedChar}, waiting for other players...
         </p>
       ) : (
-        <div className="bg-gray-800 p-10 rounded-lg border-b-8 border-l-8 border-gray-900 border-black flex flex-col justify-center items-center">
-          <p className="text-white font-semibold text-2xl">
-            Choose your AI Character.
-          </p>
-          <div className="-mx-2 my-10">
-            {charOptions.map((character, index) => (
-              <div className="flex w-full bg-red-400">
-                <button
-                  key={index}
-                  className={`mx-1.5 w-full font-bold rounded-lg py-2 px-5 inline-block border-4 border-blue-300 shadow-lg mb-4 mx-1 transform transition-all hover:scale-105 hover:border-blue-500 ${
-                    charOptions[index] === selectedChar
-                      ? "bg-blue-200 border-blue-500"
-                      : "bg-white"
-                  } hover:shadow-lg active:border-blue-400`}
-                  onClick={() => setSelectedChar(charOptions[index])}
-                >
-                  <div className="flex items-center justify-center">
-                    <div className="my-10 w-10 h-10 border border-black mb-20 bg-pink-600 rounded-lg"></div>
-                  </div>
-                  <span className="px-20">{charOptions[index]}</span>
-                </button>
-              </div>
-            ))}
-          </div>
+        <div className="w-screen h-screen justify-center items-center flex">
+          <div className="min-h-72 min-w-96 bg-gray-800 p-4 rounded-lg border-b-8 border-l-8 border-gray-900  flex flex-col justify-center items-center w-[70%] h-[60%]">
+            <p className="text-white font-semibold lg:text-xl xl:text-2xl text-center my-2">
+              Choose your AI Character. This will be how your answers are
+              translated!
+            </p>
+            <div className="-mx-2 my-2 flex w-[90%] h-[50%]">
+              {charOptions.map((character, index) => (
+                <div className="flex w-full">
+                  <button
+                    key={index}
+                    className={`overflow-hidden min-h-32 flex-1 font-bold rounded-lg flex-col items-center justify-center border-4 border-blue-300 shadow-lg  mx-1 transition-all hover:scale-105 hover:border-blue-500 ${
+                      charOptions[index] === selectedChar
+                        ? "bg-blue-200 border-blue-500"
+                        : "bg-white"
+                    } hover:shadow-lg active:border-blue-400`}
+                    onClick={() => setSelectedChar(charOptions[index])}
+                  >
+                    <div className="justify-center h-full ">
+                      <div className="flex flex-col items-center justify-center py-10 space-y-6">
+                        <div className="rounded-full overflow-hidden w-14 h-14 lg:w-20 lg:h-20 transition-all flex">
+                          <img
+                            className="w-full h-full object-cover"
+                            src={AIImage}
+                            alt={"AI Icons"}
+                          />
+                        </div>
+                        <span className="lg:text-2xl text-center transition-all text-wrap line-clamp-1">
+                          {charOptions[index]}
+                        </span>
+                      </div>
+                    </div>
+                  </button>
+                </div>
+              ))}
+            </div>
 
-          <button
-            className="bg-yellow-400 hover:bg-yellow-600 font-bold py-2 px-12 rounded-lg shadow-md border border-black transform transition-all hover:scale-105"
-            onClick={() => {
-              if (selectedChar !== null) {
-                setSubmitted(true);
-                selectChar(selectedChar);
-              } else {
-                alert("Select a char before submit");
-              }
-            }}
-          >
-            Submit
-          </button>
+            <button
+              className="bg-yellow-400 hover:bg-yellow-600 font-bold py-2 px-12 my-2 rounded-lg shadow-md border border-black transform transition-all hover:scale-105"
+              onClick={() => {
+                if (selectedChar !== null) {
+                  setSubmitted(true);
+                  selectChar(selectedChar);
+                } else {
+                  alert("Select a char before submit");
+                }
+              }}
+            >
+              Submit
+            </button>
+
+            <motion.div
+              className="w-full h-[12%] bg-yellow-600 shadow-md relative mt-4"
+              style={{ zIndex: 1 }}
+              initial={{ y: "-16.6vh" }}
+              animate={{ y: 0 }}
+            >
+              <motion.div
+                initial={{ width: "100%" }}
+                animate={{ width: `${(timer / 5000) * 100}%` }}
+                className="h-full bg-yellow-300 animate-timer border-b-4 border-l-2 border-yellow-500 absolute top-0 left-0"
+                transition={{ ease: "linear", duration: 1 }}
+              ></motion.div>
+
+              <div className="flex justify-center items-center h-full relative z-1 ">
+                {timer > 0 && (
+                  <span className="text-white font-bold text-2xl ">
+                    {timer}s remaining!
+                  </span>
+                )}
+              </div>
+            </motion.div>
+          </div>
         </div>
       )}
-      <p className="font-medium">{"Game starts in: " + timer}</p>
     </div>
   );
 }
