@@ -99,8 +99,8 @@ function Lobby() {
 
   return (
     <div className="flex flex-col items-center w-100% h-screen pt-32">
-      <div className="mb-6">
-        <h1 className="text-6xl">
+      <div className="mb-6 relative overflow-hidden">
+        <h1 className="text-6xl font-title font-thin" style={{ textShadow: "-1px 1px 0px rgba(240, 240, 240, 0.5)"}}>
           <b>TR.AI.TOR</b>
         </h1>
       </div>
