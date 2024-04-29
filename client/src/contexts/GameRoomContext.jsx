@@ -22,9 +22,9 @@ export const GameRoomProvider = ({ children }) => {
 
   useEffect(() => {
     const newSocket = io("http://localhost:4000");
-    // const newSocket = io("https://ace-memento-418917.nn.r.appspot.com",
-    //   {transports: ['websocket', 'polling']
-    // });
+    //  const newSocket = io("https://ace-memento-418917.nn.r.appspot.com",
+    //    {transports: ['websocket', 'polling']
+    //  });
 
     setSocket(newSocket);
 

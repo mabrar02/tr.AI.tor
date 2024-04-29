@@ -18,6 +18,7 @@ function CharacterSelect() {
   const [charOptions, setCharOptions] = useState([]);
   const [selectedChar, setSelectedChar] = useState(null);
   const [submitted, setSubmitted] = useState(false);
+  const [transition, setTransition] = useState(false);
 
   useEffect(() => {
     socket?.on("update_char_options", (res) => {
@@ -29,12 +30,16 @@ function CharacterSelect() {
       if (selectedChar !== null) {
         selectChar(selectedChar);
       }
-      transitionToGamePhase("prompts");
+      setTransition(true);
+      const timer = setTimeout(() => {
+        transitionToGamePhase("prompts")
+      }, 2000);
     });
 
     return () => {
       socket?.off("update_char_options");
       socket?.off("timer_expired");
+      clearTimeout(timer);
     };
   }, [socket]);
 
@@ -57,6 +62,10 @@ function CharacterSelect() {
 
   return (
     <div>
+      {transition === true && (
+        <div className="transition-container closing-container"></div>
+      )}
+
       {role === "Traitor" ? (
         <p className="font-bold text-5xl text-white bg-gray-800 py-20 px-20 border-2 border-red-700 outline outline-red-500 rounded-lg bg-gradient-to-b from-black to-red-950 w-full">
           You are the traitor! Try to blend in.

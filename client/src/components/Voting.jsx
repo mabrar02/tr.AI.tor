@@ -22,6 +22,7 @@ function Voting() {
   const [selected, selectSelect] = useState("");
   const [tallyVotes, updateTallyVotes] = useState({});
   const [voteText, setVoteText] = useState("");
+  const [transition, setTransition] = useState(false);
 
   useEffect(() => {
     if (isHost) {
@@ -45,15 +46,20 @@ function Voting() {
         }
         setPhase("post-votes");
       } else if (phase === "post-votes") {
-        if (nextPhase === "ending") {
-          transitionToGamePhase("ending");
-        } else if (nextPhase === "resetting") {
-          transitionToGamePhase("prompts");
-        }
+        setTransition(true);
+       
+        const timer = setTimeout(() => {
+          if (nextPhase === "ending") {
+            transitionToGamePhase("ending");
+          } else if (nextPhase === "resetting") {
+            transitionToGamePhase("prompts");
+          }
+        }, 2000);
       }
     });
 
     return () => {
+      clearTimeout(timer);
       socket?.off("get_tally_votes");
       socket?.off("vote_decision");
       socket?.off("timer_expired");
@@ -95,6 +101,12 @@ function Voting() {
 
   return (
     <div>
+
+      {transition === true && (
+        <div className="transition-container closing-container"></div>
+      )}
+
+
       {phase == "voting" && (
         <div>
           Time left: {timer} Prompt: {prompt}

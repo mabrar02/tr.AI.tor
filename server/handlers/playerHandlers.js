@@ -85,7 +85,7 @@ module.exports = function playerHandlers(socket, io, rooms) {
   });
 
   socket.on("regenerate_answer", async ({ roomId }) => {
-    console.log(roomId);
+//    console.log(roomId);
     const content = await getFilteredResponse(
       rooms[roomId].players[socket.id].character,
       rooms[roomId].players[socket.id].answers

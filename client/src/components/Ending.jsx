@@ -17,6 +17,7 @@ function Ending() {
 
   useEffect(() => {
     socket?.on("players_return_to_lobby", () => {
+      setRoundValue(0);
       transitionToGamePhase("lobby");
     });
 
