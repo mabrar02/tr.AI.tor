@@ -149,19 +149,19 @@ module.exports = function phaseHandlers(socket, io, rooms) {
     let time = 0;
     switch (phase) {
       case "lobby":
-        time = 5;
+        time = 0;
         break;
       case "characters":
-        time = 20;
+        time = 5;
         break;
       case "prompts":
-        time = 9000;
+        time = 90;
         break;
       case "voting":
-        time = 10;
+        time = 5;
         break;
       case "post-votes":
-        time = 10;
+        time = 5;
         break;
     }
 

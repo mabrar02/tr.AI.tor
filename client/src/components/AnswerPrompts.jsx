@@ -73,7 +73,7 @@ function AnswerPrompts() {
         if(isHost) {
           socket?.emit("start_timer", { roomId: joinCode, phase: gamePhase });
         }
-      }, 6000);
+      }, 9000);
 
       return () => {
         clearTimeout(timer);
@@ -95,72 +95,52 @@ function AnswerPrompts() {
     }
   };
 
+
   return (
     <div>
-      { transition && (
+       { transition && (
         <TransitionToPrompts />
-      )}
+      )} 
 
-    <div className="h-screen w-screen items-center flex-col flex">
-      <PromptBanner />
+      <div className="h-screen w-screen items-center flex-col flex">
+        <PromptBanner />
 
-      <ResponseBox />
-      <span>Answer honestly!</span>
+        <div className="h-[30%] w-full flex flex-col justify-center "></div> 
+        <ResponseBox />
+        <span>Answer honestly!</span>
 
-      {/* 
-
-        {!submitted && (
-          <div className="bg-lime-400 w-[15rem] h-[10rem] text-center">
-            <h1>PROMPT: {prompt}</h1>
-            <input
-              type="test"
-              value={answer}
-              onChange={(e) => setAnswer(e.target.value)}
-            ></input>
-
-            <button className="bg-blue-200" onClick={submitAnswer}>
-              Submit Answer
-            </button>
-          </div>
-        )}
 
         {submitted && (
-          <div className="bg-cyan-600 w-[15rem] h-[10rem] text-center text-white">
-            You've submitted! Waiting on all other player submissions...
-          </div>
-        )} */}
-
-      {submitted && (
-        <div className="flex flex-col items-center w-[40rem] justify-center bg-black text-white">
-          {role === "Traitor" ? (
-            <div>
-              <p>Your answer will NOT be filtered:</p>
-              <p>{filteredAnswer}</p>
-            </div>
-          ) : (
-            <div>
-              <p className="text-center">Your filtered answer:</p>
-              <p>{filteredAnswer}</p>
-              <div className="text-center">
-                {timer > 5 && (
-                  <button
-                    className={`${
-                      regenCount == 0 || updatingResponse
-                        ? "bg-yellow-800"
-                        : "bg-yellow-200"
-                    } px-10 py-2 text-black my-2`}
-                    onClick={regenerateAnswer}
-                  >
-                    {updatingResponse ? "..." : "Regenerate Answer"} (x
-                    {regenCount})
-                  </button>
-                )}
+          <div className="flex flex-col items-center w-[40rem] justify-center bg-black text-white">
+            {role === "Traitor" ? (
+              <div>
+                <p>Your answer will NOT be filtered:</p>
+                <p>{filteredAnswer}</p>
               </div>
-            </div>
-          )}
-        </div>
-      )}
-    </div>
+            ) : (
+              <div>
+                <p className="text-center">Your filtered answer:</p>
+                <p>{filteredAnswer}</p>
+                <div className="text-center">
+                  {timer > 5 && (
+                    <button
+                      className={`${
+                        regenCount == 0 || updatingResponse
+                          ? "bg-yellow-800"
+                          : "bg-yellow-200"
+                      } px-10 py-2 text-black my-2`}
+                      onClick={regenerateAnswer}
+                    >
+                      {updatingResponse ? "..." : "Regenerate Answer"} (x
+                      {regenCount})
+                    </button>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

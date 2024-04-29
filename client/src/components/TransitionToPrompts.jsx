@@ -19,7 +19,7 @@ function TransitionToPrompts() {
   } = useGameRoom();
 
   return (
-    <div className="overflow-hidden" style={{width: '100%', height: '100%', position: 'absolute', left: '0', top: '0'}}>
+    <div className="overflow-hidden" style={{width: '100%', height: '100%', position: 'absolute', left: '0', top: '0', zIndex: 5}}>
     <div className="slider-container transition-container">
       <div className="sliding-word">
         <p><i>Round {roundNum}!</i></p>

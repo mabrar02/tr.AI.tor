@@ -14,13 +14,13 @@
     align-items: center;
 }
 
-.slider-container {
+.slider-container { /* Spiral into screen at end of transition*/
     animation: spiralIn 2s ease-in-out forwards;
     animation-delay: 6s;
     transform-origin: center;
 }
 
-.sliding-word {
+.sliding-word { /* Slide in ominous words at start of transition*/
     position: relative;
     white-space: nowrap; 
     width: 100%;
@@ -29,7 +29,7 @@
     opacity: 0%;
 }
 
-.closing-container {
+.closing-container { /* Closing animation from end of previous page */
     animation:  closeDoor 2s forwards;
     transform-origin: left;
 }
