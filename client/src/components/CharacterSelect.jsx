@@ -18,6 +18,7 @@ function CharacterSelect() {
   const [charOptions, setCharOptions] = useState([]);
   const [selectedChar, setSelectedChar] = useState(null);
   const [submitted, setSubmitted] = useState(false);
+  const [transition, setTransition] = useState(false);
 
   useEffect(() => {
     socket?.on("update_char_options", (res) => {
@@ -29,12 +30,16 @@ function CharacterSelect() {
       if (selectedChar !== null) {
         selectChar(selectedChar);
       }
-      transitionToGamePhase("prompts");
+      setTransition(true);
+      const timer = setTimeout(() => {
+        transitionToGamePhase("prompts")
+      }, 2000);
     });
 
     return () => {
       socket?.off("update_char_options");
       socket?.off("timer_expired");
+      clearTimeout(timer);
     };
   }, [socket]);
 
@@ -57,6 +62,10 @@ function CharacterSelect() {
 
   return (
     <div>
+      {transition === true && (
+        <div className="transition-container closing-container"></div>
+      )}
+
       {role === "Traitor" ? (
         <p>You are the traitor! Try to blend in.</p>
       ) : submitted ? (

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useGameRoom } from "../contexts/GameRoomContext";
 import { motion } from "framer-motion";
+import TransitionToPrompts from "./TransitionToPrompts";
 
 function AnswerPrompts() {
   const {
@@ -26,11 +27,11 @@ function AnswerPrompts() {
   const [submitted, setSubmitted] = useState(false);
   const [regenCount, setRegenCount] = useState(3);
   const [updatingResponse, setUpdatingResponse] = useState(false);
+  const [transition, setTransition] = useState(true);
 
   useEffect(() => {
     if (isHost) {
       socket?.emit("request_prompt", joinCode);
-      socket?.emit("start_timer", { roomId: joinCode, phase: gamePhase });
     }
   }, []);
 
@@ -61,6 +62,23 @@ function AnswerPrompts() {
     };
   }, [socket]);
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+        setTransition(false);
+      }, 8000);
+
+    const timer2 = setTimeout(() => {
+        if(isHost) {
+          socket?.emit("start_timer", { roomId: joinCode, phase: gamePhase });
+        }
+      }, 6000);
+
+      return () => {
+        clearTimeout(timer);
+        clearTimeout(timer2);
+      }
+  }, []);
+
   const submitAnswer = () => {
     console.log(answer);
     socket?.emit("submit_answer", { roomId: joinCode, answer });
@@ -77,6 +95,10 @@ function AnswerPrompts() {
 
   return (
     <div>
+      { transition && (
+        <TransitionToPrompts />
+      )}
+
       <div className="flex flex-col items-center w-full h-screen ">
         <div className="font-bold text-3xl w-full h-[5rem] text-center relative">
           <h2 className="bg-gray-900 text-white">
