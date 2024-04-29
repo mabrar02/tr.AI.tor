@@ -30,6 +30,7 @@ function AnswerPrompts() {
   const [regenCount, setRegenCount] = useState(3);
   const [updatingResponse, setUpdatingResponse] = useState(false);
   const [transition, setTransition] = useState(true);
+  const animDuration = 8; // Duration of the transition animation
 
   useEffect(() => {
     if (isHost) {
@@ -66,14 +67,14 @@ function AnswerPrompts() {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-        setTransition(false);
-      }, 8000);
+        setTransition(false); // For end of transition
+      }, animDuration * 1000);
 
     const timer2 = setTimeout(() => {
         if(isHost) {
           socket?.emit("start_timer", { roomId: joinCode, phase: gamePhase });
         }
-      }, 9000);
+      }, animDuration * 1000 + 1000);
 
       return () => {
         clearTimeout(timer);
@@ -100,46 +101,17 @@ function AnswerPrompts() {
     <div>
        { transition && (
         <TransitionToPrompts />
-      )} 
+      )}
 
       <div className="h-screen w-screen items-center flex-col flex">
-        <PromptBanner />
+        <PromptBanner time={animDuration} />
 
-        <div className="h-[30%] w-full flex flex-col justify-center "></div> 
-        <ResponseBox />
+        <div className="h-[30%] w-full flex flex-col justify-center "></div> {/*Dummy div*/}
+        <ResponseBox time={animDuration}/>
         <span>Answer honestly!</span>
 
 
-        {submitted && (
-          <div className="flex flex-col items-center w-[40rem] justify-center bg-black text-white">
-            {role === "Traitor" ? (
-              <div>
-                <p>Your answer will NOT be filtered:</p>
-                <p>{filteredAnswer}</p>
-              </div>
-            ) : (
-              <div>
-                <p className="text-center">Your filtered answer:</p>
-                <p>{filteredAnswer}</p>
-                <div className="text-center">
-                  {timer > 5 && (
-                    <button
-                      className={`${
-                        regenCount == 0 || updatingResponse
-                          ? "bg-yellow-800"
-                          : "bg-yellow-200"
-                      } px-10 py-2 text-black my-2`}
-                      onClick={regenerateAnswer}
-                    >
-                      {updatingResponse ? "..." : "Regenerate Answer"} (x
-                      {regenCount})
-                    </button>
-                  )}
-                </div>
-              </div>
-            )}
-          </div>
-        )}
+
       </div>
     </div>
   );

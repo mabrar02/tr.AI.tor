@@ -63,8 +63,59 @@
 @keyframes closeDoor {
     from {
         transform: rotateY(-90deg);
+        left: 0;
     }
     to {
         transform: rotateY(0deg);
+        right: 0;
+    }
+}
+
+
+
+.animate-left {
+    animation: animate-left 1s forwards;
+}
+
+@keyframes animate-left {
+    0%, 100% {
+        transform: translateX(0) rotate(0deg);
+    }
+    10%, 30%, 50%, 70%, 90% {
+        transform: translateX(-10px) rotate(5deg);
+    }
+    20%, 40%, 60%, 80% {
+        transform: translateX(10px)rotate(-5deg);
+    } 
+
+    from {
+        width: 100%;
+        background-color: white;
+    }
+    to {
+        width: 48%;
+        background-color: lightgray;
+    }
+}
+
+.animate-right {
+    animation: animate-right 1s forwards;
+    position: absolute;
+    transform-origin: center;
+    animation-delay: 1s;
+    opacity: 0;
+}
+
+@keyframes animate-right {
+    from {
+        width: 0%;
+        left: 0;
+        height: 0;
+    }
+    to {
+        width: 48%;
+        height: 100%;
+        left: calc(100% - 48%); 
+        opacity: 1;
     }
 }
