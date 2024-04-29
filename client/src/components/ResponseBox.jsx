@@ -1,11 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useGameRoom } from "../contexts/GameRoomContext";
 import { motion } from "framer-motion";
-import PromptBanner from "./PromptBanner";
-import ResponseBox from "./ResponseBox";
-import TransitionToPrompts from "./TransitionToPrompts";
 
-function AnswerPrompts() {
+function ResponseBox() {
   const {
     isHost,
     players,
@@ -23,30 +20,13 @@ function AnswerPrompts() {
     timer,
     gamePhase,
   } = useGameRoom();
-
   const [answer, setAnswer] = useState("");
   const [filteredAnswer, setFilteredAnswer] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [regenCount, setRegenCount] = useState(3);
   const [updatingResponse, setUpdatingResponse] = useState(false);
-  const [transition, setTransition] = useState(true);
 
   useEffect(() => {
-    if (isHost) {
-      socket?.emit("request_prompt", joinCode);
-    }
-  }, []);
-
-  useEffect(() => {
-    socket?.on("get_prompt", (prompt) => {
-      setPrompt(prompt);
-      setRoundValue(roundNum + 1);
-    });
-
-    socket?.on("timer_expired", () => {
-      transitionToGamePhase("responses");
-    });
-
     socket?.on("answer_regenerated", (content) => {
       setFilteredAnswer(content);
       setUpdatingResponse(false);
@@ -57,29 +37,10 @@ function AnswerPrompts() {
     });
 
     return () => {
-      socket?.off("timer_expired");
-      socket?.off("get_prompt");
       socket?.off("answer_regenerated");
       socket?.off("answer_submitted");
     };
   }, [socket]);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-        setTransition(false);
-      }, 8000);
-
-    const timer2 = setTimeout(() => {
-        if(isHost) {
-          socket?.emit("start_timer", { roomId: joinCode, phase: gamePhase });
-        }
-      }, 6000);
-
-      return () => {
-        clearTimeout(timer);
-        clearTimeout(timer2);
-      }
-  }, []);
 
   const submitAnswer = () => {
     console.log(answer);
@@ -96,39 +57,19 @@ function AnswerPrompts() {
   };
 
   return (
-    <div>
-      { transition && (
-        <TransitionToPrompts />
-      )}
-
-    <div className="h-screen w-screen items-center flex-col flex">
-      <PromptBanner />
-
-      <ResponseBox />
-      <span>Answer honestly!</span>
-
-      {/* 
-
-        {!submitted && (
-          <div className="bg-lime-400 w-[15rem] h-[10rem] text-center">
-            <h1>PROMPT: {prompt}</h1>
-            <input
-              type="test"
-              value={answer}
-              onChange={(e) => setAnswer(e.target.value)}
-            ></input>
-
-            <button className="bg-blue-200" onClick={submitAnswer}>
-              Submit Answer
-            </button>
-          </div>
-        )}
-
-        {submitted && (
-          <div className="bg-cyan-600 w-[15rem] h-[10rem] text-center text-white">
-            You've submitted! Waiting on all other player submissions...
-          </div>
-        )} */}
+    <div className="bg-green-400 w-[55%] h-[30%] mt-10 flex-col flex items-center rounded-3xl">
+      <textarea
+        className="px-4 py-2 border border-gray-300 rounded-2xl resize-none w-[80%] h-[50%] focus:outline-none mt-10"
+        placeholder="Enter your answer..."
+        value={answer}
+        onChange={(e) => setAnswer(e.target.value)}
+      />
+      <button
+        onClick={submitAnswer}
+        className="bg-yellow-400 hover:bg-yellow-600 font-bold py-2 px-4 rounded-lg border-b-4 border-l-2 border-yellow-700 shadow-md transform transition-all hover:scale-105 active:border-yellow-600 mt-6"
+      >
+        Submit Answer
+      </button>
 
       {submitted && (
         <div className="flex flex-col items-center w-[40rem] justify-center bg-black text-white">
@@ -161,8 +102,7 @@ function AnswerPrompts() {
         </div>
       )}
     </div>
-    </div>
   );
 }
 
-export default AnswerPrompts;
+export default ResponseBox;
