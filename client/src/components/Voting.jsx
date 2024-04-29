@@ -14,13 +14,20 @@ function Voting() {
     roundNum,
     setRoundValue,
     setGameOver,
+    timer,
   } = useGameRoom();
 
-  const [timer, setTimer] = useState(10);
-  const [phase, setPhase] = useState("Voting");
+  const [phase, setPhase] = useState("voting");
+  const [nextPhase, setNextPhase] = useState("resetting");
   const [selected, selectSelect] = useState("");
   const [tallyVotes, updateTallyVotes] = useState({});
   const [voteText, setVoteText] = useState("");
+
+  useEffect(() => {
+    if (isHost) {
+      socket?.emit("start_timer", { roomId: joinCode, phase: phase });
+    }
+  }, [phase]);
 
   useEffect(() => {
     socket?.on("get_tally_votes", (votee_dict) => {
@@ -31,35 +38,27 @@ function Voting() {
       voteDecision(decision);
     });
 
+    socket?.on("timer_expired", () => {
+      if (phase === "voting") {
+        if (isHost) {
+          socket?.emit("tally_votes", joinCode);
+        }
+        setPhase("post-votes");
+      } else if (phase === "post-votes") {
+        if (nextPhase === "ending") {
+          transitionToGamePhase("ending");
+        } else if (nextPhase === "resetting") {
+          transitionToGamePhase("prompts");
+        }
+      }
+    });
+
     return () => {
       socket?.off("get_tally_votes");
       socket?.off("vote_decision");
+      socket?.off("timer_expired");
     };
-  }, [socket]);
-
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      setTimer((timer) => {
-        if (timer == 0) {
-          clearInterval(intervalId);
-        } else {
-          return timer - 1;
-        }
-      });
-    }, 1000);
-
-    return () => clearInterval(intervalId);
-  }, []);
-
-  // To transition after timer end
-  useEffect(() => {
-    if (timer == 0 && phase == "Voting") {
-      if (isHost) {
-        socket?.emit("tally_votes", joinCode);
-      }
-      setPhase("Post-Votes");
-   }
-  }, [timer]);
+  }, [socket, phase, nextPhase]);
 
   const selectResponse = (index) => {
     selectSelect(index);
@@ -72,48 +71,31 @@ function Voting() {
   const voteDecision = ({ decision, player }) => {
     if (decision) {
       setVoteText(`${player} has been found as the traitor!`);
-      
-      if(players.length > 5) {
-        // multiple traitors
-      } else {
-        setGameOver({innowin: true})
-        setTimeout(() => {
-          transitionToGamePhase("ending");
-        }, 5000);
-      }
-
+      setGameOver({ innowin: true });
+      setNextPhase("ending");
     } else {
-      console.log(roundNum);
-      if(roundNum == 3) {
+      if (roundNum == 3) {
         setVoteText("No conclusive traitor was found... game over.");
-        setGameOver({innowin: false});
-        setTimeout(() => {
-          transitionToGamePhase("ending");
-        }, 5000);
-
+        setGameOver({ innowin: false });
+        setNextPhase("ending");
       } else {
         setVoteText("No conclusive traitor was found... try again.");
+        setNextPhase("resetting");
         if (isHost) {
           socket.emit("reset_round", joinCode);
         }
+
         players.forEach((player) => {
           player.filteredAnswer = "";
           player.vote = "";
         });
-
-        setTimeout(() => {
-          transitionToGamePhase("prompts");
-        }, 10000);
- 
       }
     }
-
-
   };
 
   return (
     <div>
-      {phase == "Voting" && (
+      {phase == "voting" && (
         <div>
           Time left: {timer} Prompt: {prompt}
           <div className="flex-row justify-center">
@@ -141,7 +123,7 @@ function Voting() {
         </div>
       )}
 
-      {phase == "Post-Votes" && (
+      {phase == "post-votes" && (
         <div>
           Prompt: {prompt}
           <div className="flex-row justify-center">

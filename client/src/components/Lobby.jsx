@@ -17,6 +17,7 @@ function Lobby() {
     socket,
     inLobby,
     setInLobby,
+    timer,
   } = useGameRoom();
 
   const [joinGame, setJoinGame] = useState(false);
@@ -26,10 +27,17 @@ function Lobby() {
       transitionToGamePhase("characters");
     });
 
+    socket?.on("timer_expired", () => {
+      if (isHost) {
+        socket?.emit("start_game", joinCode);
+      }
+    });
+
     return () => {
       socket?.off("game_started");
+      socket?.off("timer_expired");
     };
-  }, [socket]);
+  }, [socket, isHost]);
 
   function getRandomColor() {
     //Generates random color for lobby players (bkg of text)
@@ -86,7 +94,7 @@ function Lobby() {
   };
 
   const handleStartGame = () => {
-    socket?.emit("start_game", joinCode);
+    socket?.emit("start_timer", { roomId: joinCode, phase: gamePhase });
   };
 
   return (
@@ -105,7 +113,7 @@ function Lobby() {
             placeholder="Enter your username"
             className="w-64 py-2 px-4 bg-gray-200 text-gray-800 border border-gray-300 rounded-lg hover:bg-gray-300 mb-4"
             value={userName}
-            onChange={(e) => setUserNameValue(e.target.value)}
+            onChange={(e) => setUserNameValue(e.target.value.slice(0, 14))}
           ></input>
 
           <button
@@ -131,7 +139,9 @@ function Lobby() {
             placeholder="Enter room code"
             className="w-64 py-2 px-4 bg-gray-200 text-gray-800 border border-gray-300 rounded-lg hover:bg-gray-300 mb-4"
             value={joinCode}
-            onChange={(e) => setJoinCodeValue(e.target.value.toUpperCase())}
+            onChange={(e) =>
+              setJoinCodeValue(e.target.value.toUpperCase().slice(0, 4))
+            }
           ></input>
 
           <button
@@ -152,6 +162,7 @@ function Lobby() {
 
       {inLobby && (
         <div>
+          {timer > 0 && <p>{timer}</p>}
           <p className="font-bold text-xl mb-2">Players:</p>
           <ul className="-mx-2">
             <AnimatePresence>
@@ -181,7 +192,6 @@ function Lobby() {
               </button>
             </div>
           )}
-
           <h2 className="text-xl font-bold flex justify-center">ROOM CODE:</h2>
           <h1 className="text-xl font-bold flex justify-center mb-6">
             <span

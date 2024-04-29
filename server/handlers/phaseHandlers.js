@@ -14,18 +14,10 @@ module.exports = function phaseHandlers(socket, io, rooms) {
     io.to(roomId).emit("game_started", {});
     let i = 0;
 
-    let randTraitor1 = Math.floor(Math.random() * rooms[roomId].numPlayers);
-    let randTraitor2;
-    do {
-      randTraitor2 =
-        rooms[roomId].numPlayers > 5
-          ? Math.floor(Math.random() * rooms[roomId].numPlayers)
-          : -1;
-    } while (randTraitor1 === randTraitor2);
+    let randTraitor = Math.floor(Math.random() * rooms[roomId].numPlayers);
     Object.keys(rooms[roomId].players).forEach((key) => {
-      if (i == randTraitor1 || i == randTraitor2) {
+      if (i == randTraitor) {
         rooms[roomId].players[key].role = "Traitor";
-        rooms[roomId].numTraitors += 1;
       } else {
         rooms[roomId].players[key].role = "Innocent";
       }
@@ -136,5 +128,64 @@ module.exports = function phaseHandlers(socket, io, rooms) {
     io.to(roomid).emit("players_return_to_lobby");
   });
 
+  const startTimer = (roomId) => {
+    const interval = setInterval(() => {
+      if (rooms[roomId]) {
+        if (rooms[roomId].timer > 0) {
+          rooms[roomId].timer -= 1;
 
+          io.to(roomId).emit("timer_update", rooms[roomId].timer);
+        } else {
+          rooms[roomId].timerActive = false;
+          clearInterval(interval);
+          io.to(roomId).emit("timer_expired");
+        }
+      }
+    }, 1000);
+  };
+
+  socket.on("start_timer", ({ roomId, phase }) => {
+    if (rooms[roomId].timerActive) return;
+    let time = 0;
+    switch (phase) {
+      case "lobby":
+        time = 5;
+        break;
+      case "characters":
+        time = 20;
+        break;
+      case "prompts":
+        time = 90;
+        break;
+      case "voting":
+        time = 10;
+        break;
+      case "post-votes":
+        time = 10;
+        break;
+    }
+
+    rooms[roomId].timerActive = true;
+    rooms[roomId].timer = time;
+    startTimer(roomId);
+    io.to(roomId).emit("timer_update", rooms[roomId].timer);
+  });
+
+  socket.on("set_timer", ({ roomId, time }) => {
+    rooms[roomId].timer = time;
+    io.to(roomId).emit("timer_update", rooms[roomId].timer);
+  });
+
+  socket.on("start_showing_responses", (roomId) => {
+    let index = 0;
+
+    const interval = setInterval(() => {
+      if (index <= rooms[roomId].numPlayers) {
+        index++;
+      } else {
+        clearInterval(interval);
+      }
+      io.to(roomId).emit("show_response_index", index);
+    }, 3000);
+  });
 };

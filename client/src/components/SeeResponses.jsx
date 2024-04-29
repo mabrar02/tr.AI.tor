@@ -19,12 +19,20 @@ function SeeResponses() {
   const [currentResIndex, setCurrentResIndex] = useState(0);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setCurrentResIndex((prevIndex) => prevIndex + 1);
-    }, 3000);
+    if (isHost) {
+      socket?.emit("start_showing_responses", joinCode);
+    }
+  }, []);
 
-    return () => clearTimeout(timer);
-  }, [currentResIndex]);
+  useEffect(() => {
+    socket?.on("show_response_index", (index) => {
+      setCurrentResIndex(index);
+    });
+
+    return () => {
+      socket?.off("show_response_index");
+    };
+  }, [socket]);
 
   useEffect(() => {
     if (currentResIndex === players.length) {

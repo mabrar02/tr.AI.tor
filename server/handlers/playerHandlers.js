@@ -46,6 +46,7 @@ module.exports = function playerHandlers(socket, io, rooms) {
       }
     }
 
+    rooms[roomId].numSubmitted = 1;
   });
 
   const getFilteredResponse = async (character, answer) => {
@@ -56,6 +57,7 @@ module.exports = function playerHandlers(socket, io, rooms) {
   };
 
   socket.on("submit_answer", async ({ roomId, answer }) => {
+    console.log(answer);
     rooms[roomId].players[socket.id].answers = answer;
     rooms[roomId].numSubmitted++;
 
@@ -73,13 +75,17 @@ module.exports = function playerHandlers(socket, io, rooms) {
 
     updatePlayers(roomId);
 
-    if (rooms[roomId].numSubmitted == rooms[roomId].numPlayers) {
-      io.to(roomId).emit("see_responses", {});
+    if (
+      rooms[roomId].numSubmitted == rooms[roomId].numPlayers &&
+      rooms[roomId].timer > 12
+    ) {
+      rooms[roomId].timer = 10;
+      io.to(roomId).emit("timer_update", rooms[roomId].timer);
     }
   });
 
   socket.on("regenerate_answer", async ({ roomId }) => {
-    console.log(roomId);
+//    console.log(roomId);
     const content = await getFilteredResponse(
       rooms[roomId].players[socket.id].character,
       rooms[roomId].players[socket.id].answers
@@ -93,6 +99,15 @@ module.exports = function playerHandlers(socket, io, rooms) {
 
   socket.on("select_char", ({ character, roomId }) => {
     rooms[roomId].players[socket.id].character = character;
+    rooms[roomId].numSubmitted++;
+
+    if (
+      rooms[roomId].numSubmitted == rooms[roomId].numPlayers &&
+      rooms[roomId].timer > 7
+    ) {
+      rooms[roomId].timer = 5;
+      io.to(roomId).emit("timer_update", rooms[roomId].timer);
+    }
   });
 
   socket.on("send_vote", ({ roomId, vote }) => {

@@ -17,42 +17,22 @@ function AnswerPrompts() {
     role,
     roundNum,
     setRoundValue,
+    timer,
+    gamePhase,
   } = useGameRoom();
 
   const [answer, setAnswer] = useState("");
   const [filteredAnswer, setFilteredAnswer] = useState("");
   const [submitted, setSubmitted] = useState(false);
-  const [timer, setTimer] = useState(90);
   const [regenCount, setRegenCount] = useState(3);
   const [updatingResponse, setUpdatingResponse] = useState(false);
 
   useEffect(() => {
     if (isHost) {
       socket?.emit("request_prompt", joinCode);
+      socket?.emit("start_timer", { roomId: joinCode, phase: gamePhase });
     }
-
-    return () => {
-      socket?.off("request_prompt");
-    };
-  }, [socket]);
-
-  // For timer
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      setTimer((timer) => {
-        return timer - 1;
-      });
-    }, 1000);
-
-    return () => clearInterval(intervalId);
   }, []);
-
-  // To transition after timer end
-  useEffect(() => {
-    if (timer < 1) {
-      transitionToGamePhase("responses");
-    }
-  }, [timer]);
 
   useEffect(() => {
     socket?.on("get_prompt", (prompt) => {
@@ -60,11 +40,8 @@ function AnswerPrompts() {
       setRoundValue(roundNum + 1);
     });
 
-    socket?.on("see_responses", () => {
-      console.log(players);
-      if (timer > 20) {
-        setTimer(10); // After all players submit, set timer to 20 seconds
-      }
+    socket?.on("timer_expired", () => {
+      transitionToGamePhase("responses");
     });
 
     socket?.on("answer_regenerated", (content) => {
@@ -77,8 +54,8 @@ function AnswerPrompts() {
     });
 
     return () => {
+      socket?.off("timer_expired");
       socket?.off("get_prompt");
-      socket?.off("see_responses");
       socket?.off("answer_regenerated");
       socket?.off("answer_submitted");
     };
@@ -149,17 +126,19 @@ function AnswerPrompts() {
               <p className="text-center">Your filtered answer:</p>
               <p>{filteredAnswer}</p>
               <div className="text-center">
-                <button
-                  className={`${
-                    regenCount == 0 || updatingResponse
-                      ? "bg-yellow-800"
-                      : "bg-yellow-200"
-                  } px-10 py-2 text-black my-2`}
-                  onClick={regenerateAnswer}
-                >
-                  {updatingResponse ? "..." : "Regenerate Answer"} (x
-                  {regenCount})
-                </button>
+                {timer > 5 && (
+                  <button
+                    className={`${
+                      regenCount == 0 || updatingResponse
+                        ? "bg-yellow-800"
+                        : "bg-yellow-200"
+                    } px-10 py-2 text-black my-2`}
+                    onClick={regenerateAnswer}
+                  >
+                    {updatingResponse ? "..." : "Regenerate Answer"} (x
+                    {regenCount})
+                  </button>
+                )}
               </div>
             </div>
           )}
