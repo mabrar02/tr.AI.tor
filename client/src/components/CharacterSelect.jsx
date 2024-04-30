@@ -108,7 +108,7 @@ function CharacterSelect() {
                 <motion.div
                   initial={{ width: "100%" }}
                   animate={{
-                    width: `${(timer / 5000) * 100}%`,
+                    width: `${(timer / 20) * 100}%`,
                   }}
                   className="h-full bg-yellow-300 animate-timer border-b-4 border-l-2 border-yellow-500 absolute top-0 left-0"
                   transition={{ ease: "linear", duration: 1 }}
@@ -234,7 +234,7 @@ function CharacterSelect() {
                 <motion.div
                   initial={{ width: "100%" }}
                   animate={{
-                    width: `${(timer / 5000) * 100}%`,
+                    width: `${(timer / 20) * 100}%`,
                   }}
                   className="h-full bg-yellow-300 animate-timer border-b-4 border-l-2 border-yellow-500 absolute top-0 left-0"
                   transition={{ ease: "linear", duration: 1 }}
