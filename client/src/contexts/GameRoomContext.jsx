@@ -14,7 +14,7 @@ export const GameRoomProvider = ({ children }) => {
   const [userName, setUserName] = useState("");
   const [socket, setSocket] = useState(null);
   const [prompt, setPrompt] = useState("");
-  const [role, setRole] = useState("Innocent");
+  const [role, setRole] = useState("");
   const [roundNum, setRoundNum] = useState(0);
   const [gameOver, setGameOver] = useState({});
   const [inLobby, setInLobby] = useState(false);
