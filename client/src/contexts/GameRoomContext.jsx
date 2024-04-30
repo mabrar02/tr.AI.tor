@@ -19,6 +19,7 @@ export const GameRoomProvider = ({ children }) => {
   const [gameOver, setGameOver] = useState({});
   const [inLobby, setInLobby] = useState(false);
   const [timer, setTimer] = useState(0);
+  const [playerColor, setColor] = useState("#ffffff");
 
   useEffect(() => {
     const newSocket = io("http://localhost:4000");
@@ -78,6 +79,10 @@ export const GameRoomProvider = ({ children }) => {
     setRoundNum(roundNum);
   };
 
+  const setPlayerColor = (color) => {
+    setPlayerColor(color);
+  };
+
   return (
     <GameRoomContext.Provider
       value={{
@@ -104,6 +109,8 @@ export const GameRoomProvider = ({ children }) => {
         setInLobby,
         timer,
         updateTimer,
+        playerColor,
+        setPlayerColor,
       }}
     >
       {children}

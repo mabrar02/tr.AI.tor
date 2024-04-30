@@ -25,9 +25,9 @@ function Lobby() {
 
   const [joinGame, setJoinGame] = useState(false);
 
-  const [playerNames, setPlayerNames] = useState(
-    Array(8).fill("Player is offline")
-  );
+  const [playerNames, setPlayerNames] = useState(players);
+
+  useEffect(() => {}, [players]);
 
   useEffect(() => {
     socket?.on("game_started", () => {
@@ -51,10 +51,10 @@ function Lobby() {
     };
   }, [socket, isHost]);
 
-  function getRandomColor() {
+  const getPlayerColor = () => {
     //Generates random color for lobby players (bkg of text)
     return "#" + Math.floor(Math.random() * 16777215).toString(16);
-  }
+  };
 
   const handleHostRoom = () => {
     if (userName.length != 0) {
@@ -165,15 +165,44 @@ function Lobby() {
     <div>
       {inLobby && (
         <div className="flex flex-row w-screen h-screen">
-          <div className="bg-green-300 w-1/4 overflow-y-auto">
-            <p className="px-4 py-2 font-bold">Players List</p>
-            <ul className="max-h-full">
-              {playerNames.map((name, index) => (
-                <li key={index} style={{ color: players[index]?.color }}>
-                  <div className="bg-gray-200 p-2">{name}</div>
-                </li>
-              ))}
-            </ul>
+          <div className="w-1/4 ">
+            <div className="w-full flex-col flex items-center justify-center h-full ">
+              <div className="w-full h-[80%]  overflow-clip">
+                <p className="font-bold text-center text-white  text-xl mb-2">
+                  PLAYERS
+                </p>
+                <ul className="w-full h-full ">
+                  <AnimatePresence>
+                    {[...Array(8)].map((_, index) => {
+                      const player = players[index]; // Get player at current index
+                      return (
+                        <motion.li
+                          key={index}
+                          initial={{ opacity: 0.5, scale: 0.5 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          transition={{ ease: "easeOut", duration: 0.2 }}
+                          className="text-center font-bold rounded-lg border-b-4 border-l-2 border border-black shadow-lg mb-2 h-[10%] mx-2"
+                          style={{
+                            backgroundColor: player ? player.color : "#636363",
+                          }}
+                        >
+                          {player ? (
+                            <div className="">
+                              <span>{player.username}</span>{" "}
+                              {player.host && (
+                                <span className="font-bold">(HOST)</span>
+                              )}
+                            </div>
+                          ) : (
+                            <div>Player is offline</div>
+                          )}
+                        </motion.li>
+                      );
+                    })}
+                  </AnimatePresence>
+                </ul>
+              </div>
+            </div>
           </div>
 
           <div className="w-1/2 overflow-hidden">
@@ -216,7 +245,7 @@ function Lobby() {
           </div>
 
           <div className=" w-1/4">
-            <div className="w-full flex-col flex items-center  h-[20%] justify-center">
+            <div className="w-full flex-col flex items-center  h-[20%] justify-center ">
               <p className="font-bold text-white">Join Code</p>
               <button
                 className="bg-red-600 hover:scale-105 p-1 text-white w-[60%] rounded-md flex flex-row justify-center items-center transition-all"
@@ -317,50 +346,6 @@ function Lobby() {
           </div>
         </div>
       )}
-
-      {/* {inLobby && (
-        <div>
-          {timer > 0 && <p>{timer}</p>}
-          <p className="font-bold text-xl mb-2">Players:</p>
-          <ul className="-mx-2">
-            <AnimatePresence>
-              {players.map((player, index) => (
-                //Need players to consistently show distinctive colors, right now it shows diff colors for diff people
-                <motion.li
-                  key={index}
-                  initial={{ opacity: 0.5, scale: 0.5 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ ease: "easeOut", duration: 0.2 }}
-                  className="text-center font-bold rounded-lg py-2 px-10 border-b-4 border-l-2 border border-black shadow shadow-lg mb-2 mx-1"
-                  style={{ backgroundColor: getRandomColor() }}
-                >
-                  {player.username}{" "}
-                  {player.host && <span className="font-bold">(HOST)</span>}
-                </motion.li>
-              ))}
-            </AnimatePresence>
-          </ul>
-          {isHost && (
-            <div className="flex justify-center pt-20">
-              <button
-                onClick={handleStartGame}
-                className="bg-yellow-400 hover:bg-yellow-600 font-bold py-2 px-12 rounded-lg border-b-4 border-l-2 border-yellow-700 shadow-md transform transition-all hover:scale-105 active:border-yellow-600 mb-2"
-              >
-                Start Game
-              </button>
-            </div>
-          )}
-          <h2 className="text-xl font-bold flex justify-center">ROOM CODE:</h2>
-          <h1 className="text-xl font-bold flex justify-center mb-6">
-            <span
-              className="ml-1 text-white text-6xl"
-              style={{ WebkitTextStroke: "2px black" }}
-            >
-              {joinCode}
-            </span>
-          </h1>
-        </div>
-      )}  */}
 
       <ToastContainer
         position="top-center"

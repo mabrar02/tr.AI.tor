@@ -14,6 +14,16 @@ module.exports = function roomHandlers(socket, io, rooms) {
       characters: [],
       round: 0,
       prompts: [],
+      colors: [
+        "#69db88",
+        "#f0f2aa",
+        "#a3f7e7",
+        "#f5a4c7",
+        "#a88df2",
+        "#ed4532",
+        "#5f72d9",
+        "#f5592f",
+      ],
       timerActive: false,
       timer: 0,
     };
@@ -26,6 +36,7 @@ module.exports = function roomHandlers(socket, io, rooms) {
       filteredAnswer: "",
       role: "",
       vote: "",
+      color: rooms[roomId].colors[0],
     };
     updatePlayers(roomId);
     console.log(`Room hosted: ${roomId}`);
@@ -43,6 +54,7 @@ module.exports = function roomHandlers(socket, io, rooms) {
         filteredAnswer: "",
         role: "",
         vote: "",
+        color: rooms[roomId].colors[rooms[roomId].numPlayers],
       };
       rooms[roomId].numPlayers++;
       updatePlayers(roomId);
