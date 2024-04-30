@@ -98,16 +98,18 @@ function Lobby() {
   };
 
   return (
-    <div className="flex flex-col items-center w-100% h-screen pt-32">
+    
+    <div className="flex flex-col items-center w-100% p-16 pt-10 border-8 border-blue-950 outline outline-blue-900 rounded-lg bg-blue-800">
       <div className="mb-6 relative overflow-hidden">
-        <h1 className="text-6xl font-title font-thin" style={{ textShadow: "-1px 1px 0px rgba(240, 240, 240, 0.5)"}}>
-          <b>TR.AI.TOR</b>
+        <h1 className="lg:text-7xl md:text-6xl sm:text-6xl font-title font-thin" style={{ textShadow: "-3px 3px 0px black"}}>
+          <b className="text-gray-100">TR.</b><b className="text-red-600">AI</b><b className="text-gray-100">.TOR</b>
         </h1>
+        
       </div>
 
       {!joinGame && !inLobby && (
-        <div className="flex flex-col gap-y-2 text-center mb-60">
-          <h2 className="font-bold">Username</h2>
+        <div className="flex flex-col gap-y-2 text-center">
+          <h2 className="font-medium text-white">Username</h2>
           <input
             type="text"
             placeholder="Enter your username"
@@ -132,8 +134,8 @@ function Lobby() {
       )}
 
       {joinGame && !inLobby && (
-        <div className="flex flex-col text-center gap-y-2 mb-60">
-          <h2 className="font-bold">Room Code</h2>
+        <div className="flex flex-col text-center gap-y-2">
+          <h2 className="font-medium text-white">Room Code</h2>
           <input
             type="text"
             placeholder="Enter room code"
