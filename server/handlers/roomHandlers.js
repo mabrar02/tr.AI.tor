@@ -6,6 +6,15 @@ module.exports = function roomHandlers(socket, io, rooms) {
     }
   };
 
+  const getRandomColors = () => {
+    const colors = [];
+    for (let i = 0; i < 8; i++) {
+      const randColor = "#" + Math.floor(Math.random() * 16777215).toString(16);
+      colors.push(randColor);
+    }
+    return colors;
+  };
+
   socket.on("host_room", ({ roomId, username }) => {
     rooms[roomId] = {
       players: {},
@@ -14,16 +23,7 @@ module.exports = function roomHandlers(socket, io, rooms) {
       characters: [],
       round: 0,
       prompts: [],
-      colors: [
-        "#69db88",
-        "#f0f2aa",
-        "#a3f7e7",
-        "#f5a4c7",
-        "#a88df2",
-        "#ed4532",
-        "#5f72d9",
-        "#f5592f",
-      ],
+      colors: getRandomColors(),
       timerActive: false,
       timer: 0,
     };
@@ -39,7 +39,6 @@ module.exports = function roomHandlers(socket, io, rooms) {
       color: rooms[roomId].colors[0],
     };
     updatePlayers(roomId);
-    console.log(`Room hosted: ${roomId}`);
   });
 
   socket.on("join_room", ({ roomId, username }, callback) => {

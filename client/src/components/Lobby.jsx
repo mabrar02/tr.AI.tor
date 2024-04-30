@@ -27,8 +27,6 @@ function Lobby() {
 
   const [playerNames, setPlayerNames] = useState(players);
 
-  useEffect(() => {}, [players]);
-
   useEffect(() => {
     socket?.on("game_started", () => {
       transitionToGamePhase("characters");
@@ -40,21 +38,11 @@ function Lobby() {
       }
     });
 
-    socket?.on("players_updated", (updatedPlayers) => {
-      setPlayerNames(updatedPlayers);
-    });
-
     return () => {
       socket?.off("game_started");
-      socket?.off("players_updated");
       socket?.off("timer_expired");
     };
   }, [socket, isHost]);
-
-  const getPlayerColor = () => {
-    //Generates random color for lobby players (bkg of text)
-    return "#" + Math.floor(Math.random() * 16777215).toString(16);
-  };
 
   const handleHostRoom = () => {
     if (userName.length != 0) {
@@ -163,6 +151,18 @@ function Lobby() {
 
   return (
     <div>
+      {timer > 0 && (
+        <div className="fixed top-0 left-0 w-full h-full flex justify-center items-center z-50">
+          <motion.h1
+            key={timer}
+            className="text-white font-bold text-9xl"
+            animate={{ scale: [1, 1.2, 1] }}
+            transition={{ duration: 0.4 }}
+          >
+            {timer}
+          </motion.h1>
+        </div>
+      )}
       {inLobby && (
         <div className="flex flex-row w-screen h-screen">
           <div className="w-1/4 ">
@@ -174,7 +174,7 @@ function Lobby() {
                 <ul className="w-full h-full ">
                   <AnimatePresence>
                     {[...Array(8)].map((_, index) => {
-                      const player = players[index]; // Get player at current index
+                      const player = players[index];
                       return (
                         <motion.li
                           key={index}
