@@ -60,13 +60,23 @@ module.exports = function roomHandlers(socket, io, rooms) {
         rooms.hasOwnProperty(roomId) &&
         rooms[roomId].players.hasOwnProperty(socket.id)
       ) {
-        delete rooms[roomId].players[socket.id];
-        rooms[roomId].numPlayers--;
-        if (rooms[roomId].numPlayers == 0) {
-          delete rooms[roomId];
-        }
-        updatePlayers(roomId);
+        handleLeaveRoom(socket, roomId);
       }
     }
+  });
+
+  const handleLeaveRoom = (socket, roomId) => {
+    if (rooms[roomId] && rooms[roomId].players[socket.id]) {
+      delete rooms[roomId].players[socket.id];
+      rooms[roomId].numPlayers--;
+      if (rooms[roomId].numPlayers === 0) {
+        delete rooms[roomId];
+      }
+      updatePlayers(roomId);
+    }
+  };
+
+  socket.on("leave_room", ({ roomId }) => {
+    handleLeaveRoom(socket, roomId);
   });
 };

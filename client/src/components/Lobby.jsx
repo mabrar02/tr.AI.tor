@@ -108,6 +108,13 @@ function Lobby() {
     socket?.emit("start_timer", { roomId: joinCode, phase: gamePhase });
   };
 
+  const handleLeaveRoom = () => {
+    socket?.emit("leave_room", { roomId: joinCode });
+    setInLobby(false);
+    setJoinGame(false);
+    setJoinCodeValue("");
+  };
+
   return (
     <div>
       {inLobby && (
@@ -123,14 +130,19 @@ function Lobby() {
             </ul>
           </div>
 
-          <div className="w-1/2">
-            <div className="flex flex-col h-full items-center justify-center -mt-16">
-              <div className="w-fit flex h-fit">
-                <h1 className="text-9xl bg-white p-10 border-4 border-black font-bold">
-                  <span>TR.</span>
-                  <span className="italic text-red-700">AI</span>
-                  <span>.TOR</span>
-                </h1>
+          <div className="w-1/2 overflow-hidden">
+            <div className="flex flex-col h-full items-center justify-center">
+              <div className="flex flex-col justify-center items-center min-w-72 w-[60%] h-[25%] p-16 border-8 border-blue-950 outline outline-blue-900 rounded-lg bg-blue-800 overflow-clip">
+                <div className=" ">
+                  <h1
+                    className="xl:text-8xl lg:text-7xl md:text-6xl text-5xl  font-title font-thin"
+                    style={{ textShadow: "-3px 3px 0px black" }}
+                  >
+                    <b className="text-gray-100">TR.</b>
+                    <b className="text-red-600">AI</b>
+                    <b className="text-gray-100">.TOR</b>
+                  </h1>
+                </div>
               </div>
 
               <div className="mt-8 space-y-4">
@@ -147,7 +159,7 @@ function Lobby() {
 
                 <div className="flex">
                   <button
-                    onClick={() => console.log("test")}
+                    onClick={handleLeaveRoom}
                     className="text-2xl bg-yellow-400 hover:bg-yellow-600 font-bold py-6 px-16 max-w-72 rounded-lg border-b-4 border-l-2 border-yellow-700 shadow-md transform transition-all hover:scale-105 active:border-yellow-600 mb-2"
                   >
                     Leave Game
@@ -157,8 +169,8 @@ function Lobby() {
             </div>
           </div>
 
-          <div className="bg-red-400 w-1/4 flex justify-end">
-            <div className="bg-white flex flex-row justify-center items-center h-screen">
+          <div className="bg-red-400 w-1/4 flex-col justify-end">
+            <div className="bg-white flex flex-row justify-center items-center ">
               {joinCode.split("").map((letter, index) => (
                 <div key={index} className="text-4xl font-bold">
                   {letter}
@@ -169,12 +181,12 @@ function Lobby() {
         </div>
       )}
 
-      {!joinGame && !inLobby && (
+      {!inLobby && (
         <div className="flex flex-col text-center justify-center items-center  w-screen h-screen">
-          <div className="flex flex-col  items-center w-[35%] h-[60%] p-16 pt-10 border-8 border-blue-950 outline outline-blue-900 rounded-lg bg-blue-800 overflow-hidden">
+          <div className="flex flex-col  items-center min-w-72 w-[35%] h-[60%] p-16 pt-10 border-8 border-blue-950 outline outline-blue-900 rounded-lg bg-blue-800 overflow-clip">
             <div className="mb-6 ">
               <h1
-                className="lg:text-7xl md:text-6xl sm:text-5xl text-4xl font-title font-thin"
+                className="lg:text-7xl md:text-6xl text-5xl  font-title font-thin"
                 style={{ textShadow: "-3px 3px 0px black" }}
               >
                 <b className="text-gray-100">TR.</b>
@@ -182,31 +194,68 @@ function Lobby() {
                 <b className="text-gray-100">.TOR</b>
               </h1>
             </div>
-            <div className="w-full">
-              <h2 className="font-medium text-white mb-2">Display Name</h2>
-              <input
-                type="text"
-                placeholder="Enter a display name"
-                className="w-full py-2 px-4 bg-gray-200 text-gray-800 border border-gray-300 rounded-lg hover:bg-gray-300 text-center mb-24"
-                value={userName}
-                onChange={(e) => setUserNameValue(e.target.value.slice(0, 14))}
-              ></input>
-            </div>
 
-            <div className="w-full">
-              <button
-                className="overflow-hidden bg-yellow-400 w-full hover:bg-yellow-600 font-bold py-2 mb-3 px-4 rounded-lg border-b-4 border-l-2 border-yellow-700 shadow-md transform transition-all hover:scale-105 active:border-yellow-600"
-                onClick={tryJoinGame}
-              >
-                Join Game
-              </button>
-              <button
-                className="overflow-hidden bg-yellow-400  w-full hover:bg-yellow-600 font-bold py-2 px-4 rounded-lg border-b-4 border-l-2 border-yellow-700 shadow-md transform transition-all hover:scale-105 active:border-yellow-600"
-                onClick={handleHostRoom}
-              >
-                Host Game
-              </button>
-            </div>
+            {!joinGame ? (
+              <div className="w-full">
+                <div className="w-full">
+                  <h2 className="font-medium text-white mb-2">Display Name</h2>
+                  <input
+                    type="text"
+                    placeholder="Enter a display name"
+                    className="w-full py-2 px-4 bg-gray-200 text-gray-800 border border-gray-300 rounded-lg hover:bg-gray-300 text-center mb-24"
+                    value={userName}
+                    onChange={(e) =>
+                      setUserNameValue(e.target.value.slice(0, 14))
+                    }
+                  ></input>
+                </div>
+
+                <div className="w-full">
+                  <button
+                    className="overflow-hidden bg-yellow-400 w-full hover:bg-yellow-600 font-bold py-2 mb-3 px-4 rounded-lg border-b-4 border-l-2 border-yellow-700 shadow-md transform transition-all hover:scale-105 active:border-yellow-600"
+                    onClick={tryJoinGame}
+                  >
+                    Join Game
+                  </button>
+                  <button
+                    className="overflow-hidden bg-yellow-400  w-full hover:bg-yellow-600 font-bold py-2 px-4 rounded-lg border-b-4 border-l-2 border-yellow-700 shadow-md transform transition-all hover:scale-105 active:border-yellow-600"
+                    onClick={handleHostRoom}
+                  >
+                    Host Game
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="w-full">
+                <div className="w-full">
+                  <h2 className="font-medium text-white mb-2">Room Code</h2>
+                  <input
+                    type="text"
+                    placeholder="Enter a room code"
+                    className="w-full py-2 px-4 bg-gray-200 text-gray-800 border border-gray-300 rounded-lg hover:bg-gray-300 text-center mb-24"
+                    value={joinCode}
+                    onChange={(e) =>
+                      setJoinCodeValue(e.target.value.toUpperCase().slice(0, 4))
+                    }
+                  ></input>
+                </div>
+
+                <div className="w-full">
+                  <button
+                    className="overflow-hidden bg-yellow-400 w-full hover:bg-yellow-600 font-bold py-2 mb-3 px-4 rounded-lg border-b-4 border-l-2 border-yellow-700 shadow-md transform transition-all hover:scale-105 active:border-yellow-600"
+                    onClick={handleJoinRoom}
+                  >
+                    Join Room
+                  </button>
+                  <button
+                    className="overflow-hidden bg-yellow-400  w-full hover:bg-yellow-600 font-bold py-2 px-4 rounded-lg border-b-4 border-l-2 border-yellow-700 shadow-md transform transition-all hover:scale-105 active:border-yellow-600"
+                    onClick={() => setJoinGame(false)}
+                  >
+                    Back
+                  </button>
+                </div>
+              </div>
+            )}
 
             <div className="mt-8">
               <button className="rounded-full">
@@ -218,35 +267,6 @@ function Lobby() {
               </button>
             </div>
           </div>
-        </div>
-      )}
-
-      {joinGame && !inLobby && (
-        <div className="flex flex-col text-center gap-y-2">
-          <h2 className="font-medium text-white">Room Code</h2>
-          <input
-            type="text"
-            placeholder="Enter room code"
-            className="w-64 py-2 px-4 bg-gray-200 text-gray-800 border border-gray-300 rounded-lg hover:bg-gray-300 mb-4"
-            value={joinCode}
-            onChange={(e) =>
-              setJoinCodeValue(e.target.value.toUpperCase().slice(0, 4))
-            }
-          ></input>
-
-          <button
-            className="bg-yellow-400 hover:bg-yellow-600 font-bold py-2 px-4 rounded-lg border-b-4 border-l-2 border-yellow-700 shadow-md transform transition-all hover:scale-105 active:border-yellow-600"
-            onClick={handleJoinRoom}
-          >
-            Join
-          </button>
-
-          <button
-            className="bg-yellow-400 hover:bg-yellow-600 font-bold py-2 px-4 rounded-lg border-b-4 border-l-2 border-yellow-700 shadow-md transform transition-all hover:scale-105 active:border-yellow-600"
-            onClick={() => setJoinGame(false)}
-          >
-            Back
-          </button>
         </div>
       )}
 
