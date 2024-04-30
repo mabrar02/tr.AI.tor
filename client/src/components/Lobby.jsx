@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useGameRoom } from "../contexts/GameRoomContext";
 import { motion, AnimatePresence } from "framer-motion";
+import { FaInfoCircle } from "react-icons/fa";
 
 function Lobby() {
   const {
@@ -169,34 +170,60 @@ function Lobby() {
       )}
 
       {!joinGame && !inLobby && (
-        <div className="flex flex-col gap-y-2 text-center mb-60">
-          <h2 className="font-bold">Username</h2>
-          <input
-            type="text"
-            placeholder="Enter your username"
-            className="w-64 py-2 px-4 bg-gray-200 text-gray-800 border border-gray-300 rounded-lg hover:bg-gray-300 mb-4"
-            value={userName}
-            onChange={(e) => setUserNameValue(e.target.value.slice(0, 14))}
-          ></input>
+        <div className="flex flex-col text-center justify-center items-center  w-screen h-screen">
+          <div className="flex flex-col  items-center w-[35%] h-[60%] p-16 pt-10 border-8 border-blue-950 outline outline-blue-900 rounded-lg bg-blue-800 overflow-hidden">
+            <div className="mb-6 ">
+              <h1
+                className="lg:text-7xl md:text-6xl sm:text-5xl text-4xl font-title font-thin"
+                style={{ textShadow: "-3px 3px 0px black" }}
+              >
+                <b className="text-gray-100">TR.</b>
+                <b className="text-red-600">AI</b>
+                <b className="text-gray-100">.TOR</b>
+              </h1>
+            </div>
+            <div className="w-full">
+              <h2 className="font-medium text-white mb-2">Display Name</h2>
+              <input
+                type="text"
+                placeholder="Enter a display name"
+                className="w-full py-2 px-4 bg-gray-200 text-gray-800 border border-gray-300 rounded-lg hover:bg-gray-300 text-center mb-24"
+                value={userName}
+                onChange={(e) => setUserNameValue(e.target.value.slice(0, 14))}
+              ></input>
+            </div>
 
-          <button
-            className="bg-yellow-400 hover:bg-yellow-600 font-bold py-2 px-4 rounded-lg border-b-4 border-l-2 border-yellow-700 shadow-md transform transition-all hover:scale-105 active:border-yellow-600"
-            onClick={tryJoinGame}
-          >
-            Join Game
-          </button>
-          <button
-            className="bg-yellow-400 hover:bg-yellow-600 font-bold py-2 px-4 rounded-lg border-b-4 border-l-2 border-yellow-700 shadow-md transform transition-all hover:scale-105 active:border-yellow-600"
-            onClick={handleHostRoom}
-          >
-            Host Game
-          </button>
+            <div className="w-full">
+              <button
+                className="overflow-hidden bg-yellow-400 w-full hover:bg-yellow-600 font-bold py-2 mb-3 px-4 rounded-lg border-b-4 border-l-2 border-yellow-700 shadow-md transform transition-all hover:scale-105 active:border-yellow-600"
+                onClick={tryJoinGame}
+              >
+                Join Game
+              </button>
+              <button
+                className="overflow-hidden bg-yellow-400  w-full hover:bg-yellow-600 font-bold py-2 px-4 rounded-lg border-b-4 border-l-2 border-yellow-700 shadow-md transform transition-all hover:scale-105 active:border-yellow-600"
+                onClick={handleHostRoom}
+              >
+                Host Game
+              </button>
+            </div>
+
+            <div className="mt-8">
+              <button className="rounded-full">
+                <FaInfoCircle
+                  size={55}
+                  color="#facc15"
+                  className="hover:scale-110 transition-all"
+                />
+              </button>
+            </div>
+          </div>
         </div>
       )}
 
       {joinGame && !inLobby && (
-        <div className="flex flex-col text-center gap-y-2 mb-60">
-          <h2 className="font-bold">Room Code</h2>
+        <div className="flex flex-col text-center gap-y-2">
+          <h2 className="font-medium text-white">Room Code</h2>
           <input
             type="text"
             placeholder="Enter room code"
