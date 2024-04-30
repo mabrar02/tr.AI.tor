@@ -152,7 +152,7 @@ module.exports = function phaseHandlers(socket, io, rooms) {
         time = 2;
         break;
       case "characters":
-        time = 20;
+        time = 5000;
         break;
       case "prompts":
         time = 90;
