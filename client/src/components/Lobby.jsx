@@ -2,6 +2,9 @@ import React, { useState, useEffect } from "react";
 import { useGameRoom } from "../contexts/GameRoomContext";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaInfoCircle } from "react-icons/fa";
+import Notification from "./Notification";
+import { Bounce, ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function Lobby() {
   const {
@@ -22,6 +25,8 @@ function Lobby() {
   } = useGameRoom();
 
   const [joinGame, setJoinGame] = useState(false);
+  const [notif, setNotif] = useState(null);
+  const [notifType, setNotifType] = useState("");
 
   const [playerNames, setPlayerNames] = useState(
     Array(8).fill("Player is offline")
@@ -62,13 +67,13 @@ function Lobby() {
       setJoinCodeValue(code);
       socket?.emit("host_room", { roomId: code, username: userName });
     } else {
-      alert("Please enter a username");
+      notify("Please enter a display name!", "error");
     }
   };
 
   const handleJoinRoom = () => {
     if (joinCode.length !== 4) {
-      alert("Please enter a 4-letter code to join the room.");
+      notify("Please enter a 4-letter code to join the room!", "error");
       return;
     }
 
@@ -79,7 +84,7 @@ function Lobby() {
         if (roomExists) {
           setInLobby(true);
         } else {
-          alert("Room doesn't exist!");
+          notify("This room doesn't exist!", "error");
         }
       }
     );
@@ -100,7 +105,7 @@ function Lobby() {
     if (userName.length != 0) {
       setJoinGame(true);
     } else {
-      alert("Please enter a username");
+      notify("Please enter a display name!", "error");
     }
   };
 
@@ -108,11 +113,55 @@ function Lobby() {
     socket?.emit("start_timer", { roomId: joinCode, phase: gamePhase });
   };
 
+  const copyJoinCode = () => {
+    notify("Join code copied to clipboard.", "success");
+    navigator.clipboard.writeText(joinCode);
+  };
+
   const handleLeaveRoom = () => {
     socket?.emit("leave_room", { roomId: joinCode });
     setInLobby(false);
     setJoinGame(false);
     setJoinCodeValue("");
+  };
+
+  const notify = (msg, type) => {
+    const existingToastId = toast.isActive("notification");
+
+    if (existingToastId) {
+      toast.update(existingToastId, {
+        render: msg,
+        type: type === "error" ? toast.TYPE.ERROR : toast.TYPE.SUCCESS,
+      });
+    } else {
+      if (type === "error") {
+        toast.error(msg, {
+          position: "top-center",
+          autoClose: 2000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+          transition: Bounce,
+          toastId: "notification", // Set a specific toastId
+        });
+      } else {
+        toast.success(msg, {
+          position: "top-center",
+          autoClose: 2000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+          transition: Bounce,
+          toastId: "notification", // Set a specific toastId
+        });
+      }
+    }
   };
 
   return (
@@ -133,7 +182,7 @@ function Lobby() {
           <div className="w-1/2 overflow-hidden">
             <div className="flex flex-col h-full items-center justify-center">
               <div className="flex flex-col justify-center items-center min-w-72 w-[60%] h-[25%] p-16 border-8 border-blue-950 outline outline-blue-900 rounded-lg bg-blue-800 overflow-clip">
-                <div className=" ">
+                <div>
                   <h1
                     className="xl:text-8xl lg:text-7xl md:text-6xl text-5xl  font-title font-thin"
                     style={{ textShadow: "-3px 3px 0px black" }}
@@ -150,7 +199,7 @@ function Lobby() {
                   <div className="flex">
                     <button
                       onClick={handleStartGame}
-                      className="text-2xl bg-yellow-400 hover:bg-yellow-600 font-bold py-6 px-16  rounded-lg border-b-4 border-l-2 border-yellow-700 shadow-md transform transition-all hover:scale-105 active:border-yellow-600 mb-2"
+                      className="w-full text-2xl bg-yellow-400 hover:bg-yellow-600 font-bold py-6 px-16  rounded-lg border-b-4 border-l-2 border-yellow-700 shadow-md transform transition-all hover:scale-105 active:border-yellow-600 mb-2"
                     >
                       Start Game
                     </button>
@@ -160,7 +209,7 @@ function Lobby() {
                 <div className="flex">
                   <button
                     onClick={handleLeaveRoom}
-                    className="text-2xl bg-yellow-400 hover:bg-yellow-600 font-bold py-6 px-16 max-w-72 rounded-lg border-b-4 border-l-2 border-yellow-700 shadow-md transform transition-all hover:scale-105 active:border-yellow-600 mb-2"
+                    className="w-full text-2xl bg-yellow-400 hover:bg-yellow-600 font-bold py-6 px-16 max-w-72 rounded-lg border-b-4 border-l-2 border-yellow-700 shadow-md transform transition-all hover:scale-105 active:border-yellow-600 mb-2"
                   >
                     Leave Game
                   </button>
@@ -169,13 +218,15 @@ function Lobby() {
             </div>
           </div>
 
-          <div className="bg-red-400 w-1/4 flex-col justify-end">
-            <div className="bg-white flex flex-row justify-center items-center ">
-              {joinCode.split("").map((letter, index) => (
-                <div key={index} className="text-4xl font-bold">
-                  {letter}
-                </div>
-              ))}
+          <div className=" w-1/4">
+            <div className="w-full flex-col flex items-center  h-[20%] justify-center">
+              <p className="font-bold text-white">Join Code</p>
+              <button
+                className="bg-red-600 hover:scale-105 p-1 text-white w-[60%] rounded-md flex flex-row justify-center items-center transition-all"
+                onClick={copyJoinCode}
+              >
+                <h2 className="text-4xl font-bold">{joinCode}</h2>
+              </button>
             </div>
           </div>
         </div>
@@ -313,6 +364,20 @@ function Lobby() {
           </h1>
         </div>
       )}  */}
+
+      <ToastContainer
+        position="top-center"
+        autoClose={2000}
+        hideProgressBar
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss={false}
+        draggable
+        pauseOnHover={false}
+        theme="colored"
+        transition={Bounce}
+      />
     </div>
   );
 }
