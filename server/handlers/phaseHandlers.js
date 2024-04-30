@@ -160,10 +160,10 @@ module.exports = function phaseHandlers(socket, io, rooms) {
         time = 5;
         break;
       case "prompts":
-        time = 5 ;
+        time = 10;
         break;
       case "voting":
-        time = 5;
+        time = 10;
         break;
       case "post-votes":
         time = 5;
@@ -185,14 +185,28 @@ module.exports = function phaseHandlers(socket, io, rooms) {
     let index = 0;
     let time_to_show;
 
-    for (const value of Object.values(rooms[roomId].players)) {
+    for (const [player, value] of Object.entries(rooms[roomId].players)) {
       io.to(roomId).emit("show_response_index", index);
-      time_to_show = value.filteredAnswer.length / 50 * 1000 + 2000;
+      time_to_show = value.filteredAnswer.length / 50 * 1000 + 3000;
       index++;
+      console.log(index);
       await delay(time_to_show);
     };
 
     io.to(roomId).emit("show_response_index", index);
 
   });
+  
+//  socket.on("start_showing_responses", (roomId) => {
+//    let index = 0;
+//
+//    const interval = setInterval(() => {
+//      if (index <= rooms[roomId].numPlayers) {
+//        index++;
+//      } else {
+//        clearInterval(interval);
+//      }
+//      io.to(roomId).emit("show_response_index", index);
+//    }, 3000);
+//  });
 };

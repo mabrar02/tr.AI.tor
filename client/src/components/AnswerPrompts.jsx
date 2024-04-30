@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useGameRoom } from "../contexts/GameRoomContext";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import PromptBanner from "./PromptBanner";
 import ResponseBox from "./ResponseBox";
 import TransitionToPrompts from "./TransitionToPrompts";
@@ -32,6 +32,7 @@ function AnswerPrompts() {
   const [regenCount, setRegenCount] = useState(3);
   const [updatingResponse, setUpdatingResponse] = useState(false);
   const [transition, setTransition] = useState(true);
+  const [transitionOut, setTransitionOut] = useState(false);
   const animDuration = 8; // Duration of the transition animation
 
   useEffect(() => {
@@ -47,7 +48,11 @@ function AnswerPrompts() {
     });
 
     socket?.on("timer_expired", () => {
-      transitionToGamePhase("responses");
+      setTransitionOut(true)
+      const timer = setTimeout(() => {
+        clearTimeout(timer);
+        transitionToGamePhase("responses");
+      },  1000);
     });
 
     socket?.on("answer_regenerated", (content) => {
@@ -77,7 +82,7 @@ function AnswerPrompts() {
           socket?.emit("start_timer", { roomId: joinCode, phase: gamePhase });
         }
       }, animDuration * 1000 + 1000);
-
+    
       return () => {
         clearTimeout(timer);
         clearTimeout(timer2);
@@ -109,17 +114,28 @@ function AnswerPrompts() {
 
         <div className="h-[30%] w-full flex flex-col justify-center "></div> {/*Dummy div*/}
 
-        {role === "Innocent" && (
-        <span className="mt-2">Answer honestly! The {selectedChar} will translate for you.</span>
-        )}
+        <div className="w-screen flex-grow flex flex-col items-center overflow-hidden">
+        <AnimatePresence>
+          {!transitionOut && (
+            <motion.div className="w-screen flex-grow flex flex-col items-center"
+                key={0}
+                animate={{ y: '0' }} 
+                exit={{y: '100vh' }}
+                transition={{ duration: 1, bounce: 0.2, delay: 0, type: 'spring' }} 
+                >
+              {role === "Innocent" && (
+              <span className="mt-2">Answer honestly! The {selectedChar} will translate for you.</span>
+              )}
 
-        {role === "Traitor" && (
-        <span className="mt-2">Try to deceive the others into thinking you're an AI!</span>
-        )}
+              {role === "Traitor" && (
+              <span className="mt-2">Try to deceive the others into thinking you're an AI!</span>
+              )}
+              <ResponseBox time={animDuration}/>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-
-        <ResponseBox time={animDuration}/>
-
+        </div>
       </div>
     </div>
   );

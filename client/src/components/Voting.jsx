@@ -106,6 +106,7 @@ function Voting() {
         <div className="transition-container closing-container"></div>
       )}
 
+      <PromptBanner animate={false} />
 
       {phase == "voting" && (
         <div>

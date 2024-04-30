@@ -73,7 +73,7 @@ function ResponseBox(props) {
   }, [filteredAnswer, filteredAnswerText]);
 
   return (
-    <div className="w-[75%] h-[50%] mt-2">
+    <div className="w-[75%] h-[80%] mt-2">
     <motion.div className="bg-green-400 h-[100%] flex-col flex items-center rounded-3xl"
         initial={{ height: '10%' }} 
         animate={{ height: '100%' }} 

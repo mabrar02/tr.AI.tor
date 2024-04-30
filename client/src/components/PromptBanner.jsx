@@ -22,7 +22,7 @@ function PromptBanner(props) {
   } = useGameRoom();
 
   return (
-    <motion.div className={`w-full flex flex-col justify-center ${props.animate ? 'absolute' : 'relative'}`} style={{zIndex:3}} 
+    <motion.div className={`w-full h-[30vh] flex flex-col justify-center ${props.animate ? 'absolute' : 'relative'}`} style={{zIndex:3}} 
         initial={{ y: '30vh', height: '50vh'}} 
         animate={{ y: 0, height: '30vh' }} 
         transition={props.animate ? { duration: 0.25, bounce: 0.5, delay: props.time + 2, type: 'spring' } : {duration: 0} } //Banner move up 
