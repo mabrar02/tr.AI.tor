@@ -22,6 +22,8 @@ function AnswerPrompts() {
     setRoundValue,
     timer,
     gamePhase,
+    selectedChar,
+    setSelectedChar,
   } = useGameRoom();
 
   const [answer, setAnswer] = useState("");
@@ -96,7 +98,6 @@ function AnswerPrompts() {
     }
   };
 
-
   return (
     <div>
        { transition && (
@@ -104,13 +105,20 @@ function AnswerPrompts() {
       )}
 
       <div className="h-screen w-screen items-center flex-col flex">
-        <PromptBanner time={animDuration} />
+        <PromptBanner time={animDuration} animate={true} />
 
         <div className="h-[30%] w-full flex flex-col justify-center "></div> {/*Dummy div*/}
+
+        {role === "Innocent" && (
+        <span className="mt-2">Answer honestly! The {selectedChar} will translate for you.</span>
+        )}
+
+        {role === "Traitor" && (
+        <span className="mt-2">Try to deceive the others into thinking you're an AI!</span>
+        )}
+
+
         <ResponseBox time={animDuration}/>
-        <span>Answer honestly!</span>
-
-
 
       </div>
     </div>

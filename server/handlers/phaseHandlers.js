@@ -1,3 +1,4 @@
+const { time } = require("console");
 const fs = require("fs");
 
 const prompts = JSON.parse(fs.readFileSync("prompts.json", "utf-8"));
@@ -8,6 +9,10 @@ const getRandomPrompt = () => {
 
   return randPrompt;
 };
+
+const delay = (duration) => {
+  return new Promise(resolve => setTimeout(resolve, duration));
+}
 
 module.exports = function phaseHandlers(socket, io, rooms) {
   socket.on("start_game", (roomId) => {
@@ -149,13 +154,13 @@ module.exports = function phaseHandlers(socket, io, rooms) {
     let time = 0;
     switch (phase) {
       case "lobby":
-        time = 0;
+        time = 5;
         break;
       case "characters":
         time = 5;
         break;
       case "prompts":
-        time = 90;
+        time = 5 ;
         break;
       case "voting":
         time = 5;
@@ -176,16 +181,18 @@ module.exports = function phaseHandlers(socket, io, rooms) {
     io.to(roomId).emit("timer_update", rooms[roomId].timer);
   });
 
-  socket.on("start_showing_responses", (roomId) => {
+  socket.on("start_showing_responses", async (roomId) => {
     let index = 0;
+    let time_to_show;
 
-    const interval = setInterval(() => {
-      if (index <= rooms[roomId].numPlayers) {
-        index++;
-      } else {
-        clearInterval(interval);
-      }
+    for (const value of Object.values(rooms[roomId].players)) {
       io.to(roomId).emit("show_response_index", index);
-    }, 3000);
+      time_to_show = value.filteredAnswer.length / 50 * 1000 + 2000;
+      index++;
+      await delay(time_to_show);
+    };
+
+    io.to(roomId).emit("show_response_index", index);
+
   });
 };

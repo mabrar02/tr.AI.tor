@@ -28,6 +28,8 @@ const App = () => {
     setGameOver,
     inLobby,
     setInLobby,
+    selectedChar,
+    setSelectedChar,
   } = useGameRoom();
 
   return (

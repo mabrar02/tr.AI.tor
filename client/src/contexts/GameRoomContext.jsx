@@ -19,6 +19,7 @@ export const GameRoomProvider = ({ children }) => {
   const [gameOver, setGameOver] = useState({});
   const [inLobby, setInLobby] = useState(false);
   const [timer, setTimer] = useState(0);
+  const [selectedChar, setSelectedChar] = useState(null);
 
   useEffect(() => {
     const newSocket = io("http://localhost:4000");
@@ -104,6 +105,8 @@ export const GameRoomProvider = ({ children }) => {
         setInLobby,
         timer,
         updateTimer,
+        selectedChar,
+        setSelectedChar,
       }}
     >
       {children}

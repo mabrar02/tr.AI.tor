@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useGameRoom } from "../contexts/GameRoomContext";
+import PromptBanner from "./PromptBanner";
+import { AnimatePresence, motion } from "framer-motion";
 
 function SeeResponses() {
   const {
@@ -17,6 +19,7 @@ function SeeResponses() {
   } = useGameRoom();
 
   const [currentResIndex, setCurrentResIndex] = useState(0);
+  const [showResponse, setShowResponse] = useState(false);
 
   useEffect(() => {
     if (isHost) {
@@ -27,6 +30,7 @@ function SeeResponses() {
   useEffect(() => {
     socket?.on("show_response_index", (index) => {
       setCurrentResIndex(index);
+      setShowResponse(true);
     });
 
     return () => {
@@ -40,22 +44,56 @@ function SeeResponses() {
     }
   }, [currentResIndex]);
 
+  //useEffect(() => {
+  //  const interval = setInterval(() => {
+  //    setCurrentResIndex(key => key+1);
+  //    console.log(currentResIndex);
+  //  }, 4000);
+  //  return () => clearInterval(interval);
+  //}, []);
+
   return (
     <div>
-      <div className="flex justify-center">
-        <div className="bg-red-500 w-[15rem] h-[5rem] text-center">
-          <h1>PLAYER RESPONSES: </h1>
-        </div>
-      </div>
-      <div>
-        <div className="flex-1 bg-green-500 p-4 text-black">
-          <div
-            className="font-bold rounded-lg py-2 px-5 border border-black shadow shadow-lg mb-4 mx-1 wx-5"
-            style={{ backgroundColor: "white" }}
-          >
-            {players[currentResIndex]?.filteredAnswer}
+
+      <div className="h-screen w-screen items-center flex-col flex">
+
+        <PromptBanner animate={false} />
+
+
+        <div className="relative w-screen h-screen justify-center flex-col overflow-hidden">
+          <motion.div className="flex justify-center"
+                key={0}
+                initial={{ y: '-100vh' }} 
+                animate={{ y: '0' }} 
+                exit={{x: '-100vh' }}
+                transition={{ duration: 1, bounce: 0.2, delay: 0, type: 'spring' }} 
+                >
+            <h1>Time's up! Let's take a look at these responses...</h1>
+          </motion.div>
+
+        {showResponse && (
+          <div className="relative w-screen justify-center flex flex-grow overflow-hidden pt-10">
+            <AnimatePresence>
+              <motion.div className="flex-1 p-4 text-black absolute w-[45%] h-[40%]"
+                  key={currentResIndex}
+                  initial={{ x: '-100vw' }} 
+                  animate={{ x: '0' }} 
+                  exit={{x: '100vw' }}
+                  transition={{ duration: 1, bounce: 0.2, delay: 0, type: 'spring' }} 
+                  >
+                <div className="font-bold py-2 px-5 border border-black shadow shadow-lg mb-4 mx-1 wx-5 rounded-tr-xl rounded-br-xl rounded-tl-md w-[100%] h-[100%] relative"
+                  style={{ backgroundColor: "white" }}>
+                  <p className="mb-5">{players[currentResIndex]?.username}:</p>
+                  <p>{players[currentResIndex]?.filteredAnswer}</p>
+                </div>
+              </motion.div>
+            </AnimatePresence>
           </div>
-          <p>Written by: {players[currentResIndex]?.username}</p>
+
+
+        )}
+
+
         </div>
       </div>
     </div>

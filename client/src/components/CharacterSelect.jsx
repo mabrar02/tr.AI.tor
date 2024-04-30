@@ -14,9 +14,10 @@ function CharacterSelect() {
     role,
     timer,
     setRoleValue,
+    selectedChar,
+    setSelectedChar,
   } = useGameRoom();
   const [charOptions, setCharOptions] = useState([]);
-  const [selectedChar, setSelectedChar] = useState(null);
   const [submitted, setSubmitted] = useState(false);
   const [transition, setTransition] = useState(false);
 
@@ -70,7 +71,7 @@ function CharacterSelect() {
         <p>You are the traitor! Try to blend in.</p>
       ) : submitted ? (
         <p>
-          You've chosen to be a {selectedChar}, waiting for other players...
+          You've chosen to be a {selectedChar}. Waiting for other players to finish...
         </p>
       ) : (
         <div>
