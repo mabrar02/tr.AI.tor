@@ -1,0 +1,70 @@
+
+.transition-container {
+    position: absolute;
+    top:0;
+    left:0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: 1;
+    background-color: black;
+    color: aliceblue;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.slider-container { /* Spiral into screen at end of transition*/
+    animation: spiralIn 2s ease-in-out forwards;
+    animation-delay: 6s;
+    transform-origin: center;
+}
+
+.sliding-word { /* Slide in ominous words at start of transition*/
+    position: relative;
+    white-space: nowrap; 
+    width: 100%;
+    animation: slideInOut 6s forwards;
+    text-align: center;
+    opacity: 0%;
+}
+
+.closing-container { /* Closing animation from end of previous page */
+    animation:  closeDoor 2s forwards;
+    transform-origin: left;
+}
+
+@keyframes slideInOut {
+    0% {
+        transform: translateX(-100%);
+        opacity: 100%;
+    }
+    20%, 80% {
+        transform: translateX(0%);
+        opacity: 100%;
+    }
+    100% {
+        transform: translateX(100%);
+        opacity: 100%;
+    }
+}
+
+@keyframes spiralIn {
+    from {
+        transform:  scale(1) rotate(0deg);
+    }
+    to {
+        transform:  scale(0) rotate(720deg);
+        opacity: 0;
+        border-radius: 50%;
+    }
+}
+
+@keyframes closeDoor {
+    from {
+        transform: rotateY(-90deg);
+    }
+    to {
+        transform: rotateY(0deg);
+    }
+}

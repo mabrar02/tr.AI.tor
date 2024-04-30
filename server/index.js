@@ -20,7 +20,9 @@ const allowedOrigins = [
 const io = new Server(httpServer, {
   cors: {
     origin: allowedOrigins,
+    methods: ["GET", "POST"],
   },
+  transports: ['websocket', 'polling']
 });
 
 require("./socket")(io);

@@ -130,14 +130,16 @@ module.exports = function phaseHandlers(socket, io, rooms) {
 
   const startTimer = (roomId) => {
     const interval = setInterval(() => {
-      if (rooms[roomId].timer > 0) {
-        rooms[roomId].timer -= 1;
+      if (rooms[roomId]) {
+        if (rooms[roomId].timer > 0) {
+          rooms[roomId].timer -= 1;
 
-        io.to(roomId).emit("timer_update", rooms[roomId].timer);
-      } else {
-        rooms[roomId].timerActive = false;
-        clearInterval(interval);
-        io.to(roomId).emit("timer_expired");
+          io.to(roomId).emit("timer_update", rooms[roomId].timer);
+        } else {
+          rooms[roomId].timerActive = false;
+          clearInterval(interval);
+          io.to(roomId).emit("timer_expired");
+        }
       }
     }, 1000);
   };
@@ -147,7 +149,7 @@ module.exports = function phaseHandlers(socket, io, rooms) {
     let time = 0;
     switch (phase) {
       case "lobby":
-        time = 5;
+        time = 2;
         break;
       case "characters":
         time = 20;
@@ -156,10 +158,10 @@ module.exports = function phaseHandlers(socket, io, rooms) {
         time = 90;
         break;
       case "voting":
-        time = 10;
+        time = 5;
         break;
       case "post-votes":
-        time = 10;
+        time = 5;
         break;
     }
 

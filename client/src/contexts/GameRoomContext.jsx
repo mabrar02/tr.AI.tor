@@ -14,7 +14,7 @@ export const GameRoomProvider = ({ children }) => {
   const [userName, setUserName] = useState("");
   const [socket, setSocket] = useState(null);
   const [prompt, setPrompt] = useState("");
-  const [role, setRole] = useState("Innocent");
+  const [role, setRole] = useState("");
   const [roundNum, setRoundNum] = useState(0);
   const [gameOver, setGameOver] = useState({});
   const [inLobby, setInLobby] = useState(false);
@@ -22,9 +22,9 @@ export const GameRoomProvider = ({ children }) => {
 
   useEffect(() => {
     const newSocket = io("http://localhost:4000");
-    // const newSocket = io("https://ace-memento-418917.nn.r.appspot.com",
-    //   {transports: ['websocket', 'polling']
-    // });
+    //  const newSocket = io("https://ace-memento-418917.nn.r.appspot.com",
+    //    {transports: ['websocket', 'polling']
+    //  });
 
     setSocket(newSocket);
 
