@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { useGameRoom } from "../contexts/GameRoomContext";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaInfoCircle } from "react-icons/fa";
-import Notification from "./Notification";
 import { Bounce, ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -25,8 +24,6 @@ function Lobby() {
   } = useGameRoom();
 
   const [joinGame, setJoinGame] = useState(false);
-  const [notif, setNotif] = useState(null);
-  const [notifType, setNotifType] = useState("");
 
   const [playerNames, setPlayerNames] = useState(
     Array(8).fill("Player is offline")

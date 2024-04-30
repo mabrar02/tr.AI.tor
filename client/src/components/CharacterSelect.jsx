@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useGameRoom } from "../contexts/GameRoomContext";
 import AIImage from "../assets/image.png";
 import { motion } from "framer-motion";
+import { Bounce, ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function CharacterSelect() {
   const {
@@ -60,6 +62,30 @@ function CharacterSelect() {
 
   const selectChar = (character) => {
     socket?.emit("select_char", { character: character, roomId: joinCode });
+  };
+
+  const notify = (msg) => {
+    const existingToastId = toast.isActive("notification");
+
+    if (existingToastId) {
+      toast.update(existingToastId, {
+        render: msg,
+        type: toast.TYPE.ERROR,
+      });
+    } else {
+      toast.error(msg, {
+        position: "top-center",
+        autoClose: 2000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+        transition: Bounce,
+        toastId: "notification",
+      });
+    }
   };
 
   return (
@@ -218,7 +244,7 @@ function CharacterSelect() {
                       setSubmitted(true);
                       selectChar(selectedChar);
                     } else {
-                      alert("Select a char before submit");
+                      notify("Select a character before submitting!");
                     }
                   }}
                 >
@@ -250,6 +276,20 @@ function CharacterSelect() {
           </motion.div>
         </div>
       )}
+
+      <ToastContainer
+        position="top-center"
+        autoClose={2000}
+        hideProgressBar
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss={false}
+        draggable
+        pauseOnHover={false}
+        theme="colored"
+        transition={Bounce}
+      />
     </div>
   );
 }
