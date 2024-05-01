@@ -6,6 +6,15 @@ module.exports = function roomHandlers(socket, io, rooms) {
     }
   };
 
+  const getRandomColors = () => {
+    const colors = [];
+    for (let i = 0; i < 8; i++) {
+      const randColor = "#" + Math.floor(Math.random() * 16777215).toString(16);
+      colors.push(randColor);
+    }
+    return colors;
+  };
+
   socket.on("host_room", ({ roomId, username }) => {
     rooms[roomId] = {
       players: {},
@@ -14,6 +23,7 @@ module.exports = function roomHandlers(socket, io, rooms) {
       characters: [],
       round: 0,
       prompts: [],
+      colors: getRandomColors(),
       timerActive: false,
       timer: 0,
       index:0,
@@ -27,10 +37,10 @@ module.exports = function roomHandlers(socket, io, rooms) {
       filteredAnswer: "",
       role: "",
       vote: "",
+      color: rooms[roomId].colors[0],
       index: 0,
     };
     updatePlayers(roomId);
-    console.log(`Room hosted: ${roomId}`);
   });
 
   socket.on("join_room", ({ roomId, username }, callback) => {
@@ -45,6 +55,7 @@ module.exports = function roomHandlers(socket, io, rooms) {
         filteredAnswer: "",
         role: "",
         vote: "",
+        color: rooms[roomId].colors[rooms[roomId].numPlayers],
         index: rooms[roomId].index+1,
       };
       rooms[roomId].numPlayers++;
@@ -64,13 +75,23 @@ module.exports = function roomHandlers(socket, io, rooms) {
         rooms.hasOwnProperty(roomId) &&
         rooms[roomId].players.hasOwnProperty(socket.id)
       ) {
-        delete rooms[roomId].players[socket.id];
-        rooms[roomId].numPlayers--;
-        if (rooms[roomId].numPlayers == 0) {
-          delete rooms[roomId];
-        }
-        updatePlayers(roomId);
+        handleLeaveRoom(socket, roomId);
       }
     }
+  });
+
+  const handleLeaveRoom = (socket, roomId) => {
+    if (rooms[roomId] && rooms[roomId].players[socket.id]) {
+      delete rooms[roomId].players[socket.id];
+      rooms[roomId].numPlayers--;
+      if (rooms[roomId].numPlayers === 0) {
+        delete rooms[roomId];
+      }
+      updatePlayers(roomId);
+    }
+  };
+
+  socket.on("leave_room", ({ roomId }) => {
+    handleLeaveRoom(socket, roomId);
   });
 };

@@ -23,6 +23,7 @@ const App = () => {
     index,
     setIndex,
     roundNum,
+    role,
     setRoundValue,
     gameOver,
     setGameOver,

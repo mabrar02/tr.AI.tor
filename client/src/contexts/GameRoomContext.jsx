@@ -14,11 +14,12 @@ export const GameRoomProvider = ({ children }) => {
   const [userName, setUserName] = useState("");
   const [socket, setSocket] = useState(null);
   const [prompt, setPrompt] = useState("");
-  const [role, setRole] = useState("Innocent");
+  const [role, setRole] = useState("");
   const [roundNum, setRoundNum] = useState(0);
   const [gameOver, setGameOver] = useState({});
   const [inLobby, setInLobby] = useState(false);
   const [timer, setTimer] = useState(0);
+  const [playerColor, setColor] = useState("#ffffff");
   const [timerMax, setTimerMax] = useState(0);
   const [selectedChar, setSelectedChar] = useState(null);
 
@@ -89,6 +90,10 @@ export const GameRoomProvider = ({ children }) => {
     setRoundNum(roundNum);
   };
 
+  const setPlayerColor = (color) => {
+    setPlayerColor(color);
+  };
+
   return (
     <GameRoomContext.Provider
       value={{
@@ -115,6 +120,8 @@ export const GameRoomProvider = ({ children }) => {
         setInLobby,
         timer,
         updateTimer,
+        playerColor,
+        setPlayerColor,
         selectedChar,
         setSelectedChar,
         timerMax,
