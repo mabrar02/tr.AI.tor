@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { motion } from "framer-motion";
 import { useGameRoom } from "../contexts/GameRoomContext";
+import { AnimatePresence, motion } from "framer-motion";
 
 function PromptBanner(props) {
   const {
@@ -19,7 +19,17 @@ function PromptBanner(props) {
     setRoundValue,
     timer,
     gamePhase,
+    timerMax,
   } = useGameRoom();
+
+    const [isAnimating, setIsAnimating] = useState(false);
+
+    //useEffect(() => {
+    //  setIsAnimating(true);
+    //  setTimeout(() => {
+    //    setIsAnimating(false);
+    //  }, 500)
+    //}, [prompt])
 
   return (
     <motion.div className={`w-full h-[30vh] flex flex-col justify-center ${props.animate ? 'absolute' : 'relative'}`} style={{zIndex:3}} 
@@ -35,11 +45,18 @@ function PromptBanner(props) {
         transition={props.animate ? { duration: 0.1, bounce: 1, delay: props.time + 2.1, type: 'spring' }: {duration: 0}} // Text rotate
         >
 
-              <motion.span className=""
-            initial={{ scale: 0 }} 
-            animate={{ scale: 1 }} 
-            transition={props.animate ? { duration: 0.5, bounce: 0.5, delay: props.time + 0.5, type: 'spring' }: {duration: 0}} // Text Pop up
+          <AnimatePresence>
+            {!isAnimating && (
+              <motion.span className="absolute"
+              key={prompt}
+              initial={{ scale: 0 }} 
+              animate={{ scale: 1 }} 
+              exit={{scale: 0}}
+              transition={props.animate || props.animateprompt ? { duration: 0.5, bounce: 0.5, delay: props.time + 0.5, type: 'spring' }: {duration: 0}} // Text Pop up
               >{prompt}</motion.span>
+
+            )}
+          </AnimatePresence>
 
           </motion.div> 
         </div>
@@ -51,9 +68,9 @@ function PromptBanner(props) {
       >
         <motion.div
           initial={{ width: "100%" }}
-          animate={{ width: `${(timer / 90) * 100}%` }}
+          animate={{ width: `${(timer / timerMax) * 100}%` }}
           className="h-full bg-yellow-300 animate-timer border-b-4 border-l-2 border-yellow-500 absolute top-0 left-0"
-          transition={props.animate ? {ease: "linear", duration: 1} : {duration: 0}}
+          transition={props.animate || props.timeranimate ? {ease: "linear", duration: 1} : {duration: 0}}
         ></motion.div>
 
         <div className="flex justify-center items-center h-full relative z-1 ">

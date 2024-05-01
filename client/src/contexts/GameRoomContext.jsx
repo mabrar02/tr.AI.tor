@@ -19,6 +19,7 @@ export const GameRoomProvider = ({ children }) => {
   const [gameOver, setGameOver] = useState({});
   const [inLobby, setInLobby] = useState(false);
   const [timer, setTimer] = useState(0);
+  const [timerMax, setTimerMax] = useState(0);
   const [selectedChar, setSelectedChar] = useState(null);
 
   useEffect(() => {
@@ -41,11 +42,20 @@ export const GameRoomProvider = ({ children }) => {
       updateTimer(time);
     });
 
+    socket?.on("timer_max", (time) => {
+      updateTimerMax(time);
+    });
+
     return () => {
       socket?.off("update_players");
       socket?.off("timer_update");
+      socket?.off("timer_max");
     };
   }, [socket]);
+
+  const updateTimerMax = (updatedTime) => {
+    setTimerMax(updatedTime);
+  };
 
   const updateTimer = (updatedTime) => {
     setTimer(updatedTime);
@@ -107,6 +117,7 @@ export const GameRoomProvider = ({ children }) => {
         updateTimer,
         selectedChar,
         setSelectedChar,
+        timerMax,
       }}
     >
       {children}

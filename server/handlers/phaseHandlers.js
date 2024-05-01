@@ -173,6 +173,7 @@ module.exports = function phaseHandlers(socket, io, rooms) {
     rooms[roomId].timerActive = true;
     rooms[roomId].timer = time;
     startTimer(roomId);
+    io.to(roomId).emit("timer_max", time);
     io.to(roomId).emit("timer_update", rooms[roomId].timer);
   });
 

@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useGameRoom } from "../contexts/GameRoomContext";
+import PromptBanner from "./PromptBanner";
+import { AnimatePresence, motion } from "framer-motion";
 
 function Voting() {
   const {
@@ -14,29 +16,80 @@ function Voting() {
     roundNum,
     setRoundValue,
     setGameOver,
+    setPrompt,
     timer,
   } = useGameRoom();
 
   const [phase, setPhase] = useState("voting");
   const [nextPhase, setNextPhase] = useState("resetting");
   const [selected, selectSelect] = useState("");
-  const [tallyVotes, updateTallyVotes] = useState({});
+  const [tallyVotes, updateTallyVotes] = useState();
   const [voteText, setVoteText] = useState("");
   const [transition, setTransition] = useState(false);
+  const [decision, setDecision] = useState({});
+  const [filteredPlayers, setFilteredPlayers] = useState(players);
+  const [tallyVotesUpdated, setTallyVotesUpdated] = useState(false);
+
+
+
+  useEffect(() => {
+    if(tallyVotes != null) {
+      setFilteredPlayers(current => current.filter((item) => Object.keys(tallyVotes).includes(item.username)));
+      setTallyVotesUpdated(true);
+    }
+  }, [tallyVotes]);
 
   useEffect(() => {
     if (isHost) {
       socket?.emit("start_timer", { roomId: joinCode, phase: phase });
+    }
+
+    switch (phase) {
+      case "voting":
+        setPrompt("Who is the Traitor?");
+        break;
+      case "post-votes":
+          
+        if (decision.decision) {
+          setVoteText(`${decision.player} has been found as the Traitor!`);
+          setGameOver({ innowin: true });
+          setNextPhase("ending");
+        } else {
+          if (roundNum == 3) {
+            setVoteText("No conclusive Traitor was found... game over.");
+            setGameOver({ innowin: false });
+            setNextPhase("ending");
+          } else {
+            setVoteText("No conclusive Traitor was found... try again.");
+            setNextPhase("resetting");
+            if (isHost) {
+              socket.emit("reset_round", joinCode);
+            }
+
+            const newPlayers = players.map(player => ({
+              ...player,
+              filteredAnswer: "",
+              vote: "",
+            }));
+
+            updatePlayers(newPlayers);
+          }
+        }
+        break;
+      case "inter-votes":
+        setVoteText("And the results conclude...");
+
     }
   }, [phase]);
 
   useEffect(() => {
     socket?.on("get_tally_votes", (votee_dict) => {
       updateTallyVotes(votee_dict);
+
     });
 
     socket?.on("vote_decision", (decision) => {
-      voteDecision(decision);
+      setDecision(decision);
     });
 
     socket?.on("timer_expired", () => {
@@ -54,17 +107,17 @@ function Voting() {
           } else if (nextPhase === "resetting") {
             transitionToGamePhase("prompts");
           }
+          clearTimeout(timer);
         }, 2000);
       }
     });
 
     return () => {
-      clearTimeout(timer);
       socket?.off("get_tally_votes");
       socket?.off("vote_decision");
       socket?.off("timer_expired");
     };
-  }, [socket, phase, nextPhase]);
+  }, [socket]);
 
   const selectResponse = (index) => {
     selectSelect(index);
@@ -74,94 +127,129 @@ function Voting() {
     socket?.emit("send_vote", { roomId: joinCode, vote: selected });
   };
 
-  const voteDecision = ({ decision, player }) => {
-    if (decision) {
-      setVoteText(`${player} has been found as the traitor!`);
-      setGameOver({ innowin: true });
-      setNextPhase("ending");
-    } else {
-      if (roundNum == 3) {
-        setVoteText("No conclusive traitor was found... game over.");
-        setGameOver({ innowin: false });
-        setNextPhase("ending");
-      } else {
-        setVoteText("No conclusive traitor was found... try again.");
-        setNextPhase("resetting");
-        if (isHost) {
-          socket.emit("reset_round", joinCode);
-        }
+//  useEffect(() => {
+//    const interval = setInterval(() => {
+//      setPhase("post-votes");
+//    }, 5000);
+//    return () => clearInterval(interval);
+//  }, []);
 
-        players.forEach((player) => {
-          player.filteredAnswer = "";
-          player.vote = "";
-        });
-      }
+  const containerVariants = {
+    hidden: { },
+    visible: {
+        transition: {
+            staggerChildren: 0.1,  // Delay in seconds between each child animation
+        }
     }
-  };
+  }
+    const itemVariants1 = {
+        hidden: { x: '-100vw' },  // Start off-screen to the left
+        visible: {
+            x: 0,
+            transition: { 
+              type: 'spring', 
+              stiffness: 50, 
+              damping: 10,
+              mass: 1
+            },
+        },
+        exit:  {
+            rotateX: 270,
+            rotate: -20,
+            y: '100vh',
+            transition: {
+              duration: 3,
+            }
+        },
+    };
+    const itemVariants2 = {
+        hidden: { x: '100vw' },  // Start off-screen to the left
+        visible: {
+            x: 0,
+            transition: { 
+              type: 'spring', 
+              stiffness: 50, 
+              damping: 10,
+              mass: 1
+            },
+        },
+        exit:  {
+            rotate:  20,
+            rotateY: 270, 
+            y: '100vh',
+            transition: {
+              duration: 3,
+            }
+        },
+    };
 
   return (
-    <div>
+    <>
 
-      {transition === true && (
-        <div className="transition-container closing-container"></div>
+      {/* For transitioning out*/}
+      {transition && (
+        <div className="transition-container closing-container"></div> 
       )}
 
-      <PromptBanner animate={false} />
+      <div className="w-screen items-center flex-col flex ">
 
-      {phase == "voting" && (
-        <div>
-          Time left: {timer} Prompt: {prompt}
-          <div className="flex-row justify-center">
-            {players.map((player, index) => (
-              <div
-                key={index}
-                className={`${
-                  selected == player.username ? "bg-cyan-200" : "bg-slate-200"
-                } m-4`}
-                onClick={() => selectResponse(player.username)}
-              >
-                <p>Player: {player.username}</p>
-                <p>Answer: {player.filteredAnswer}</p>
-              </div>
-            ))}
-          </div>
-          <button
-            className="bg-yellow-500 hover:bg-yellow-600 font-bold py-2 px-4 rounded-lg shadow-md transform transition-all hover:scale-105"
-            onClick={sendVote}
-          >
-            {selected == ""
-              ? "Who is the imposter?"
-              : `${selected} is the imposter!`}
-          </button>
-        </div>
-      )}
+        <PromptBanner animate={false} animateprompt={true} timeranimate={true}/>
 
-      {phase == "post-votes" && (
-        <div>
-          Prompt: {prompt}
-          <div className="flex-row justify-center">
-            The results are in!<br></br>
-            {Object.entries(tallyVotes).map(([votee, value]) => (
-              <div
-                key={votee}
-                className="font-bold rounded-lg py-2 px-5 inline-block border border-black shadow shadow-lg mb-4 mx-1 bg-white"
-              >
-                <p>Player: {votee}</p>
-                {Object.entries(value).map(([key, value2]) => (
-                  <div key={key}>
-                    {key == "votes" && <p>Number of Votes: {value2}</p>}
-                    {key == "voters" && <p>Voters: {value2.join(", ")} </p>}
-                  </div>
-                ))}
-              </div>
-            ))}
+          <div className="overflow-hidden flex-col w-[100%] flex items-center">
+
+          {<AnimatePresence>
+          {phase == "voting" && (
+            <motion.button
+              initial={{ y: '-100vh' }} 
+              animate={{ y: '0vh' }} 
+              exit={{y: '-100vh' }}
+              transition={{ duration: 0.35, type: 'tween'}} 
+              className="bg-yellow-500 hover:bg-yellow-600 font-bold py-2 px-4 rounded-lg shadow-md transform transition-all hover:scale-105 mt-5"
+              onClick={sendVote}
+            >
+              {selected == ""
+                ? "Who is the Traitor?"
+                : `${selected} is the Traitor!`}
+            </motion.button>
+            )}
+          </AnimatePresence>}
+            
+            <motion.div className="flex-row w-[70%] justify-center flex-col justify-center items-center grid grid-cols-2 gap-4 grid" 
+              variants={containerVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+            >
+            <AnimatePresence>
+              {filteredPlayers.map((player, index) => (
+                <motion.div
+                  key={player.index}
+                  className={`${
+                    selected == player.username ? "bg-cyan-200" : "bg-slate-200"
+                    } m-4 font-bold py-2 px-5 border border-black shadow shadow-lg mb-4 mx-1 wx-5 rounded-tr-xl rounded-br-xl rounded-tl-md w-[100%] relative`}
+                  onClick={() => selectResponse(player.username)}
+                  variants={Math.random() > 0.5 ? itemVariants1 : itemVariants2}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                >
+                  <p className="mb-5">{player.username}</p>
+                  <p>{player.filteredAnswer}</p>
+                   {phase == "post-votes" && tallyVotesUpdated && (
+                    <p>Voted by {tallyVotes[player.username].voters}</p>
+                   )} 
+
+                </motion.div>
+
+              ))}
+            </AnimatePresence>
+            </motion.div>
+
           </div>
-          <div className="bg-yellow-500 font-bold py-2 px-4 rounded-lg shadow-md transform transition-all">
-            {voteText}
-          </div>
-        </div>
-      )}
+
+
     </div>
+  </>
   );
 }
 

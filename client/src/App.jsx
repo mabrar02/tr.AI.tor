@@ -30,6 +30,7 @@ const App = () => {
     setInLobby,
     selectedChar,
     setSelectedChar,
+    timerMax,
   } = useGameRoom();
 
   return (
