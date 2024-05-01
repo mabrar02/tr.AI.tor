@@ -225,8 +225,8 @@ function Voting() {
               animate="visible"
               exit="exit"
             >
-              {filteredPlayers.map((player, index) => (
             <AnimatePresence>
+              {filteredPlayers.map((player, index) => (
                 <motion.div
                   key={player.index}
                   className={`${
@@ -252,8 +252,8 @@ function Voting() {
                    )} 
 
                 </motion.div>
-            </AnimatePresence>
               ))}
+            </AnimatePresence>
             </motion.div>
 
           </div>
