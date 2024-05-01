@@ -94,13 +94,33 @@ module.exports = function roomHandlers(socket, io, rooms) {
 
   const handleLeaveRoom = (socket, roomId) => {
     if (rooms[roomId] && rooms[roomId].players[socket.id]) {
+      const player = rooms[roomId].players[socket.id];
+      const wasHost = player.host;
+      const newHostSocketId = findNewHost(socket.id, roomId);
+
       delete rooms[roomId].players[socket.id];
       rooms[roomId].numPlayers--;
+
+      if (wasHost && newHostSocketId) {
+        rooms[roomId].players[newHostSocketId].host = true;
+        io.to(newHostSocketId).emit("host_swap");
+      }
+
       if (rooms[roomId].numPlayers === 0) {
         delete rooms[roomId];
       }
       updatePlayers(roomId);
     }
+  };
+  const findNewHost = (leavingSocketId, roomId) => {
+    const players = rooms[roomId].players;
+
+    for (const playerId in players) {
+      if (players[playerId].host === false && playerId !== leavingSocketId) {
+        return playerId;
+      }
+    }
+    return null;
   };
 
   socket.on("leave_room", ({ roomId }) => {

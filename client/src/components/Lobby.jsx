@@ -113,6 +113,9 @@ function Lobby() {
   };
 
   const handleLeaveRoom = () => {
+    if (isHost) {
+      setHostStatus(false);
+    }
     socket?.emit("leave_room", { roomId: joinCode });
     setInLobby(false);
     setJoinGame(false);

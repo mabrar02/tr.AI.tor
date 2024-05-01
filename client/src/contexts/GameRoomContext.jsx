@@ -47,6 +47,10 @@ export const GameRoomProvider = ({ children }) => {
       updateTimerMax(time);
     });
 
+    socket?.on("host_swap", () => {
+      setIsHost(true);
+    });
+
     return () => {
       socket?.off("update_players");
       socket?.off("timer_update");

@@ -176,9 +176,8 @@ function CharacterSelect() {
               {!submitted ? (
                 <div className="-mx-2 my-2 flex w-[90%] h-[50%]">
                   {charOptions.map((character, index) => (
-                    <div className="flex w-full">
+                    <div key={index} className="flex w-full">
                       <button
-                        key={index}
                         className={`overflow-hidden w-full min-h-32 font-bold rounded-lg flex-col items-center justify-center border-4 border-blue-300 shadow-lg mx-1 transition-all hover:scale-105 hover:border-blue-500 ${
                           charOptions[index] === selectedChar
                             ? "bg-blue-200 border-blue-500 scale-105"
