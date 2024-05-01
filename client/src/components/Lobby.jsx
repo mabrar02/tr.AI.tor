@@ -24,8 +24,7 @@ function Lobby() {
   } = useGameRoom();
 
   const [joinGame, setJoinGame] = useState(false);
-
-  const [playerNames, setPlayerNames] = useState(players);
+  const [enableBtns, setEnableBtns] = useState(true);
 
   useEffect(() => {
     socket?.on("game_started", () => {
@@ -43,6 +42,12 @@ function Lobby() {
       socket?.off("timer_expired");
     };
   }, [socket, isHost]);
+
+  useEffect(() => {
+    if (enableBtns && timer > 0) {
+      setEnableBtns(false);
+    }
+  }, [timer]);
 
   const handleHostRoom = () => {
     if (userName.length != 0) {
@@ -65,11 +70,11 @@ function Lobby() {
     socket?.emit(
       "join_room",
       { roomId: joinCode, username: userName },
-      (roomExists) => {
-        if (roomExists) {
+      (res) => {
+        if (res == "success") {
           setInLobby(true);
         } else {
-          notify("This room doesn't exist!", "error");
+          notify(res, "error");
         }
       }
     );
@@ -95,7 +100,11 @@ function Lobby() {
   };
 
   const handleStartGame = () => {
-    socket?.emit("start_timer", { roomId: joinCode, phase: gamePhase });
+    if (players.length < 4) {
+      notify("Require at least 4 players!", "error");
+    } else {
+      socket?.emit("start_timer", { roomId: joinCode, phase: gamePhase });
+    }
   };
 
   const copyJoinCode = () => {
@@ -224,6 +233,7 @@ function Lobby() {
                 {isHost && (
                   <div className="flex">
                     <button
+                      disabled={!enableBtns}
                       onClick={handleStartGame}
                       className="w-full text-2xl bg-yellow-400 hover:bg-yellow-600 font-bold py-6 px-16  rounded-lg border-b-4 border-l-2 border-yellow-700 shadow-md transform transition-all hover:scale-105 active:border-yellow-600 mb-2"
                     >
@@ -234,6 +244,7 @@ function Lobby() {
 
                 <div className="flex">
                   <button
+                    disabled={!enableBtns}
                     onClick={handleLeaveRoom}
                     className="w-full text-2xl bg-yellow-400 hover:bg-yellow-600 font-bold py-6 px-16 max-w-72 rounded-lg border-b-4 border-l-2 border-yellow-700 shadow-md transform transition-all hover:scale-105 active:border-yellow-600 mb-2"
                   >

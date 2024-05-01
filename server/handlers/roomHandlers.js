@@ -26,7 +26,7 @@ module.exports = function roomHandlers(socket, io, rooms) {
       colors: getRandomColors(),
       timerActive: false,
       timer: 0,
-      index:0,
+      index: 0,
     };
     socket.join(roomId);
     rooms[roomId].players[socket.id] = {
@@ -44,27 +44,39 @@ module.exports = function roomHandlers(socket, io, rooms) {
   });
 
   socket.on("join_room", ({ roomId, username }, callback) => {
-    console.log(rooms);
-    if (rooms[roomId]) {
-      socket.join(roomId);
-      rooms[roomId].players[socket.id] = {
-        username,
-        host: false,
-        character: "",
-        answer: "",
-        filteredAnswer: "",
-        role: "",
-        vote: "",
-        color: rooms[roomId].colors[rooms[roomId].numPlayers],
-        index: rooms[roomId].index+1,
-      };
-      rooms[roomId].numPlayers++;
-      rooms[roomId].index++;
-      updatePlayers(roomId);
-      callback(true);
-      console.log(`User ${username} joined room: ${roomId}`);
+    const room = rooms[roomId];
+
+    if (!room) {
+      callback("This room doesn't exist!");
+    } else if (room.numPlayers >= 8) {
+      callback("This game is full!");
     } else {
-      callback(false);
+      const isUsernameTaken = Object.values(room.players).some(
+        (player) => player.username.toLowerCase() === username.toLowerCase()
+      );
+
+      if (isUsernameTaken) {
+        callback("This username is already taken!");
+      } else {
+        socket.join(roomId);
+        const { players, colors, numPlayers, index } = room;
+        players[socket.id] = {
+          username,
+          host: false,
+          character: "",
+          answer: "",
+          filteredAnswer: "",
+          role: "",
+          vote: "",
+          color: colors[numPlayers],
+          index: index + 1,
+        };
+        room.numPlayers++;
+        room.index++;
+        updatePlayers(roomId);
+        callback("success");
+        console.log(`User ${username} joined room: ${roomId}`);
+      }
     }
   });
 

@@ -11,8 +11,8 @@ const getRandomPrompt = () => {
 };
 
 const delay = (duration) => {
-  return new Promise(resolve => setTimeout(resolve, duration));
-}
+  return new Promise((resolve) => setTimeout(resolve, duration));
+};
 
 module.exports = function phaseHandlers(socket, io, rooms) {
   socket.on("start_game", (roomId) => {
@@ -188,26 +188,11 @@ module.exports = function phaseHandlers(socket, io, rooms) {
 
     for (const [player, value] of Object.entries(rooms[roomId].players)) {
       io.to(roomId).emit("show_response_index", index);
-      time_to_show = value.filteredAnswer.length / 50 * 1000 + 3000;
+      time_to_show = (value.filteredAnswer.length / 50) * 1000 + 3000;
       index++;
-      console.log(index);
       await delay(time_to_show);
-    };
+    }
 
     io.to(roomId).emit("show_response_index", index);
-
   });
-  
-//  socket.on("start_showing_responses", (roomId) => {
-//    let index = 0;
-//
-//    const interval = setInterval(() => {
-//      if (index <= rooms[roomId].numPlayers) {
-//        index++;
-//      } else {
-//        clearInterval(interval);
-//      }
-//      io.to(roomId).emit("show_response_index", index);
-//    }, 3000);
-//  });
 };
