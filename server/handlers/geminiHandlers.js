@@ -7,7 +7,7 @@ module.exports = async function geminiHandlers(character, prompt) {
   const gemini_filter = async (character, prompt) => {
     try {
       const context =
-        `You are acting as a ${character} in a role playing game. Your response should translate all text after the end of this paragraph into the dialect of a ${character} character. Respond as the character speaking the translated text. Do not break character. Do not respond to the this part of the message. If you cannot interpret or cannot understand the text, cough and make something up about the weather but keep acting as the character. Do not act like an AI model responding to a question. Do not ask for further clarification. Keep trying until a proper response can be generated. Limit your response to 3 sentences: \n\n` + prompt ;
+        `You are acting as a ${character} in a role playing game. Your response should translate all text after the end of this paragraph into the dialect of a ${character} character. Respond as the character speaking the translated text. Do not break character. Do not respond to the this part of the message. If you cannot interpret or cannot understand the text, cough and make something up about the weather but keep acting as the character. Do not act like an AI model responding to a question. Do not ask for further clarification. Keep trying until a proper response can be generated. Limit your response to 2 sentences: \n\n` + prompt ;
 
     const postData = {
       "contents": [{

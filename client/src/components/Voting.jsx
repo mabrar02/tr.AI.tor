@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useGameRoom } from "../contexts/GameRoomContext";
 import PromptBanner from "./PromptBanner";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, easeIn, motion } from "framer-motion";
 
 function Voting() {
   const {
@@ -21,15 +21,13 @@ function Voting() {
   } = useGameRoom();
 
   const [phase, setPhase] = useState("voting");
-  const [nextPhase, setNextPhase] = useState("resetting");
+  const [nextPhase, setNextPhase] = useState("");
   const [selected, selectSelect] = useState("");
   const [tallyVotes, updateTallyVotes] = useState();
   const [transition, setTransition] = useState(false);
   const [decision, setDecision] = useState({});
   const [filteredPlayers, setFilteredPlayers] = useState(players);
   const [tallyVotesUpdated, setTallyVotesUpdated] = useState(false);
-
-
 
   useEffect(() => {
     if(tallyVotes != null) {
@@ -39,7 +37,8 @@ function Voting() {
   }, [tallyVotes]);
 
   useEffect(() => {
-    if (isHost) {
+    console.log(phase);
+    if (isHost && phase !== "post-votes") {
       socket?.emit("start_timer", { roomId: joinCode, phase: phase });
     }
 
@@ -48,7 +47,6 @@ function Voting() {
         setPrompt("Who is the Traitor?");
         break;
       case "post-votes":
-          
         if (decision.decision) {
           setPrompt(`${decision.player} has been found as the Traitor!`);
           setGameOver({ innowin: true });
@@ -59,7 +57,7 @@ function Voting() {
             setGameOver({ innowin: false });
             setNextPhase("ending");
           } else {
-            setPrompt("No conclusive Traitor was found... try again.");
+            setPrompt(`No conclusive Traitor was found. ${tallyVotes.size >= 2 ? "You must vote unanimously!" : ""}`);
             setNextPhase("resetting");
             if (isHost) {
               socket.emit("reset_round", joinCode);
@@ -79,12 +77,28 @@ function Voting() {
         setPrompt("And the results conclude...");
 
     }
-  }, [phase]);
+  }, [phase, decision]);
+
+  useEffect(() => {
+    const timer2 = setTimeout(() => {
+      if (nextPhase === "ending") {
+        transitionToGamePhase("ending");
+      } else if (nextPhase === "resetting") {
+        transitionToGamePhase("prompts");
+      }
+      clearTimeout(timer2);
+    }, 10000);
+  }, [nextPhase])
 
   useEffect(() => {
     socket?.on("get_tally_votes", (votee_dict) => {
       updateTallyVotes(votee_dict);
+      setPhase("post-votes");
 
+      const timer1 = setTimeout(() => {
+        setTransition(true);
+        clearTimeout(timer1);
+      }, 8000);
     });
 
     socket?.on("vote_decision", (decision) => {
@@ -92,22 +106,12 @@ function Voting() {
     });
 
     socket?.on("timer_expired", () => {
-      if (phase === "voting") {
-        if (isHost) {
-          socket?.emit("tally_votes", joinCode);
-        }
-        setPhase("post-votes");
-      } else if (phase === "post-votes") {
-        setTransition(true);
-       
-        const timer = setTimeout(() => {
-          if (nextPhase === "ending") {
-            transitionToGamePhase("ending");
-          } else if (nextPhase === "resetting") {
-            transitionToGamePhase("prompts");
+      switch(phase) {
+        case "voting" :
+          if (isHost) {
+            socket?.emit("tally_votes", joinCode);
           }
-          clearTimeout(timer);
-        }, 2000);
+          break;
       }
     });
 
@@ -142,14 +146,15 @@ function Voting() {
     }
   }
     const itemVariants1 = {
-        hidden: { x: '-100vw' },  // Start off-screen to the left
+        hidden: { x: -4000 },  // Start off-screen to the left
         visible: {
             x: 0,
             transition: { 
               type: 'spring', 
-              stiffness: 50, 
-              damping: 10,
-              mass: 1
+              stiffness: 4, 
+              damping: 1,
+              mass: 0.1,
+              ease: "easeIn",
             },
         },
         exit:  {
@@ -162,14 +167,15 @@ function Voting() {
         },
     };
     const itemVariants2 = {
-        hidden: { x: '100vw' },  // Start off-screen to the left
+        hidden: { x: 4000 },  // Start off-screen to the right
         visible: {
             x: 0,
             transition: { 
               type: 'spring', 
-              stiffness: 50, 
-              damping: 10,
-              mass: 1
+              stiffness: 4, 
+              damping: 1,
+              mass: 0.1,
+              ease: "easeIn",
             },
         },
         exit:  {
@@ -187,7 +193,7 @@ function Voting() {
 
       {/* For transitioning out*/}
       {transition && (
-        <div className="transition-container closing-container"></div> 
+        <div className="transition-container closing-container "></div> 
       )}
 
       <div className="w-screen h-screen items-center flex-col flex ">
@@ -219,8 +225,8 @@ function Voting() {
               animate="visible"
               exit="exit"
             >
-            <AnimatePresence>
               {filteredPlayers.map((player, index) => (
+            <AnimatePresence>
                 <motion.div
                   key={player.index}
                   className={`${
@@ -231,17 +237,23 @@ function Voting() {
                   initial="hidden"
                   animate="visible"
                   exit="exit"
+                  layout
                 >
                   <p className="mb-5">{player.username}</p>
                   <p>{player.filteredAnswer}</p>
+
                    {phase == "post-votes" && tallyVotesUpdated && (
-                    <p>Voted by {tallyVotes[player.username].voters}</p>
+                    <motion.p
+                    initial={{ size: 0 }} 
+                    animate={{ size: 1 }} 
+                    transition={{ stiffness: 2, mass: 1, damping: 5, type: 'spring'}} 
+                    className="mt-2" 
+                    >Voted by {tallyVotes[player.username]?.voters.join(", ")}</motion.p>
                    )} 
 
                 </motion.div>
-
-              ))}
             </AnimatePresence>
+              ))}
             </motion.div>
 
           </div>
