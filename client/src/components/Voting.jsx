@@ -24,7 +24,6 @@ function Voting() {
   const [nextPhase, setNextPhase] = useState("resetting");
   const [selected, selectSelect] = useState("");
   const [tallyVotes, updateTallyVotes] = useState();
-  const [voteText, setVoteText] = useState("");
   const [transition, setTransition] = useState(false);
   const [decision, setDecision] = useState({});
   const [filteredPlayers, setFilteredPlayers] = useState(players);
@@ -51,16 +50,16 @@ function Voting() {
       case "post-votes":
           
         if (decision.decision) {
-          setVoteText(`${decision.player} has been found as the Traitor!`);
+          setPrompt(`${decision.player} has been found as the Traitor!`);
           setGameOver({ innowin: true });
           setNextPhase("ending");
         } else {
           if (roundNum == 3) {
-            setVoteText("No conclusive Traitor was found... game over.");
+            setPrompt("The Traitor was not found... game over.");
             setGameOver({ innowin: false });
             setNextPhase("ending");
           } else {
-            setVoteText("No conclusive Traitor was found... try again.");
+            setPrompt("No conclusive Traitor was found... try again.");
             setNextPhase("resetting");
             if (isHost) {
               socket.emit("reset_round", joinCode);
@@ -77,7 +76,7 @@ function Voting() {
         }
         break;
       case "inter-votes":
-        setVoteText("And the results conclude...");
+        setPrompt("And the results conclude...");
 
     }
   }, [phase]);
@@ -191,11 +190,11 @@ function Voting() {
         <div className="transition-container closing-container"></div> 
       )}
 
-      <div className="w-screen items-center flex-col flex ">
+      <div className="w-screen h-screen items-center flex-col flex ">
 
         <PromptBanner animate={false} animateprompt={true} timeranimate={true}/>
 
-          <div className="overflow-hidden flex-col w-[100%] flex items-center">
+          <div className="overflow-hidden flex-col w-[100%] flex-grow flex items-center">
 
           {<AnimatePresence>
           {phase == "voting" && (
@@ -228,7 +227,7 @@ function Voting() {
                     selected == player.username ? "bg-cyan-200" : "bg-slate-200"
                     } m-4 font-bold py-2 px-5 border border-black shadow shadow-lg mb-4 mx-1 wx-5 rounded-tr-xl rounded-br-xl rounded-tl-md w-[100%] relative`}
                   onClick={() => selectResponse(player.username)}
-                  variants={Math.random() > 0.5 ? itemVariants1 : itemVariants2}
+                  variants={player.index % 2 == 1 ? itemVariants1 : itemVariants2}
                   initial="hidden"
                   animate="visible"
                   exit="exit"
