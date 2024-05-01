@@ -3,9 +3,32 @@ import { useGameRoom } from "../contexts/GameRoomContext";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaInfoCircle } from "react-icons/fa";
 import { Bounce, ToastContainer, toast } from "react-toastify";
+import useSound from 'use-sound'
+
+import soundFile from "../assets/sfx/clickSFX.wav"
+import hoverSoundFile from "../assets/sfx/hoverSFX.wav"
+import errorSoundFile from "../assets/sfx/errorSFX.mp3"
+import popSoundFile from "../assets/sfx/popSFX.wav"
+
 import "react-toastify/dist/ReactToastify.css";
 
 function Lobby() {
+
+  // Hook for playing sound
+  const [play] = useSound(soundFile, {volume: 0.8});
+  const [playHoverSound] = useSound(hoverSoundFile, {volume: 0.1});
+  const [playErrorSound] = useSound(errorSoundFile, {volume: 0.3});
+  const [playPopSound] = useSound(popSoundFile, {volume: 0.5});
+
+  // Function to play sound effect
+  const soundFX = () => {
+    play();
+  };
+
+  const playHoverSoundFX = () => {
+    playHoverSound();
+  };
+
   const {
     gamePhase,
     transitionToGamePhase,
@@ -58,12 +81,14 @@ function Lobby() {
       socket?.emit("host_room", { roomId: code, username: userName });
     } else {
       notify("Please enter a display name!", "error");
+      playErrorSound();
     }
   };
 
   const handleJoinRoom = () => {
     if (joinCode.length !== 4) {
       notify("Please enter a 4-letter code to join the room!", "error");
+      playErrorSound();
       return;
     }
 
@@ -96,12 +121,14 @@ function Lobby() {
       setJoinGame(true);
     } else {
       notify("Please enter a display name!", "error");
+      playErrorSound();
     }
   };
 
   const handleStartGame = () => {
     if (players.length < 4) {
       notify("Require at least 4 players!", "error");
+      playErrorSound();
     } else {
       socket?.emit("start_timer", { roomId: joinCode, phase: gamePhase });
     }
@@ -109,6 +136,7 @@ function Lobby() {
 
   const copyJoinCode = () => {
     notify("Join code copied to clipboard.", "success");
+    playPopSound();
     navigator.clipboard.writeText(joinCode);
   };
 
@@ -237,7 +265,11 @@ function Lobby() {
                   <div className="flex">
                     <button
                       disabled={!enableBtns}
-                      onClick={handleStartGame}
+                      onClick={() => {
+                        handleStartGame();
+                        soundFX();
+                      }}
+                      onMouseEnter={playHoverSoundFX}
                       className="w-full text-2xl bg-yellow-400 hover:bg-yellow-600 font-bold py-6 px-16  rounded-lg border-b-4 border-l-2 border-yellow-700 shadow-md transform transition-all hover:scale-105 active:border-yellow-600 mb-2"
                     >
                       Start Game
@@ -248,7 +280,11 @@ function Lobby() {
                 <div className="flex">
                   <button
                     disabled={!enableBtns}
-                    onClick={handleLeaveRoom}
+                    onClick={() => {
+                      handleLeaveRoom();
+                      soundFX();
+                    }}
+                    onMouseEnter={playHoverSoundFX}
                     className="w-full text-2xl bg-yellow-400 hover:bg-yellow-600 font-bold py-6 px-16 max-w-72 rounded-lg border-b-4 border-l-2 border-yellow-700 shadow-md transform transition-all hover:scale-105 active:border-yellow-600 mb-2"
                   >
                     Leave Game
@@ -304,13 +340,21 @@ function Lobby() {
                 <div className="w-full">
                   <button
                     className="overflow-hidden bg-yellow-400 w-full hover:bg-yellow-600 font-bold py-2 mb-3 px-4 rounded-lg border-b-4 border-l-2 border-yellow-700 shadow-md transform transition-all hover:scale-105 active:border-yellow-600"
-                    onClick={tryJoinGame}
+                    onMouseEnter={playHoverSoundFX}
+                    onClick={() => {
+                      tryJoinGame();
+                      soundFX();
+                    }}
                   >
                     Join Game
                   </button>
                   <button
                     className="overflow-hidden bg-yellow-400  w-full hover:bg-yellow-600 font-bold py-2 px-4 rounded-lg border-b-4 border-l-2 border-yellow-700 shadow-md transform transition-all hover:scale-105 active:border-yellow-600"
-                    onClick={handleHostRoom}
+                    onMouseEnter={playHoverSoundFX}
+                    onClick={() => {
+                      handleHostRoom();
+                      soundFX();
+                    }}
                   >
                     Host Game
                   </button>
@@ -334,13 +378,22 @@ function Lobby() {
                 <div className="w-full">
                   <button
                     className="overflow-hidden bg-yellow-400 w-full hover:bg-yellow-600 font-bold py-2 mb-3 px-4 rounded-lg border-b-4 border-l-2 border-yellow-700 shadow-md transform transition-all hover:scale-105 active:border-yellow-600"
-                    onClick={handleJoinRoom}
+                    onClick={() => {
+                      handleJoinRoom();
+                      soundFX();
+                    }}
+                    onMouseEnter={playHoverSoundFX}
                   >
                     Join Room
                   </button>
                   <button
                     className="overflow-hidden bg-yellow-400  w-full hover:bg-yellow-600 font-bold py-2 px-4 rounded-lg border-b-4 border-l-2 border-yellow-700 shadow-md transform transition-all hover:scale-105 active:border-yellow-600"
-                    onClick={() => setJoinGame(false)}
+                    onClick={() => {
+                      setJoinGame(false);
+                      soundFX();
+                    }
+                    }
+                    onMouseEnter={playHoverSoundFX}
                   >
                     Back
                   </button>
