@@ -59,19 +59,18 @@ function Voting() {
           } else {
             setPrompt(`No conclusive Traitor was found. ${tallyVotes.size >= 2 ? "You must vote unanimously!" : ""}`);
             setNextPhase("resetting");
-            if (isHost) {
-              socket.emit("reset_round", joinCode);
-            }
-
-            const newPlayers = players.map(player => ({
-              ...player,
-              filteredAnswer: "",
-              vote: "",
-            }));
-
-            updatePlayers(newPlayers);
           }
         }
+        if (isHost) {
+          socket.emit("reset_round", joinCode);
+        }
+
+        const newPlayers = players.map(player => ({
+          ...player,
+          filteredAnswer: "",
+          vote: "",
+        }));
+        updatePlayers(newPlayers);
         break;
       case "inter-votes":
         setPrompt("And the results conclude...");

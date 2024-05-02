@@ -39,7 +39,7 @@ function PromptBanner(props) {
       >
 
       <div className="bg-black text-white h-5/6 flex justify-center items-center" style={{zIndex:2}}>
-        <motion.div className="sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl line-clamp-2 text-wrap w-[80%] h-fit flex items-center font-bold p-1 justify-center overflow-visible"
+        <motion.div className="sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl line-clamp-2 text-wrap w-[60%] h-fit flex items-center font-bold p-1 justify-center overflow-visible"
         initial={{ rotate: 0 }} 
         animate={{ rotate: 0 }}
         transition={props.animate ? { duration: 0.1, bounce: 1, delay: props.time + 2.1, type: 'spring' }: {duration: 0}} // Text rotate
@@ -47,7 +47,7 @@ function PromptBanner(props) {
 
           <AnimatePresence>
             {!isAnimating && (
-              <motion.span className="absolute"
+              <motion.span className="absolute w-[60%] text-center"
               key={prompt}
               initial={{ scale: 0 }} 
               animate={{ scale: 1 }} 

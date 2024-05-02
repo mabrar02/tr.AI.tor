@@ -44,7 +44,10 @@ function AnswerPrompts() {
   useEffect(() => {
     socket?.on("get_prompt", (prompt) => {
       setPrompt(prompt);
-      setRoundValue(roundNum + 1);
+    });
+
+    socket?.on("update_round", (round) => {
+      setRoundValue(round);
     });
 
     socket?.on("timer_expired", () => {

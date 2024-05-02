@@ -30,15 +30,24 @@ module.exports = function phaseHandlers(socket, io, rooms) {
     });
   });
 
+  const recentMessages = new Map();
+
   socket.on("request_prompt", (roomId) => {
-    rooms[roomId].numSubmitted = 0;
-    rooms[roomId].round += 1;
-    const prompt = getRandomPrompt();
-    rooms[roomId].currentPrompt = prompt;
+    const currentTime = Date.now();
+    const lastTime = recentMessages.get(socket.id);
+    if(!lastTime || currentTime - lastTime > 500) {
+      recentMessages.set(socket.id, currentTime);
+      rooms[roomId].round += 1;
+      io.to(roomId).emit("update_round", rooms[roomId].round);
 
-    console.log(prompt);
+      rooms[roomId].numSubmitted = 0;
+      const prompt = getRandomPrompt();
+      rooms[roomId].currentPrompt = prompt;
 
-    io.to(roomId).emit("get_prompt", prompt);
+      console.log(prompt);
+
+      io.to(roomId).emit("get_prompt", prompt);
+    }
   });
 
   socket.on("request_answers", (roomId) => {

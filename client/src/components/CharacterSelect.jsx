@@ -17,13 +17,20 @@ function CharacterSelect() {
     gamePhase,
     role,
     timer,
+    timerMax,
     setRoleValue,
     selectedChar,
     setSelectedChar,
   } = useGameRoom();
-  const [charOptions, setCharOptions] = useState([]);
+  const [charOptions, setCharOptions] = useState();
   const [submitted, setSubmitted] = useState(false);
   const [transition, setTransition] = useState(false);
+
+  useEffect(() => {
+    if(timer == 1 && selectedChar === null && role === "Innocent") {
+      setSelectedChar(charOptions[0]);
+    }
+  }, [timer, selectedChar, charOptions]);
 
   useEffect(() => {
     socket?.on("update_char_options", (res) => {
@@ -38,13 +45,13 @@ function CharacterSelect() {
       setTransition(true);
       const timer = setTimeout(() => {
         transitionToGamePhase("prompts");
+        clearTimeout(timer);
       }, 2000);
     });
 
     return () => {
       socket?.off("update_char_options");
       socket?.off("timer_expired");
-      clearTimeout(timer);
     };
   }, [socket]);
 
@@ -135,7 +142,7 @@ function CharacterSelect() {
                 <motion.div
                   initial={{ width: "100%" }}
                   animate={{
-                    width: `${(timer / 20) * 100}%`,
+                    width: `${(timer / timerMax) * 100}%`,
                   }}
                   className="h-full bg-yellow-300 animate-timer border-b-4 border-l-2 border-yellow-500 absolute top-0 left-0"
                   transition={{ ease: "linear", duration: 1 }}
@@ -260,7 +267,7 @@ function CharacterSelect() {
                 <motion.div
                   initial={{ width: "100%" }}
                   animate={{
-                    width: `${(timer / 20) * 100}%`,
+                    width: `${(timer / timerMax) * 100}%`,
                   }}
                   className="h-full bg-yellow-300 animate-timer border-b-4 border-l-2 border-yellow-500 absolute top-0 left-0"
                   transition={{ ease: "linear", duration: 1 }}
