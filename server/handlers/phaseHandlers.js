@@ -160,7 +160,7 @@ module.exports = function phaseHandlers(socket, io, rooms) {
         time = 20;
         break;
       case "prompts":
-        time = 10;
+        time = 9000;
         break;
       case "voting":
         time = 10;

@@ -22,6 +22,7 @@ export const GameRoomProvider = ({ children }) => {
   const [playerColor, setColor] = useState("#ffffff");
   const [timerMax, setTimerMax] = useState(0);
   const [selectedChar, setSelectedChar] = useState(null);
+  const [sabotageCount, setSabotageCount] = useState(2);
 
   useEffect(() => {
     const newSocket = io("http://localhost:4000");
@@ -98,6 +99,10 @@ export const GameRoomProvider = ({ children }) => {
     setPlayerColor(color);
   };
 
+  const updateSabotageCount = (count) => {
+    setSabotageCount(count);
+  };
+
   return (
     <GameRoomContext.Provider
       value={{
@@ -129,6 +134,8 @@ export const GameRoomProvider = ({ children }) => {
         selectedChar,
         setSelectedChar,
         timerMax,
+        sabotageCount,
+        setSabotageCount,
       }}
     >
       {children}

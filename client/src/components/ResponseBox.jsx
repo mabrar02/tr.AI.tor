@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useGameRoom } from "../contexts/GameRoomContext";
 import { motion } from "framer-motion";
-import './css/styles.css';
-import refresh from './css/refresh.svg';
+import "./css/styles.css";
+import refresh from "./css/refresh.svg";
 
 function ResponseBox(props) {
   const {
@@ -62,95 +62,121 @@ function ResponseBox(props) {
     }
   };
 
-
   useEffect(() => {
-    if(filteredAnswerText.length < filteredAnswer.length) {
+    if (filteredAnswerText.length < filteredAnswer.length) {
       const timeout = setTimeout(() => {
-        setFilteredAnswerText(filteredAnswer.substring(0, filteredAnswerText.length+1))
+        setFilteredAnswerText(
+          filteredAnswer.substring(0, filteredAnswerText.length + 1)
+        );
       }, 25);
       return () => clearTimeout(timeout);
     }
   }, [filteredAnswer, filteredAnswerText]);
 
   return (
-    <div className="w-[75%] h-[80%] mt-2">
-    <motion.div className="bg-green-400 h-[100%] flex-col flex items-center rounded-3xl"
-        initial={{ height: '10%' }} 
-        animate={{ height: '100%' }} 
-        transition={{ duration: 1, bounce: 0.5, delay: props.time + 2, type: 'spring' }} 
-    >
-
-       <div className="w-[90%] h-[80%] mb-2 flex-col flex relative">
-
-
+    <div className="w-[60%] h-[80%] mt-2">
+      <motion.div
+        className={`${
+          role === "Traitor"
+            ? "bg-gray-800 outline border-red-700 outline-red-500 bg-gradient-to-b from-black to-red-950"
+            : "border-blue-950 outline outline-blue-900 bg-blue-800"
+        } h-[100%] flex-col flex items-center rounded-3xl`}
+        initial={{ height: "10%" }}
+        animate={{ height: "100%" }}
+        transition={{
+          duration: 1,
+          bounce: 0.5,
+          delay: props.time + 2,
+          type: "spring",
+        }}
+      >
+        <div className="w-[90%] h-[80%] mb-2 flex-col flex relative">
           <div className="w-[100%] h-[10%] mt-2 relative">
-
-             <span className={`pt-2 absolute ${split ? 'span-anim1' : ''}`}>Your response</span>
+            <span
+              className={`pt-2 absolute ${split ? "span-anim1" : ""} ${
+                role === "Traitor" ? "text-white" : "text-black"
+              }`}
+            >
+              Your response
+            </span>
             {split && (
-             <span className="pt-2 absolute span-anim2">What other's will see!</span>
+              <span
+                className={`pt-2 absolute span-anim2  ${
+                  role === "Traitor" ? "text-white" : "text-black"
+                }`}
+              >
+                What other's will see!
+              </span>
             )}
           </div>
 
           <div className="flex flex-row h-[100%] justify-between relative items-center">
-
             {!split && (
-            <textarea
-              className="px-4 py-2 border border-gray-300 rounded-2xl resize-none w-[100%] h-[100%] focus:outline-none mt-2"
-              placeholder="Enter your answer..."
-              value={answer}
-              onChange={(e) => setAnswer(e.target.value)}
-            />
+              <textarea
+                className="px-4 py-2 border border-gray-300 rounded-2xl resize-none w-[100%] h-[100%] focus:outline-none mt-2"
+                placeholder="Enter your answer..."
+                value={answer}
+                onChange={(e) => setAnswer(e.target.value)}
+              />
             )}
 
             {split && (
-            <>
-              <textarea
-                className="px-4 py-2 border border-gray-300 rounded-2xl resize-none w-[100%] h-[100%] focus:outline-none mt-2 animate-left"
-                placeholder="Enter your answer..."
-                value={answer}
-                readOnly
-              />
+              <>
+                <textarea
+                  className="px-4 py-2 border bg-slate-200 border-gray-300 rounded-2xl resize-none w-[100%] h-[100%] focus:outline-none mt-2 animate-left"
+                  placeholder="Enter your answer..."
+                  value={answer}
+                  readOnly
+                />
 
-              <textarea
-                className="px-4 py-2 border border-gray-300 rounded-2xl resize-none w-[100%] h-[100%] focus:outline-none mt-2 animate-right"
-                placeholder=""
-                value={filteredAnswerText}
-                readOnly
-              />
-            </>
+                <textarea
+                  className="px-4 py-2 border border-gray-300 rounded-2xl resize-none w-[100%] h-[100%] focus:outline-none mt-2 animate-right"
+                  placeholder=""
+                  value={filteredAnswerText}
+                  readOnly
+                />
+              </>
             )}
-
           </div>
-
         </div>
 
-      <div className="w-[90%] h-[20%] flex-col flex items-center justify-center ">      
-        {!submitted && (
-          <button
-            onClick={submitAnswer}
-            className="bg-yellow-400 hover:bg-yellow-600 font-bold py-2 px-4 rounded-lg border-b-4 border-l-2 border-yellow-700 shadow-md transform transition-all hover:scale-105 active:border-yellow-600 "
-          >
-            Submit Answer
-          </button>
-        )}
-        
-        {submitted && role === "Innocent" && (
-          <button
-            onClick={regenerateAnswer}
-            className={`${ regenCount == 0 || updatingResponse ? "bg-yellow-600" : "bg-yellow-400"} bg-yellow-400 hover:bg-yellow-600 font-bold py-2 px-4 rounded-lg border-b-4 border-l-2 border-yellow-700 shadow-md transform transition-all hover:scale-105 active:border-yellow-600 nowrap`}
-          >
-            <motion.img className="inline mr-2 h-[80%]" src={refresh} 
-              key={updatingResponse ? 1 : 0}
-              initial={{ rotate: 0 }} 
-              animate={{ rotate: 360 }} 
-              transition={{ duration: 1, repeat: updatingResponse ? Infinity : 0, repeatType: "loop", ease: "linear" }}
-            />Regenerate (x{regenCount})
-          </button>
-        )}
-      </div>
+        <div className="w-[90%] h-[20%] flex-col flex items-center justify-center ">
+          {!submitted && (
+            <button
+              onClick={submitAnswer}
+              className="bg-yellow-400 hover:bg-yellow-600 font-bold py-2 px-4 rounded-lg border-b-4 border-l-2 border-yellow-700 shadow-md transform transition-all hover:scale-105 active:border-yellow-600 "
+            >
+              Submit Answer
+            </button>
+          )}
 
+          {submitted && role === "Innocent" && timer > 5 && (
+            <button
+              onClick={regenerateAnswer}
+              className={`${
+                regenCount == 0 || updatingResponse
+                  ? "bg-yellow-600"
+                  : "bg-yellow-400"
+              } bg-yellow-400 hover:bg-yellow-600 font-bold py-2 px-4 rounded-lg border-b-4 border-l-2 border-yellow-700 shadow-md transform transition-all hover:scale-105 active:border-yellow-600 nowrap`}
+            >
+              <motion.img
+                className="inline mr-2 h-[80%]"
+                src={refresh}
+                key={updatingResponse ? 1 : 0}
+                initial={{ rotate: 0 }}
+                animate={{ rotate: 360 }}
+                transition={{
+                  duration: 1,
+                  repeat: updatingResponse ? Infinity : 0,
+                  repeatType: "loop",
+                  ease: "linear",
+                }}
+              />
+              Regenerate (x{regenCount})
+            </button>
+          )}
+        </div>
       </motion.div>
-
     </div>
   );
 }
