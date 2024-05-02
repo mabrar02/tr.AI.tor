@@ -166,6 +166,7 @@ module.exports = function phaseHandlers(socket, io, rooms) {
         } else {
           rooms[roomId].timerActive = false;
           io.to(roomId).emit("timer_expired");
+          rooms[roomId].numSubmitted = 0;
           clearInterval(interval);
         }
       }

@@ -28,6 +28,7 @@ function Voting() {
   const [decision, setDecision] = useState({});
   const [filteredPlayers, setFilteredPlayers] = useState(players);
   const [tallyVotesUpdated, setTallyVotesUpdated] = useState(false);
+  const [submittedVote, setSubmittedVote] = useState(false);
 
   useEffect(() => {
     if (tallyVotes != null) {
@@ -133,6 +134,7 @@ function Voting() {
   };
 
   const sendVote = () => {
+    setSubmittedVote(true);
     socket?.emit("send_vote", { roomId: joinCode, vote: selected });
   };
 
@@ -204,20 +206,26 @@ function Voting() {
         <div className="overflow-hidden flex-col w-[100%] flex-grow flex items-center">
           {
             <AnimatePresence>
-              {phase == "voting" && (
-                <motion.button
-                  initial={{ y: "-100vh" }}
-                  animate={{ y: "0vh" }}
-                  exit={{ y: "-100vh" }}
-                  transition={{ duration: 0.35, type: "tween" }}
-                  className="bg-yellow-500 hover:bg-yellow-600 font-bold py-2 px-4 rounded-lg shadow-md transform transition-all hover:scale-105 mt-5"
-                  onClick={sendVote}
-                >
-                  {selected == ""
-                    ? "Who is the Traitor?"
-                    : `${selected} is the Traitor!`}
-                </motion.button>
-              )}
+              {phase == "voting" &&
+                (!submittedVote ? (
+                  <motion.button
+                    initial={{ y: "-100vh" }}
+                    animate={{ y: "0vh" }}
+                    exit={{ y: "-100vh" }}
+                    transition={{ duration: 0.35, type: "tween" }}
+                    className="bg-yellow-500 hover:bg-yellow-600 font-bold py-2 px-4 rounded-lg shadow-md transform transition-all hover:scale-105 mt-5"
+                    onClick={sendVote}
+                  >
+                    {selected == ""
+                      ? "Who is the Traitor?"
+                      : `${selected} is the Traitor!`}
+                  </motion.button>
+                ) : (
+                  <div className="text-center">
+                    You've submitted your vote for {selected}! Waiting for other
+                    players...
+                  </div>
+                ))}
             </AnimatePresence>
           }
 

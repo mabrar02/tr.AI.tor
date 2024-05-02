@@ -112,6 +112,14 @@ module.exports = function playerHandlers(socket, io, rooms) {
 
   socket.on("send_vote", ({ roomId, vote }) => {
     rooms[roomId].players[socket.id].vote = vote;
+    rooms[roomId].numSubmitted++;
+    if (
+      rooms[roomId].numSubmitted == rooms[roomId].numPlayers &&
+      rooms[roomId].timer > 7
+    ) {
+      rooms[roomId].timer = 5;
+      io.to(roomId).emit("timer_update", rooms[roomId].timer);
+    }
   });
 
   socket.on("sabotage_player", ({ roomId, username }) => {
