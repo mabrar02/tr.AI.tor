@@ -5,6 +5,8 @@ import PromptBanner from "./PromptBanner";
 import ResponseBox from "./ResponseBox";
 import TransitionToPrompts from "./TransitionToPrompts";
 import PowerUps from "./PowerUps";
+import { Bounce, ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function AnswerPrompts() {
   const {
@@ -83,9 +85,9 @@ function AnswerPrompts() {
 
   const togglePowerPanel = () => {
     if (sabotageCount <= 0) {
-      alert("out of sabs");
+      notify("You're out of sabotages!", "error");
     } else if (sabbed) {
-      alert("already sabbed");
+      notify("You've already sabotaged this round!", "error");
     } else {
       setPowerUpsVisible(!powerUpsVisible);
     }
@@ -99,6 +101,46 @@ function AnswerPrompts() {
     setSabbed(true);
     updateSabotageCount(sabotageCount - 1);
     setPowerUpsVisible(false);
+    notify("Successful Sabotage", "successful");
+  };
+
+  const notify = (msg, type) => {
+    const existingToastId = toast.isActive("notification");
+
+    if (existingToastId) {
+      toast.update(existingToastId, {
+        render: msg,
+        type: type === "error" ? toast.TYPE.ERROR : toast.TYPE.SUCCESS,
+      });
+    } else {
+      if (type === "error") {
+        toast.error(msg, {
+          position: "top-center",
+          autoClose: 2000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+          transition: Bounce,
+          toastId: "notification", // Set a specific toastId
+        });
+      } else {
+        toast.success(msg, {
+          position: "top-center",
+          autoClose: 2000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+          transition: Bounce,
+          toastId: "notification", // Set a specific toastId
+        });
+      }
+    }
   };
 
   return (
@@ -112,7 +154,7 @@ function AnswerPrompts() {
               style={{ zIndex: 1 }}
               onClick={togglePowerPanel}
             >
-              <p>Sabotage</p>
+              <p>Sabotage x{sabotageCount}</p>
             </button>
             <PowerUps visible={powerUpsVisible} onSabotage={handleSabotage} />
           </>
@@ -153,6 +195,20 @@ function AnswerPrompts() {
           </AnimatePresence>
         </div>
       </div>
+
+      <ToastContainer
+        position="top-center"
+        autoClose={2000}
+        hideProgressBar
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss={false}
+        draggable
+        pauseOnHover={false}
+        theme="colored"
+        transition={Bounce}
+      />
     </div>
   );
 }
