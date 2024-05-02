@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useGameRoom } from "../contexts/GameRoomContext";
 import { motion, AnimatePresence } from "framer-motion";
 
-function PowerUps({ visible }) {
+function PowerUps({ visible, onSabotage }) {
   const {
     isHost,
     players,
@@ -15,6 +15,10 @@ function PowerUps({ visible }) {
     gameOver,
     setRoundValue,
   } = useGameRoom();
+
+  const sabotage = (index) => {
+    onSabotage(index);
+  };
 
   return (
     <div className="rounded-xl absolute w-[10%] h-[50%] left-4 mt-16 top-1/3 min-w-14 ">
@@ -34,6 +38,7 @@ function PowerUps({ visible }) {
                     backgroundColor: player ? player.color : "#636363",
                     zIndex: 1,
                   }}
+                  onClick={() => sabotage(index)}
                 >
                   <p>{player.username}</p>
                 </button>

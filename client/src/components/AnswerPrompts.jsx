@@ -25,12 +25,15 @@ function AnswerPrompts() {
     gamePhase,
     selectedChar,
     setSelectedChar,
+    sabotageCount,
+    updateSabotageCount,
   } = useGameRoom();
 
   const [transition, setTransition] = useState(true);
   const [transitionOut, setTransitionOut] = useState(false);
   const animDuration = 8; // Duration of the transition animation
   const [powerUpsVisible, setPowerUpsVisible] = useState(false);
+  const [sabbed, setSabbed] = useState(false);
 
   useEffect(() => {
     if (isHost) {
@@ -76,7 +79,23 @@ function AnswerPrompts() {
   }, []);
 
   const togglePowerPanel = () => {
-    setPowerUpsVisible(!powerUpsVisible);
+    if (sabotageCount <= 0) {
+      alert("out of sabs");
+    } else if (sabbed) {
+      alert("already sabbed");
+    } else {
+      setPowerUpsVisible(!powerUpsVisible);
+    }
+  };
+
+  const handleSabotage = (index) => {
+    socket.emit("sabotage_player", {
+      roomId: joinCode,
+      username: players[index].username,
+    });
+    setSabbed(true);
+    updateSabotageCount(sabotageCount - 1);
+    setPowerUpsVisible(false);
   };
 
   return (
@@ -92,7 +111,7 @@ function AnswerPrompts() {
             >
               <p>Sabotage</p>
             </button>
-            <PowerUps visible={powerUpsVisible} />
+            <PowerUps visible={powerUpsVisible} onSabotage={handleSabotage} />
           </>
         )}
         <PromptBanner time={animDuration} animate={true} />

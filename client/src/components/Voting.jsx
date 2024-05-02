@@ -30,8 +30,12 @@ function Voting() {
   const [tallyVotesUpdated, setTallyVotesUpdated] = useState(false);
 
   useEffect(() => {
-    if(tallyVotes != null) {
-      setFilteredPlayers(current => current.filter((item) => Object.keys(tallyVotes).includes(item.username)));
+    if (tallyVotes != null) {
+      setFilteredPlayers((current) =>
+        current.filter((item) =>
+          Object.keys(tallyVotes).includes(item.username)
+        )
+      );
       setTallyVotesUpdated(true);
     }
   }, [tallyVotes]);
@@ -57,13 +61,17 @@ function Voting() {
             setGameOver({ innowin: false });
             setNextPhase("ending");
           } else {
-            setPrompt(`No conclusive Traitor was found. ${tallyVotes.size >= 2 ? "You must vote unanimously!" : ""}`);
+            setPrompt(
+              `No conclusive Traitor was found. ${
+                tallyVotes.size >= 2 ? "You must vote unanimously!" : ""
+              }`
+            );
             setNextPhase("resetting");
             if (isHost) {
               socket.emit("reset_round", joinCode);
             }
 
-            const newPlayers = players.map(player => ({
+            const newPlayers = players.map((player) => ({
               ...player,
               filteredAnswer: "",
               vote: "",
@@ -75,7 +83,6 @@ function Voting() {
         break;
       case "inter-votes":
         setPrompt("And the results conclude...");
-
     }
   }, [phase, decision]);
 
@@ -88,7 +95,7 @@ function Voting() {
       }
       clearTimeout(timer2);
     }, 10000);
-  }, [nextPhase])
+  }, [nextPhase]);
 
   useEffect(() => {
     socket?.on("get_tally_votes", (votee_dict) => {
@@ -106,8 +113,8 @@ function Voting() {
     });
 
     socket?.on("timer_expired", () => {
-      switch(phase) {
-        case "voting" :
+      switch (phase) {
+        case "voting":
           if (isHost) {
             socket?.emit("tally_votes", joinCode);
           }
@@ -130,137 +137,139 @@ function Voting() {
     socket?.emit("send_vote", { roomId: joinCode, vote: selected });
   };
 
-//  useEffect(() => {
-//    const interval = setInterval(() => {
-//      setPhase("post-votes");
-//    }, 5000);
-//    return () => clearInterval(interval);
-//  }, []);
-
   const containerVariants = {
-    hidden: { },
+    hidden: {},
     visible: {
-        transition: {
-            staggerChildren: 0.1,  // Delay in seconds between each child animation
-        }
-    }
-  }
-    const itemVariants1 = {
-        hidden: { x: -4000 },  // Start off-screen to the left
-        visible: {
-            x: 0,
-            transition: { 
-              type: 'spring', 
-              stiffness: 4, 
-              damping: 1,
-              mass: 0.1,
-              ease: "easeIn",
-            },
-        },
-        exit:  {
-            rotateX: 270,
-            rotate: -20,
-            y: '100vh',
-            transition: {
-              duration: 3,
-            }
-        },
-    };
-    const itemVariants2 = {
-        hidden: { x: 4000 },  // Start off-screen to the right
-        visible: {
-            x: 0,
-            transition: { 
-              type: 'spring', 
-              stiffness: 4, 
-              damping: 1,
-              mass: 0.1,
-              ease: "easeIn",
-            },
-        },
-        exit:  {
-            rotate:  20,
-            rotateY: 270, 
-            y: '100vh',
-            transition: {
-              duration: 3,
-            }
-        },
-    };
+      transition: {
+        staggerChildren: 0.1, // Delay in seconds between each child animation
+      },
+    },
+  };
+  const itemVariants1 = {
+    hidden: { x: -4000 }, // Start off-screen to the left
+    visible: {
+      x: 0,
+      transition: {
+        type: "spring",
+        stiffness: 4,
+        damping: 1,
+        mass: 0.1,
+        ease: "easeIn",
+      },
+    },
+    exit: {
+      rotateX: 270,
+      rotate: -20,
+      y: "100vh",
+      transition: {
+        duration: 3,
+      },
+    },
+  };
+  const itemVariants2 = {
+    hidden: { x: 4000 }, // Start off-screen to the right
+    visible: {
+      x: 0,
+      transition: {
+        type: "spring",
+        stiffness: 4,
+        damping: 1,
+        mass: 0.1,
+        ease: "easeIn",
+      },
+    },
+    exit: {
+      rotate: 20,
+      rotateY: 270,
+      y: "100vh",
+      transition: {
+        duration: 3,
+      },
+    },
+  };
 
   return (
     <>
-
       {/* For transitioning out*/}
       {transition && (
-        <div className="transition-container closing-container "></div> 
+        <div className="transition-container closing-container "></div>
       )}
 
       <div className="w-screen h-screen items-center flex-col flex ">
+        <PromptBanner
+          animate={false}
+          animateprompt={true}
+          timeranimate={true}
+        />
 
-        <PromptBanner animate={false} animateprompt={true} timeranimate={true}/>
+        <div className="overflow-hidden flex-col w-[100%] flex-grow flex items-center">
+          {
+            <AnimatePresence>
+              {phase == "voting" && (
+                <motion.button
+                  initial={{ y: "-100vh" }}
+                  animate={{ y: "0vh" }}
+                  exit={{ y: "-100vh" }}
+                  transition={{ duration: 0.35, type: "tween" }}
+                  className="bg-yellow-500 hover:bg-yellow-600 font-bold py-2 px-4 rounded-lg shadow-md transform transition-all hover:scale-105 mt-5"
+                  onClick={sendVote}
+                >
+                  {selected == ""
+                    ? "Who is the Traitor?"
+                    : `${selected} is the Traitor!`}
+                </motion.button>
+              )}
+            </AnimatePresence>
+          }
 
-          <div className="overflow-hidden flex-col w-[100%] flex-grow flex items-center">
-
-          {<AnimatePresence>
-          {phase == "voting" && (
-            <motion.button
-              initial={{ y: '-100vh' }} 
-              animate={{ y: '0vh' }} 
-              exit={{y: '-100vh' }}
-              transition={{ duration: 0.35, type: 'tween'}} 
-              className="bg-yellow-500 hover:bg-yellow-600 font-bold py-2 px-4 rounded-lg shadow-md transform transition-all hover:scale-105 mt-5"
-              onClick={sendVote}
-            >
-              {selected == ""
-                ? "Who is the Traitor?"
-                : `${selected} is the Traitor!`}
-            </motion.button>
-            )}
-          </AnimatePresence>}
-            
-            <motion.div className="flex-row w-[70%] justify-center flex-col justify-center items-center grid grid-cols-2 gap-4 grid" 
-              variants={containerVariants}
-              initial="hidden"
-              animate="visible"
-              exit="exit"
-            >
+          <motion.div
+            className="flex-row w-[70%] justify-center flex-col justify-center items-center grid grid-cols-2 gap-4 grid"
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+          >
             <AnimatePresence>
               {filteredPlayers.map((player, index) => (
                 <motion.div
                   key={player.index}
                   className={`${
                     selected == player.username ? "bg-cyan-200" : "bg-slate-200"
-                    } m-4 font-bold py-2 px-5 border border-black shadow shadow-lg mb-4 mx-1 wx-5 rounded-tr-xl rounded-br-xl rounded-tl-md w-[100%] relative`}
+                  } m-4 font-bold py-2 px-5 border border-black shadow shadow-lg mb-4 mx-1 wx-5 rounded-tr-xl rounded-br-xl rounded-tl-md w-[100%] relative`}
                   onClick={() => selectResponse(player.username)}
-                  variants={player.index % 2 == 1 ? itemVariants1 : itemVariants2}
+                  variants={
+                    player.index % 2 == 1 ? itemVariants1 : itemVariants2
+                  }
                   initial="hidden"
                   animate="visible"
                   exit="exit"
                   layout
                 >
                   <p className="mb-5">{player.username}</p>
-                  <p>{player.filteredAnswer}</p>
+                  <p>{player.sab ? player.answers : player.filteredAnswer}</p>
 
-                   {phase == "post-votes" && tallyVotesUpdated && (
+                  {phase == "post-votes" && tallyVotesUpdated && (
                     <motion.p
-                    initial={{ size: 0 }} 
-                    animate={{ size: 1 }} 
-                    transition={{ stiffness: 2, mass: 1, damping: 5, type: 'spring'}} 
-                    className="mt-2" 
-                    >Voted by {tallyVotes[player.username]?.voters.join(", ")}</motion.p>
-                   )} 
-
+                      initial={{ size: 0 }}
+                      animate={{ size: 1 }}
+                      transition={{
+                        stiffness: 2,
+                        mass: 1,
+                        damping: 5,
+                        type: "spring",
+                      }}
+                      className="mt-2"
+                    >
+                      Voted by {tallyVotes[player.username]?.voters.join(", ")}
+                    </motion.p>
+                  )}
                 </motion.div>
               ))}
             </AnimatePresence>
-            </motion.div>
-
-          </div>
-
-
-    </div>
-  </>
+          </motion.div>
+        </div>
+      </div>
+    </>
   );
 }
 

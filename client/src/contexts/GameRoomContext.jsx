@@ -135,7 +135,7 @@ export const GameRoomProvider = ({ children }) => {
         setSelectedChar,
         timerMax,
         sabotageCount,
-        setSabotageCount,
+        updateSabotageCount,
       }}
     >
       {children}
