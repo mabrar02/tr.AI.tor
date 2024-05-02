@@ -24,13 +24,13 @@ function TransitionToPrompts() {
       <div className="sliding-word">
         <p><i>Round {roundNum}!</i></p>
         {roundNum == 1 && (
-          <p>Try and get a feel for who's the traitor... 🕵️</p>
+          <p className="font-gameFont">Try and get a feel for who's the traitor... 🕵️</p>
         )}
         {roundNum == 2 && (
-          <p>The traitor is stil at large! Try and narrow down the suspects...</p>
+          <p className="font-gameFont">The traitor is stil at large! Try and narrow down the suspects...</p>
         )}
         {roundNum == 3 && (
-          <p>Last chance! If you don't catch the traitor this round, they will win!</p>
+          <p className="font-gameFont">Last chance! If you don't catch the traitor this round, they will win!</p>
         )}
       </div>
     </div>

@@ -3,7 +3,7 @@ import { useGameRoom } from "../contexts/GameRoomContext";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaInfoCircle } from "react-icons/fa";
 import { Bounce, ToastContainer, toast } from "react-toastify";
-import useSound from 'use-sound'
+import useSound from 'use-sound';
 
 import soundFile from "../assets/sfx/clickSFX.wav"
 import hoverSoundFile from "../assets/sfx/hoverSFX.wav"
@@ -18,7 +18,7 @@ function Lobby() {
   const [play] = useSound(soundFile, {volume: 0.8});
   const [playHoverSound] = useSound(hoverSoundFile, {volume: 0.1});
   const [playErrorSound] = useSound(errorSoundFile, {volume: 0.3});
-  const [playPopSound] = useSound(popSoundFile, {volume: 0.5});
+  const [playPopSound] = useSound(popSoundFile, {volume: 0.3});
 
   // Function to play sound effect
   const soundFX = () => {
@@ -208,7 +208,7 @@ function Lobby() {
           <div className="w-1/4 ">
             <div className="w-full flex-col flex items-center justify-center h-full ">
               <div className="w-full h-[80%]  overflow-clip">
-                <p className="font-bold text-center text-white  text-xl mb-2">
+                <p className="font-gameFont font-bold text-center text-white  text-xl mb-2">
                   PLAYERS
                 </p>
                 <ul className="w-full h-full ">
@@ -230,11 +230,11 @@ function Lobby() {
                             <div className="">
                               <span>{player.username}</span>{" "}
                               {player.host && (
-                                <span className="font-bold">(HOST)</span>
+                                <span className="font-gameFont font-bold">(HOST)</span>
                               )}
                             </div>
                           ) : (
-                            <div>Player is offline</div>
+                            <div className="font-gameFont">Player is offline</div>
                           )}
                         </motion.li>
                       );
@@ -270,7 +270,7 @@ function Lobby() {
                         soundFX();
                       }}
                       onMouseEnter={playHoverSoundFX}
-                      className="w-full text-2xl bg-yellow-400 hover:bg-yellow-600 font-bold py-6 px-16  rounded-lg border-b-4 border-l-2 border-yellow-700 shadow-md transform transition-all hover:scale-105 active:border-yellow-600 mb-2"
+                      className="font-gameFont w-full text-2xl bg-yellow-400 hover:bg-yellow-600 font-bold py-6 px-16  rounded-lg border-b-4 border-l-2 border-yellow-700 shadow-md transform transition-all hover:scale-105 active:border-yellow-600 mb-2"
                     >
                       Start Game
                     </button>
@@ -285,7 +285,7 @@ function Lobby() {
                       soundFX();
                     }}
                     onMouseEnter={playHoverSoundFX}
-                    className="w-full text-2xl bg-yellow-400 hover:bg-yellow-600 font-bold py-6 px-16 max-w-72 rounded-lg border-b-4 border-l-2 border-yellow-700 shadow-md transform transition-all hover:scale-105 active:border-yellow-600 mb-2"
+                    className="font-gameFont w-full text-2xl bg-yellow-400 hover:bg-yellow-600 font-bold py-6 px-16 max-w-72 rounded-lg border-b-4 border-l-2 border-yellow-700 shadow-md transform transition-all hover:scale-105 active:border-yellow-600 mb-2"
                   >
                     Leave Game
                   </button>
@@ -296,7 +296,7 @@ function Lobby() {
 
           <div className=" w-1/4">
             <div className="w-full flex-col flex items-center  h-[20%] justify-center ">
-              <p className="font-bold text-white">Join Code</p>
+              <p className="font-gameFont font-bold text-white">Join Code</p>
               <button
                 className="bg-red-600 hover:scale-105 p-1 text-white w-[60%] rounded-md flex flex-row justify-center items-center transition-all"
                 onClick={copyJoinCode}
@@ -325,11 +325,11 @@ function Lobby() {
             {!joinGame ? (
               <div className="w-full">
                 <div className="w-full">
-                  <h2 className="font-medium text-white mb-2">Display Name</h2>
+                  <h2 className="font-gameFont font-medium text-white mb-2">Display Name</h2>
                   <input
                     type="text"
                     placeholder="Enter a display name"
-                    className="w-full py-2 px-4 bg-gray-200 text-gray-800 border border-gray-300 rounded-lg hover:bg-gray-300 text-center mb-24"
+                    className="font-gameFont w-full py-2 px-4 bg-gray-200 text-gray-800 border border-gray-300 rounded-lg hover:bg-gray-300 text-center mb-24"
                     value={userName}
                     onChange={(e) =>
                       setUserNameValue(e.target.value.slice(0, 14))
@@ -339,7 +339,7 @@ function Lobby() {
 
                 <div className="w-full">
                   <button
-                    className="overflow-hidden bg-yellow-400 w-full hover:bg-yellow-600 font-bold py-2 mb-3 px-4 rounded-lg border-b-4 border-l-2 border-yellow-700 shadow-md transform transition-all hover:scale-105 active:border-yellow-600"
+                    className="font-gameFont overflow-hidden bg-yellow-400 w-full hover:bg-yellow-600 font-bold py-2 mb-3 px-4 rounded-lg border-b-4 border-l-2 border-yellow-700 shadow-md transform transition-all hover:scale-105 active:border-yellow-600"
                     onMouseEnter={playHoverSoundFX}
                     onClick={() => {
                       tryJoinGame();
@@ -349,7 +349,7 @@ function Lobby() {
                     Join Game
                   </button>
                   <button
-                    className="overflow-hidden bg-yellow-400  w-full hover:bg-yellow-600 font-bold py-2 px-4 rounded-lg border-b-4 border-l-2 border-yellow-700 shadow-md transform transition-all hover:scale-105 active:border-yellow-600"
+                    className="font-gameFont overflow-hidden bg-yellow-400  w-full hover:bg-yellow-600 font-bold py-2 px-4 rounded-lg border-b-4 border-l-2 border-yellow-700 shadow-md transform transition-all hover:scale-105 active:border-yellow-600"
                     onMouseEnter={playHoverSoundFX}
                     onClick={() => {
                       handleHostRoom();
@@ -363,7 +363,7 @@ function Lobby() {
             ) : (
               <div className="w-full">
                 <div className="w-full">
-                  <h2 className="font-medium text-white mb-2">Room Code</h2>
+                  <h2 className="font-gameFont font-medium text-white mb-2">Room Code</h2>
                   <input
                     type="text"
                     placeholder="Enter a room code"
@@ -377,7 +377,7 @@ function Lobby() {
 
                 <div className="w-full">
                   <button
-                    className="overflow-hidden bg-yellow-400 w-full hover:bg-yellow-600 font-bold py-2 mb-3 px-4 rounded-lg border-b-4 border-l-2 border-yellow-700 shadow-md transform transition-all hover:scale-105 active:border-yellow-600"
+                    className="font-gameFont overflow-hidden bg-yellow-400 w-full hover:bg-yellow-600 font-bold py-2 mb-3 px-4 rounded-lg border-b-4 border-l-2 border-yellow-700 shadow-md transform transition-all hover:scale-105 active:border-yellow-600"
                     onClick={() => {
                       handleJoinRoom();
                       soundFX();
@@ -387,7 +387,7 @@ function Lobby() {
                     Join Room
                   </button>
                   <button
-                    className="overflow-hidden bg-yellow-400  w-full hover:bg-yellow-600 font-bold py-2 px-4 rounded-lg border-b-4 border-l-2 border-yellow-700 shadow-md transform transition-all hover:scale-105 active:border-yellow-600"
+                    className="font-gameFont overflow-hidden bg-yellow-400  w-full hover:bg-yellow-600 font-bold py-2 px-4 rounded-lg border-b-4 border-l-2 border-yellow-700 shadow-md transform transition-all hover:scale-105 active:border-yellow-600"
                     onClick={() => {
                       setJoinGame(false);
                       soundFX();

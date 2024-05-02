@@ -5,6 +5,7 @@ export default {
     extend: {
       fontFamily:{
         title:["Lilita One","sans-serif"],
+        gameFont:["Lexend Deca", "sans-serif"],
       }
     },
   },

@@ -79,7 +79,7 @@ function SeeResponses() {
                   exit={{y: '-100vh' }}
                   transition={{ duration: 0.5, bounce: 0.2, delay: 0, type: 'spring' }} 
                   >
-              <h1>Time's up! Let's take a look at these responses...</h1>
+              <h1 className="font-gameFont">Time's up! Let's take a look at these responses...</h1>
             </motion.div>
         )}
           </AnimatePresence>
@@ -94,7 +94,7 @@ function SeeResponses() {
                   exit={{x: '100vw' }}
                   transition={{ duration: 1, bounce: 0.2, delay: 0, type: 'spring' }} 
                   >
-                <div className="font-bold py-2 px-5 border border-black shadow shadow-lg mb-4 mx-1 wx-5 rounded-tr-xl rounded-br-xl rounded-tl-md w-[100%] relative"
+                <div className="font-gameFont font-bold py-2 px-5 border border-black shadow shadow-lg mb-4 mx-1 wx-5 rounded-tr-xl rounded-br-xl rounded-tl-md w-[100%] relative"
                   style={{ backgroundColor: "white" }}>
                   <p className="mb-5">{players[currentResIndex]?.username}:</p>
                   <p>{players[currentResIndex]?.filteredAnswer}</p>

@@ -124,11 +124,11 @@ function AnswerPrompts() {
                 transition={{ duration: 1, bounce: 0.2, delay: 0, type: 'spring' }} 
                 >
               {role === "Innocent" && (
-              <span className="mt-2">Answer honestly! The {selectedChar} will translate for you.</span>
+              <span className="font-gameFont mt-2">Answer honestly! The {selectedChar} will translate for you.</span>
               )}
 
               {role === "Traitor" && (
-              <span className="mt-2">Try to deceive the others into thinking you're an AI!</span>
+              <span className="font-gameFont mt-2">Try to deceive the others into thinking you're an AI!</span>
               )}
               <ResponseBox time={animDuration}/>
             </motion.div>

@@ -3,8 +3,28 @@ import { useGameRoom } from "../contexts/GameRoomContext";
 import { motion } from "framer-motion";
 import './css/styles.css';
 import refresh from './css/refresh.svg';
+import useSound from 'use-sound';
+
+import soundFile from "../assets/sfx/clickSFX.wav"
+import hoverSoundFile from "../assets/sfx/hoverSFX.wav"
+import errorSoundFile from "../assets/sfx/errorSFX.mp3"
 
 function ResponseBox(props) {
+
+    // Hook for playing sound
+    const [play] = useSound(soundFile, {volume: 0.8});
+    const [playHoverSound] = useSound(hoverSoundFile, {volume: 0.1});
+    const [playErrorSound] = useSound(errorSoundFile, {volume: 0.3});
+
+      // Function to play sound effect
+  const soundFX = () => {
+    play();
+  };
+
+  const playHoverSoundFX = () => {
+    playHoverSound();
+  };
+  
   const {
     isHost,
     players,
@@ -85,9 +105,9 @@ function ResponseBox(props) {
 
           <div className="w-[100%] h-[10%] mt-2 relative">
 
-             <span className={`pt-2 absolute ${split ? 'span-anim1' : ''}`}>Your response</span>
+             <span className={`font-gameFont pt-2 absolute ${split ? 'span-anim1' : ''}`}>Your response</span>
             {split && (
-             <span className="pt-2 absolute span-anim2">What other's will see!</span>
+             <span className="font-gameFont pt-2 absolute span-anim2">What other's will see!</span>
             )}
           </div>
 
@@ -95,7 +115,7 @@ function ResponseBox(props) {
 
             {!split && (
             <textarea
-              className="px-4 py-2 border border-gray-300 rounded-2xl resize-none w-[100%] h-[100%] focus:outline-none mt-2"
+              className="font-gameFont px-4 py-2 border border-gray-300 rounded-2xl resize-none w-[100%] h-[100%] focus:outline-none mt-2"
               placeholder="Enter your answer..."
               value={answer}
               onChange={(e) => setAnswer(e.target.value)}
@@ -105,14 +125,14 @@ function ResponseBox(props) {
             {split && (
             <>
               <textarea
-                className="px-4 py-2 border border-gray-300 rounded-2xl resize-none w-[100%] h-[100%] focus:outline-none mt-2 animate-left"
+                className="font-gameFont px-4 py-2 border border-gray-300 rounded-2xl resize-none w-[100%] h-[100%] focus:outline-none mt-2 animate-left"
                 placeholder="Enter your answer..."
                 value={answer}
                 readOnly
               />
 
               <textarea
-                className="px-4 py-2 border border-gray-300 rounded-2xl resize-none w-[100%] h-[100%] focus:outline-none mt-2 animate-right"
+                className="font-gameFont px-4 py-2 border border-gray-300 rounded-2xl resize-none w-[100%] h-[100%] focus:outline-none mt-2 animate-right"
                 placeholder=""
                 value={filteredAnswerText}
                 readOnly
@@ -127,8 +147,12 @@ function ResponseBox(props) {
       <div className="w-[90%] h-[20%] flex-col flex items-center justify-center ">      
         {!submitted && (
           <button
-            onClick={submitAnswer}
-            className="bg-yellow-400 hover:bg-yellow-600 font-bold py-2 px-4 rounded-lg border-b-4 border-l-2 border-yellow-700 shadow-md transform transition-all hover:scale-105 active:border-yellow-600 "
+          onClick={() => {
+            submitAnswer();
+            soundFX();
+          }}
+          onMouseEnter={playHoverSoundFX}
+            className="font-gameFont bg-yellow-400 hover:bg-yellow-600 font-bold py-2 px-4 rounded-lg border-b-4 border-l-2 border-yellow-700 shadow-md transform transition-all hover:scale-105 active:border-yellow-600 "
           >
             Submit Answer
           </button>
@@ -136,8 +160,12 @@ function ResponseBox(props) {
         
         {submitted && role === "Innocent" && (
           <button
-            onClick={regenerateAnswer}
-            className={`${ regenCount == 0 || updatingResponse ? "bg-yellow-600" : "bg-yellow-400"} bg-yellow-400 hover:bg-yellow-600 font-bold py-2 px-4 rounded-lg border-b-4 border-l-2 border-yellow-700 shadow-md transform transition-all hover:scale-105 active:border-yellow-600 nowrap`}
+          onMouseEnter={playHoverSoundFX}
+          onClick={() => {
+            regenerateAnswer();
+            soundFX();
+          }}
+            className={`${ regenCount == 0 || updatingResponse ? "font-gameFont bg-yellow-600" : "bg-yellow-400"} bg-yellow-400 hover:bg-yellow-600 font-bold py-2 px-4 rounded-lg border-b-4 border-l-2 border-yellow-700 shadow-md transform transition-all hover:scale-105 active:border-yellow-600 nowrap`}
           >
             <motion.img className="inline mr-2 h-[80%]" src={refresh} 
               key={updatingResponse ? 1 : 0}

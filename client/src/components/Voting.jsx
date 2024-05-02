@@ -209,7 +209,7 @@ function Voting() {
               animate={{ y: '0vh' }} 
               exit={{y: '-100vh' }}
               transition={{ duration: 0.35, type: 'tween'}} 
-              className="bg-yellow-500 hover:bg-yellow-600 font-bold py-2 px-4 rounded-lg shadow-md transform transition-all hover:scale-105 mt-5"
+              className="font-gameFont bg-yellow-500 hover:bg-yellow-600 font-bold py-2 px-4 rounded-lg shadow-md transform transition-all hover:scale-105 mt-5"
               onClick={sendVote}
             >
               {selected == ""
@@ -231,7 +231,7 @@ function Voting() {
                   key={player.index}
                   className={`${
                     selected == player.username ? "bg-cyan-200" : "bg-slate-200"
-                    } m-4 font-bold py-2 px-5 border border-black shadow shadow-lg mb-4 mx-1 wx-5 rounded-tr-xl rounded-br-xl rounded-tl-md w-[100%] relative`}
+                    } font-gameFont m-4 font-bold py-2 px-5 border border-black shadow shadow-lg mb-4 mx-1 wx-5 rounded-tr-xl rounded-br-xl rounded-tl-md w-[100%] relative`}
                   onClick={() => selectResponse(player.username)}
                   variants={player.index % 2 == 1 ? itemVariants1 : itemVariants2}
                   initial="hidden"
@@ -247,7 +247,7 @@ function Voting() {
                     initial={{ size: 0 }} 
                     animate={{ size: 1 }} 
                     transition={{ stiffness: 2, mass: 1, damping: 5, type: 'spring'}} 
-                    className="mt-2" 
+                    className="font-gameFont mt-2" 
                     >Voted by {tallyVotes[player.username]?.voters.join(", ")}</motion.p>
                    )} 
 
