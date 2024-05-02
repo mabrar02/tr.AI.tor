@@ -2,8 +2,14 @@ import React, { useState, useEffect } from "react";
 import { useGameRoom } from "../contexts/GameRoomContext";
 import PromptBanner from "./PromptBanner";
 import { AnimatePresence, easeIn, motion } from "framer-motion";
+import useSound from 'use-sound';
+
+import selectSoundFile from "../assets/sfx/selectSFX.wav"
 
 function Voting() {
+
+  const [playSelectSound] = useSound(selectSoundFile, {volume: 0.2});
+
   const {
     isHost,
     players,
@@ -210,7 +216,9 @@ function Voting() {
               exit={{y: '-100vh' }}
               transition={{ duration: 0.35, type: 'tween'}} 
               className="font-gameFont bg-red-400 hover:bg-red-600 font-bold py-2 px-4 rounded-lg shadow-md transform transition-all hover:scale-105 mt-5"
-              onClick={sendVote}
+              onClick={() => {
+                sendVote();
+              }}
             >
               {selected == ""
                 ? "Who is the Traitor?"
@@ -232,7 +240,10 @@ function Voting() {
                   className={`${
                     selected == player.username ? "bg-red-300" : "bg-slate-200"
                     } font-gameFont m-4 font-bold py-2 px-5 border border-black shadow shadow-lg mb-4 mx-1 wx-5 rounded-tr-xl rounded-br-xl rounded-tl-md w-[100%] relative`}
-                  onClick={() => selectResponse(player.username)}
+                  onClick={() => {
+                    playSelectSound();
+                    selectResponse(player.username);
+                  }}
                   variants={player.index % 2 == 1 ? itemVariants1 : itemVariants2}
                   initial="hidden"
                   animate="visible"

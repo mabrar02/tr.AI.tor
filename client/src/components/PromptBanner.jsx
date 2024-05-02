@@ -1,8 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { useGameRoom } from "../contexts/GameRoomContext";
 import { AnimatePresence, motion } from "framer-motion";
+import useSound from "use-sound";
+
+import promptSoundFile from "../assets/sfx/promptSFX.wav"
 
 function PromptBanner(props) {
+
+  const [playPromptSound] = useSound(promptSoundFile, {volume: 0.2});
+
+
   const {
     isHost,
     players,

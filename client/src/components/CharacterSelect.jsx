@@ -8,6 +8,8 @@ import useSound from 'use-sound';
 import soundFile from "../assets/sfx/clickSFX.wav"
 import hoverSoundFile from "../assets/sfx/hoverSFX.wav"
 import errorSoundFile from "../assets/sfx/errorSFX.mp3"
+import selectSoundFile from "../assets/sfx/selectSFX.wav"
+import traitorSoundFile from "../assets/sfx/traitorSFX.wav"
 
 
 import "react-toastify/dist/ReactToastify.css";
@@ -18,6 +20,8 @@ function CharacterSelect() {
     const [play] = useSound(soundFile, {volume: 0.8});
     const [playHoverSound] = useSound(hoverSoundFile, {volume: 0.1});
     const [playErrorSound] = useSound(errorSoundFile, {volume: 0.3});
+    const [playSelectSound] = useSound(selectSoundFile, {volume: 0.1});
+    const [playTraitorSound] = useSound(traitorSoundFile, {volume: 0.2});
 
       // Function to play sound effect
   const soundFX = () => {
@@ -119,6 +123,7 @@ function CharacterSelect() {
       )}
 
       {role === "Traitor" && (
+      
         <div className="overflow-hidden">
           <motion.div
             className="w-screen h-screen justify-center items-center flex "
@@ -141,8 +146,8 @@ function CharacterSelect() {
                     alt={"AI Icons"}
                   />
                 </div>
-
                 <p className="font-gameFont font-bold  text-3xl xl:text-5xl text-white text-center mt-6 transition-all">
+                  
                   You are the Traitor! Try to blend in...
                 </p>
                 <p className="font-gameFont text-white text-center italic">
@@ -206,7 +211,10 @@ function CharacterSelect() {
                             ? "bg-blue-200 border-blue-500 scale-105"
                             : "bg-white"
                         } hover:shadow-lg active:border-blue-400`}
-                        onClick={() => setSelectedChar(charOptions[index])}
+                        onClick={() => {
+                          playSelectSound(); 
+                          setSelectedChar(charOptions[index]);
+                        }}
                       >
                         <div className="justify-center h-full">
                           <div className="flex flex-col items-center justify-center py-10 space-y-6">

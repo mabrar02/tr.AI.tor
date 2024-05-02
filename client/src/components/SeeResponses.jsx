@@ -2,8 +2,15 @@ import React, { useEffect, useState } from "react";
 import { useGameRoom } from "../contexts/GameRoomContext";
 import PromptBanner from "./PromptBanner";
 import { AnimatePresence, motion } from "framer-motion";
+import useSound from "use-sound";
+
+import wooshSoundFile from "../assets/sfx/wooshSFX.mp3"
 
 function SeeResponses() {
+
+
+  const [playWooshSound] = useSound(wooshSoundFile, {volume: 0.02});
+
   const {
     gamePhase,
     transitionToGamePhase,
@@ -87,6 +94,7 @@ function SeeResponses() {
           <div className="w-screen h-full justify-center flex flex-grow overflow-hidden pt-5">
             <AnimatePresence>
         {showResponse && currentResIndex < players.length && (
+              playWooshSound(),
               <motion.div className="flex-1 p-4 text-black absolute w-[65%]"
                   key={currentResIndex}
                   initial={{ x: '-100vw' }} 

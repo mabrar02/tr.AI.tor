@@ -5,6 +5,7 @@ import { FaInfoCircle } from "react-icons/fa";
 import { Bounce, ToastContainer, toast } from "react-toastify";
 import useSound from 'use-sound';
 
+import countdownFile from "../assets/sfx/countdownSFX.wav"
 import soundFile from "../assets/sfx/clickSFX.wav"
 import hoverSoundFile from "../assets/sfx/hoverSFX.wav"
 import errorSoundFile from "../assets/sfx/errorSFX.mp3"
@@ -19,6 +20,7 @@ function Lobby() {
   const [playHoverSound] = useSound(hoverSoundFile, {volume: 0.1});
   const [playErrorSound] = useSound(errorSoundFile, {volume: 0.3});
   const [playPopSound] = useSound(popSoundFile, {volume: 0.3});
+  const [playcountdownSound] = useSound(countdownFile, {volume: 0.1});
 
   // Function to play sound effect
   const soundFX = () => {
@@ -130,6 +132,7 @@ function Lobby() {
       notify("Require at least 4 players!", "error");
       playErrorSound();
     } else {
+      playcountdownSound();
       socket?.emit("start_timer", { roomId: joinCode, phase: gamePhase });
     }
   };
