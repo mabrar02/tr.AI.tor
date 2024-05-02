@@ -115,7 +115,7 @@ function ResponseBox(props) {
 
             {!split && (
             <textarea
-              className="font-gameFont px-4 py-2 border border-gray-300 rounded-2xl resize-none w-[100%] h-[100%] focus:outline-none mt-2"
+              className="border-4 border-gray-300 font-gameFont px-4 py-2 border border-gray-300 rounded-2xl resize-none w-[100%] h-[100%] focus:outline-none mt-2"
               placeholder="Enter your answer..."
               value={answer}
               onChange={(e) => setAnswer(e.target.value)}

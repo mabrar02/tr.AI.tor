@@ -298,7 +298,7 @@ function Lobby() {
             <div className="w-full flex-col flex items-center  h-[20%] justify-center ">
               <p className="font-gameFont font-bold text-white">Join Code</p>
               <button
-                className="bg-red-600 hover:scale-105 p-1 text-white w-[60%] rounded-md flex flex-row justify-center items-center transition-all"
+                className="bg-red-600 border-2 border border-black hover:scale-105 p-1 text-white w-[60%] rounded-md flex flex-row justify-center items-center transition-all"
                 onClick={copyJoinCode}
               >
                 <h2 className="text-4xl font-bold">{joinCode}</h2>

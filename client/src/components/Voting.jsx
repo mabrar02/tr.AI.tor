@@ -209,7 +209,7 @@ function Voting() {
               animate={{ y: '0vh' }} 
               exit={{y: '-100vh' }}
               transition={{ duration: 0.35, type: 'tween'}} 
-              className="font-gameFont bg-red-500 hover:bg-red-600 font-bold py-2 px-4 rounded-lg shadow-md transform transition-all hover:scale-105 mt-5"
+              className="font-gameFont bg-red-400 hover:bg-red-600 font-bold py-2 px-4 rounded-lg shadow-md transform transition-all hover:scale-105 mt-5"
               onClick={sendVote}
             >
               {selected == ""
