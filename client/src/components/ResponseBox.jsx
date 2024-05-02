@@ -94,7 +94,7 @@ function ResponseBox(props) {
 
   return (
     <div className="w-[75%] h-[80%] mt-2">
-    <motion.div className="bg-green-400 h-[100%] flex-col flex items-center rounded-3xl"
+    <motion.div className="bg-gradient-to-b from-blue-400 to-blue-500 border-8 border-blue-900 h-[100%] flex-col flex items-center rounded-3xl"
         initial={{ height: '10%' }} 
         animate={{ height: '100%' }} 
         transition={{ duration: 1, bounce: 0.5, delay: props.time + 2, type: 'spring' }} 
@@ -105,7 +105,7 @@ function ResponseBox(props) {
 
           <div className="w-[100%] h-[10%] mt-2 relative">
 
-             <span className={`font-gameFont pt-2 absolute ${split ? 'span-anim1' : ''}`}>Your response</span>
+             <span className={`font-gameFont pt-2 absolute ${split ? 'span-anim1' : ''}`}>Your response:</span>
             {split && (
              <span className="font-gameFont pt-2 absolute span-anim2">What other's will see!</span>
             )}

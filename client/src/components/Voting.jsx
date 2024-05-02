@@ -230,7 +230,7 @@ function Voting() {
                 <motion.div
                   key={player.index}
                   className={`${
-                    selected == player.username ? "bg-cyan-200" : "bg-slate-200"
+                    selected == player.username ? "bg-red-300" : "bg-slate-200"
                     } font-gameFont m-4 font-bold py-2 px-5 border border-black shadow shadow-lg mb-4 mx-1 wx-5 rounded-tr-xl rounded-br-xl rounded-tl-md w-[100%] relative`}
                   onClick={() => selectResponse(player.username)}
                   variants={player.index % 2 == 1 ? itemVariants1 : itemVariants2}
