@@ -135,6 +135,7 @@ module.exports = function phaseHandlers(socket, io, rooms) {
       value["vote"] = "";
       value["answer"] = "";
       value["filteredAnswer"] = "";
+      value["sab"] = false;
     });
   });
 
@@ -163,16 +164,16 @@ module.exports = function phaseHandlers(socket, io, rooms) {
     let time = 0;
     switch (phase) {
       case "lobby":
-        time = 5;
+        time = 3;
         break;
       case "characters":
         time = 20;
         break;
       case "prompts":
-        time = 10;
+        time = 90;
         break;
       case "voting":
-        time = 10;
+        time = 45;
         break;
       case "post-votes":
         time = 5; //Hardcoded in voting file

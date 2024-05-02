@@ -8,31 +8,7 @@ import SeeResponses from "./components/SeeResponses";
 import Ending from "./components/Ending";
 
 const App = () => {
-  const {
-    gamePhase,
-    transitionToGamePhase,
-    isHost,
-    setHostStatus,
-    players,
-    updatePlayers,
-    joinCode,
-    setJoinCodeValue,
-    userName,
-    setUserNameValue,
-    socket,
-    index,
-    setIndex,
-    roundNum,
-    role,
-    setRoundValue,
-    gameOver,
-    setGameOver,
-    inLobby,
-    setInLobby,
-    selectedChar,
-    setSelectedChar,
-    timerMax,
-  } = useGameRoom();
+  const { gamePhase } = useGameRoom();
 
   return (
     <div>

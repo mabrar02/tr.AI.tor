@@ -39,6 +39,7 @@ module.exports = function roomHandlers(socket, io, rooms) {
       vote: "",
       color: rooms[roomId].colors[0],
       index: 0,
+      sab: false,
     };
     updatePlayers(roomId);
   });
@@ -70,6 +71,7 @@ module.exports = function roomHandlers(socket, io, rooms) {
           vote: "",
           color: colors[numPlayers],
           index: index + 1,
+          sab: false,
         };
         room.numPlayers++;
         room.index++;
