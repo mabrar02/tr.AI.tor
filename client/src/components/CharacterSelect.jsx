@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useGameRoom } from "../contexts/GameRoomContext";
-import AIImage from "../assets/image.png";
 import { motion } from "framer-motion";
 import { Bounce, ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -121,7 +120,7 @@ function CharacterSelect() {
                 <div className="rounded-full overflow-hidden w-28 h-28 lg:w-40 lg:h-40 flex hover:scale-105 transition-all">
                   <img
                     className="w-full h-full object-cover "
-                    src={AIImage}
+                    src={`/charIcons/` + `${role}.jpg`.toLowerCase()}
                     alt={"AI Icons"}
                   />
                 </div>
@@ -197,7 +196,7 @@ function CharacterSelect() {
                             <div className="rounded-full overflow-hidden w-14 h-14 lg:w-20 lg:h-20 transition-all flex">
                               <img
                                 className="w-full h-full object-cover"
-                                src={AIImage}
+                                src={`/charIcons/` + `${charOptions[index]}.jpg`.toLowerCase()}
                                 alt={"AI Icons"}
                               />
                             </div>
@@ -229,7 +228,7 @@ function CharacterSelect() {
                         <div className="rounded-full overflow-hidden w-24 h-24 lg:w-32 lg:h-32 transition-all flex">
                           <img
                             className="w-full h-full object-cover"
-                            src={AIImage}
+                            src={`/charIcons/` + `${selectedChar}.jpg`.toLowerCase()}
                             alt={"AI Icons"}
                           />
                         </div>
