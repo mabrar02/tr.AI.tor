@@ -38,8 +38,11 @@ function AnswerPrompts() {
   const [sabbed, setSabbed] = useState(false);
 
   useEffect(() => {
-    if (isHost) {
-      socket?.emit("request_prompt", joinCode);
+    if(isHost) {
+      const timer = setTimeout(() => {
+        socket?.emit("request_prompt", joinCode);
+        clearTimeout(timer);
+      },  300);
     }
   }, []);
 

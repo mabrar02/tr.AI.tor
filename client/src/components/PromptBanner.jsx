@@ -22,15 +22,6 @@ function PromptBanner(props) {
     timerMax,
   } = useGameRoom();
 
-    const [isAnimating, setIsAnimating] = useState(false);
-
-    //useEffect(() => {
-    //  setIsAnimating(true);
-    //  setTimeout(() => {
-    //    setIsAnimating(false);
-    //  }, 500)
-    //}, [prompt])
-
   return (
     <motion.div className={`w-full h-[30vh] flex flex-col justify-center ${props.animate ? 'absolute' : 'relative'}`} style={{zIndex:3}} 
         initial={{ y: '30vh', height: '50vh'}} 
@@ -46,7 +37,6 @@ function PromptBanner(props) {
         >
 
           <AnimatePresence>
-            {!isAnimating && (
               <motion.span className="absolute w-[60%] text-center"
               key={prompt}
               initial={{ scale: 0 }} 
@@ -54,8 +44,6 @@ function PromptBanner(props) {
               exit={{scale: 0}}
               transition={props.animate || props.animateprompt ? { duration: 0.5, bounce: 0.5, delay: props.time + 0.5, type: 'spring' }: {duration: 0}} // Text Pop up
               >{prompt}</motion.span>
-
-            )}
           </AnimatePresence>
 
           </motion.div> 
