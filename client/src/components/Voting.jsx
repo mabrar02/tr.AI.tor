@@ -233,7 +233,7 @@ function Voting() {
                   >
                     {selected == ""
                       ? "Who is the Traitor?"
-                      : `${selected} is the Traitor!`}
+                      : `Submit vote for ${selected}?`}
                   </motion.button>
                 ) : (
                   <div className="text-center">

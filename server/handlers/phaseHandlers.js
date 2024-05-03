@@ -212,7 +212,7 @@ module.exports = function phaseHandlers(socket, io, rooms) {
 
     for (const [player, value] of Object.entries(rooms[roomId].players)) {
       io.to(roomId).emit("show_response_index", index);
-      time_to_show = (value.filteredAnswer.length / 50) * 1500 + 3000;
+      time_to_show = (value.filteredAnswer.length / 50) * 2500 + 3000;
       index++;
       await delay(time_to_show);
     }
