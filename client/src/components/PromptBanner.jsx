@@ -53,7 +53,7 @@ function PromptBanner(props) {
         >
 
           <AnimatePresence>
-            {!isAnimating && (
+            {!isAnimating && ( 
               <motion.span className="absolute"
               key={prompt}
               initial={{ scale: 0 }} 

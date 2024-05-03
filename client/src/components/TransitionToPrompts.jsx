@@ -8,7 +8,7 @@ import roundSoundFile from "../assets/sfx/roundSFX.wav"
 
 function TransitionToPrompts() {
 
-  const [playRoundSound] = useSound(roundSoundFile, {volume: 0.01});
+  const [playRoundSound] = useSound(roundSoundFile, {volume: 0.02});
 
   const {
     isHost,
