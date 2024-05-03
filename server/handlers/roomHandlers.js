@@ -23,7 +23,16 @@ module.exports = function roomHandlers(socket, io, rooms) {
       characters: [],
       round: 0,
       prompts: [],
-      colors: getRandomColors(),
+      colors: [
+        "#c4fabe",
+        "#f4fab6",
+        "#b6fae8",
+        "#e7b6fa",
+        "#faa5a5",
+        "#5c62d1",
+        "#b34f90",
+        "#6db827",
+      ],
       timerActive: false,
       timer: 0,
       index: 0,
@@ -39,6 +48,7 @@ module.exports = function roomHandlers(socket, io, rooms) {
       vote: "",
       color: rooms[roomId].colors[0],
       index: 0,
+      sab: false,
     };
     updatePlayers(roomId);
   });
@@ -70,6 +80,7 @@ module.exports = function roomHandlers(socket, io, rooms) {
           vote: "",
           color: colors[numPlayers],
           index: index + 1,
+          sab: false,
         };
         room.numPlayers++;
         room.index++;

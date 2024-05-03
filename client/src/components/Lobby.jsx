@@ -3,24 +3,23 @@ import { useGameRoom } from "../contexts/GameRoomContext";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaInfoCircle } from "react-icons/fa";
 import { Bounce, ToastContainer, toast } from "react-toastify";
-import useSound from 'use-sound';
+import useSound from "use-sound";
 
-import countdownFile from "../assets/sfx/countdownSFX.wav"
-import soundFile from "../assets/sfx/clickSFX.wav"
-import hoverSoundFile from "../assets/sfx/hoverSFX.wav"
-import errorSoundFile from "../assets/sfx/errorSFX.mp3"
-import popSoundFile from "../assets/sfx/popSFX.wav"
+import countdownFile from "../assets/sfx/countdownSFX.wav";
+import soundFile from "../assets/sfx/clickSFX.wav";
+import hoverSoundFile from "../assets/sfx/hoverSFX.wav";
+import errorSoundFile from "../assets/sfx/errorSFX.mp3";
+import popSoundFile from "../assets/sfx/popSFX.wav";
 
 import "react-toastify/dist/ReactToastify.css";
 
 function Lobby() {
-
   // Hook for playing sound
-  const [play] = useSound(soundFile, {volume: 0.8});
-  const [playHoverSound] = useSound(hoverSoundFile, {volume: 0.1});
-  const [playErrorSound] = useSound(errorSoundFile, {volume: 0.3});
-  const [playPopSound] = useSound(popSoundFile, {volume: 0.3});
-  const [playcountdownSound] = useSound(countdownFile, {volume: 0.1});
+  const [play] = useSound(soundFile, { volume: 0.1 });
+  const [playHoverSound] = useSound(hoverSoundFile, { volume: 0.05 });
+  const [playErrorSound] = useSound(errorSoundFile, { volume: 0.1 });
+  const [playPopSound] = useSound(popSoundFile, { volume: 0.1 });
+  const [playcountdownSound] = useSound(countdownFile, { volume: 0.1 });
 
   // Function to play sound effect
   const soundFX = () => {
@@ -233,11 +232,15 @@ function Lobby() {
                             <div className="">
                               <span>{player.username}</span>{" "}
                               {player.host && (
-                                <span className="font-gameFont font-bold">(HOST)</span>
+                                <span className="font-gameFont font-bold">
+                                  (HOST)
+                                </span>
                               )}
                             </div>
                           ) : (
-                            <div className="font-gameFont">Player is offline</div>
+                            <div className="font-gameFont">
+                              Player is offline
+                            </div>
                           )}
                         </motion.li>
                       );
@@ -328,7 +331,9 @@ function Lobby() {
             {!joinGame ? (
               <div className="w-full">
                 <div className="w-full">
-                  <h2 className="font-gameFont font-medium text-white mb-2">Display Name</h2>
+                  <h2 className="font-gameFont font-medium text-white mb-2">
+                    Display Name
+                  </h2>
                   <input
                     type="text"
                     placeholder="Enter a display name"
@@ -366,7 +371,9 @@ function Lobby() {
             ) : (
               <div className="w-full">
                 <div className="w-full">
-                  <h2 className="font-gameFont font-medium text-white mb-2">Room Code</h2>
+                  <h2 className="font-gameFont font-medium text-white mb-2">
+                    Room Code
+                  </h2>
                   <input
                     type="text"
                     placeholder="Enter a room code"
@@ -394,8 +401,7 @@ function Lobby() {
                     onClick={() => {
                       setJoinGame(false);
                       soundFX();
-                    }
-                    }
+                    }}
                     onMouseEnter={playHoverSoundFX}
                   >
                     Back

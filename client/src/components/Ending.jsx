@@ -51,10 +51,13 @@ function Ending() {
   useEffect(() => {
     const timer = setTimeout(() => {
       setTransition(false);
+      clearTimeout(timer);
     }, 2000);
   }, []);
 
   const returnToLobby = () => {
+    socket.emit("reset", joinCode);
+    
     socket.emit("return_to_lobby", joinCode);
   };
 

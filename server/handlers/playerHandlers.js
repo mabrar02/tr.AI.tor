@@ -85,7 +85,7 @@ module.exports = function playerHandlers(socket, io, rooms) {
   });
 
   socket.on("regenerate_answer", async ({ roomId }) => {
-//    console.log(roomId);
+    //    console.log(roomId);
     const content = await getFilteredResponse(
       rooms[roomId].players[socket.id].character,
       rooms[roomId].players[socket.id].answers
@@ -112,5 +112,34 @@ module.exports = function playerHandlers(socket, io, rooms) {
 
   socket.on("send_vote", ({ roomId, vote }) => {
     rooms[roomId].players[socket.id].vote = vote;
+    rooms[roomId].numSubmitted++;
+    if (
+      rooms[roomId].numSubmitted == rooms[roomId].numPlayers &&
+      rooms[roomId].timer > 7
+    ) {
+      rooms[roomId].timer = 5;
+      io.to(roomId).emit("timer_update", rooms[roomId].timer);
+    }
+  });
+
+  socket.on("sabotage_player", ({ roomId, username }) => {
+    const room = rooms[roomId];
+    if (room) {
+      const players = room.players;
+      const playerToSabotage = Object.values(players).find(
+        (player) => player.username === username
+      );
+      if (playerToSabotage) {
+        const socketId = Object.keys(players).find(
+          (key) => players[key] === playerToSabotage
+        );
+        rooms[roomId].players[socketId].sab = true;
+        updatePlayers(roomId);
+      } else {
+        console.log("Player not found in the room.");
+      }
+    } else {
+      console.log("Room not found.");
+    }
   });
 };

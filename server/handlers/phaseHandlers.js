@@ -3,13 +3,6 @@ const fs = require("fs");
 
 const prompts = JSON.parse(fs.readFileSync("prompts.json", "utf-8"));
 
-const getRandomPrompt = () => {
-  const randIndex = Math.floor(Math.random() * prompts.length);
-  const randPrompt = prompts[randIndex];
-
-  return randPrompt;
-};
-
 const delay = (duration) => {
   return new Promise((resolve) => setTimeout(resolve, duration));
 };
@@ -30,15 +23,44 @@ module.exports = function phaseHandlers(socket, io, rooms) {
     });
   });
 
+  const recentMessages = new Map();
+
+  const getRandomPrompt = (roomId) => {
+    const randIndex = Math.floor(Math.random() * prompts.length);
+    let randPrompt = prompts[randIndex];
+
+    if (randPrompt.includes("<PLAYER")) {
+      const randPlayerUser = getRandomUser(roomId);
+      randPrompt = randPrompt.replace("<PLAYER>", randPlayerUser);
+    }
+
+    return randPrompt;
+  };
+
+  const getRandomUser = (roomId) => {
+    const players = Object.values(rooms[roomId].players);
+    const randPlayerIndex = Math.floor(Math.random() * players.length);
+    const randPlayerUsername = players[randPlayerIndex].username;
+
+    return randPlayerUsername;
+  };
+
   socket.on("request_prompt", (roomId) => {
-    rooms[roomId].numSubmitted = 0;
-    rooms[roomId].round += 1;
-    const prompt = getRandomPrompt();
-    rooms[roomId].currentPrompt = prompt;
+    const currentTime = Date.now();
+    const lastTime = recentMessages.get(socket.id);
+    if (!lastTime || currentTime - lastTime > 500) {
+      recentMessages.set(socket.id, currentTime);
+      rooms[roomId].round += 1;
+      io.to(roomId).emit("update_round", rooms[roomId].round);
 
-    console.log(prompt);
+      rooms[roomId].numSubmitted = 0;
+      const prompt = getRandomPrompt(roomId);
+      rooms[roomId].currentPrompt = prompt;
 
-    io.to(roomId).emit("get_prompt", prompt);
+      console.log(prompt);
+
+      io.to(roomId).emit("get_prompt", prompt);
+    }
   });
 
   socket.on("request_answers", (roomId) => {
@@ -126,6 +148,7 @@ module.exports = function phaseHandlers(socket, io, rooms) {
       value["vote"] = "";
       value["answer"] = "";
       value["filteredAnswer"] = "";
+      value["sab"] = false;
     });
   });
 
@@ -143,6 +166,7 @@ module.exports = function phaseHandlers(socket, io, rooms) {
         } else {
           rooms[roomId].timerActive = false;
           io.to(roomId).emit("timer_expired");
+          rooms[roomId].numSubmitted = 0;
           clearInterval(interval);
         }
       }
@@ -160,10 +184,10 @@ module.exports = function phaseHandlers(socket, io, rooms) {
         time = 20;
         break;
       case "prompts":
-        time = 10;
+        time = 90;
         break;
       case "voting":
-        time = 10;
+        time = 45;
         break;
       case "post-votes":
         time = 5; //Hardcoded in voting file

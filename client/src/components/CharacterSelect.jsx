@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useGameRoom } from "../contexts/GameRoomContext";
-import AIImage from "../assets/image.png";
 import { motion } from "framer-motion";
 import { Bounce, ToastContainer, toast } from "react-toastify";
 import useSound from 'use-sound';
@@ -44,13 +43,20 @@ function CharacterSelect() {
     gamePhase,
     role,
     timer,
+    timerMax,
     setRoleValue,
     selectedChar,
     setSelectedChar,
   } = useGameRoom();
-  const [charOptions, setCharOptions] = useState([]);
+  const [charOptions, setCharOptions] = useState();
   const [submitted, setSubmitted] = useState(false);
   const [transition, setTransition] = useState(false);
+
+  useEffect(() => {
+    if(timer == 1 && selectedChar === null && role === "Innocent") {
+      setSelectedChar(charOptions[0]);
+    }
+  }, [timer, selectedChar, charOptions]);
 
   useEffect(() => {
     socket?.on("update_char_options", (res) => {
@@ -65,13 +71,13 @@ function CharacterSelect() {
       setTransition(true);
       const timer = setTimeout(() => {
         transitionToGamePhase("prompts");
+        clearTimeout(timer);
       }, 2000);
     });
 
     return () => {
       socket?.off("update_char_options");
       socket?.off("timer_expired");
-      clearTimeout(timer);
     };
   }, [socket]);
 
@@ -142,7 +148,7 @@ function CharacterSelect() {
                 <div className="rounded-full overflow-hidden w-28 h-28 lg:w-40 lg:h-40 flex hover:scale-105 transition-all">
                   <img
                     className="w-full h-full object-cover "
-                    src={AIImage}
+                    src={`/charIcons/` + `${role}.jpg`.toLowerCase()}
                     alt={"AI Icons"}
                   />
                 </div>
@@ -163,7 +169,7 @@ function CharacterSelect() {
                 <motion.div
                   initial={{ width: "100%" }}
                   animate={{
-                    width: `${(timer / 20) * 100}%`,
+                    width: `${(timer / timerMax) * 100}%`,
                   }}
                   className="h-full bg-yellow-300 animate-timer border-b-4 border-l-2 border-yellow-500 absolute top-0 left-0"
                   transition={{ ease: "linear", duration: 1 }}
@@ -221,7 +227,7 @@ function CharacterSelect() {
                             <div className="rounded-full overflow-hidden w-14 h-14 lg:w-20 lg:h-20 transition-all flex">
                               <img
                                 className="w-full h-full object-cover"
-                                src={AIImage}
+                                src={`/charIcons/` + `${charOptions[index]}.jpg`.toLowerCase()}
                                 alt={"AI Icons"}
                               />
                             </div>
@@ -253,7 +259,7 @@ function CharacterSelect() {
                         <div className="rounded-full overflow-hidden w-24 h-24 lg:w-32 lg:h-32 transition-all flex">
                           <img
                             className="w-full h-full object-cover"
-                            src={AIImage}
+                            src={`/charIcons/` + `${selectedChar}.jpg`.toLowerCase()}
                             alt={"AI Icons"}
                           />
                         </div>
@@ -294,7 +300,7 @@ function CharacterSelect() {
                 <motion.div
                   initial={{ width: "100%" }}
                   animate={{
-                    width: `${(timer / 20) * 100}%`,
+                    width: `${(timer / timerMax) * 100}%`,
                   }}
                   className="h-full bg-yellow-300 animate-timer border-b-4 border-l-2 border-yellow-500 absolute top-0 left-0"
                   transition={{ ease: "linear", duration: 1 }}

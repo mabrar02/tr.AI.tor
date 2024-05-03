@@ -4,6 +4,9 @@ import { AnimatePresence, motion } from "framer-motion";
 import PromptBanner from "./PromptBanner";
 import ResponseBox from "./ResponseBox";
 import TransitionToPrompts from "./TransitionToPrompts";
+import PowerUps from "./PowerUps";
+import { Bounce, ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function AnswerPrompts() {
   const {
@@ -24,119 +27,191 @@ function AnswerPrompts() {
     gamePhase,
     selectedChar,
     setSelectedChar,
+    sabotageCount,
+    updateSabotageCount,
   } = useGameRoom();
 
-  const [answer, setAnswer] = useState("");
-  const [filteredAnswer, setFilteredAnswer] = useState("");
-  const [submitted, setSubmitted] = useState(false);
-  const [regenCount, setRegenCount] = useState(3);
-  const [updatingResponse, setUpdatingResponse] = useState(false);
   const [transition, setTransition] = useState(true);
   const [transitionOut, setTransitionOut] = useState(false);
   const animDuration = 8; // Duration of the transition animation
+  const [powerUpsVisible, setPowerUpsVisible] = useState(false);
+  const [sabbed, setSabbed] = useState(false);
 
   useEffect(() => {
     if (isHost) {
-      socket?.emit("request_prompt", joinCode);
+      const timer = setTimeout(() => {
+        socket?.emit("request_prompt", joinCode);
+        clearTimeout(timer);
+      }, 300);
     }
   }, []);
 
   useEffect(() => {
     socket?.on("get_prompt", (prompt) => {
       setPrompt(prompt);
-      setRoundValue(roundNum + 1);
+    });
+
+    socket?.on("update_round", (round) => {
+      setRoundValue(round);
     });
 
     socket?.on("timer_expired", () => {
-      setTransitionOut(true)
+      setTransitionOut(true);
       const timer = setTimeout(() => {
         clearTimeout(timer);
         transitionToGamePhase("responses");
-      },  1000);
-    });
-
-    socket?.on("answer_regenerated", (content) => {
-      setFilteredAnswer(content);
-      setUpdatingResponse(false);
-    });
-
-    socket?.on("answer_submitted", (content) => {
-      setFilteredAnswer(content);
+      }, 1000);
     });
 
     return () => {
       socket?.off("timer_expired");
       socket?.off("get_prompt");
-      socket?.off("answer_regenerated");
-      socket?.off("answer_submitted");
     };
   }, [socket]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
-        setTransition(false); // For end of transition
-      }, animDuration * 1000);
+      setTransition(false); // For end of transition
+    }, animDuration * 1000);
 
     const timer2 = setTimeout(() => {
-        if(isHost) {
-          socket?.emit("start_timer", { roomId: joinCode, phase: gamePhase });
-        }
-      }, animDuration * 1000 + 1000);
-    
-      return () => {
-        clearTimeout(timer);
-        clearTimeout(timer2);
+      if (isHost) {
+        socket?.emit("start_timer", { roomId: joinCode, phase: gamePhase });
       }
+    }, animDuration * 1000 + 1000);
+
+    return () => {
+      clearTimeout(timer);
+      clearTimeout(timer2);
+    };
   }, []);
 
-  const submitAnswer = () => {
-    console.log(answer);
-    socket?.emit("submit_answer", { roomId: joinCode, answer });
-    setSubmitted(true);
+  const togglePowerPanel = () => {
+    if (sabotageCount <= 0) {
+      notify("You're out of sabotages!", "error");
+    } else if (sabbed) {
+      notify("You've already sabotaged this round!", "error");
+    } else {
+      setPowerUpsVisible(!powerUpsVisible);
+    }
   };
 
-  const regenerateAnswer = () => {
-    if (regenCount > 0) {
-      socket?.emit("regenerate_answer", { roomId: joinCode });
-      setRegenCount(regenCount - 1);
-      setUpdatingResponse(true);
+  const handleSabotage = (index) => {
+    socket.emit("sabotage_player", {
+      roomId: joinCode,
+      username: players[index].username,
+    });
+    setSabbed(true);
+    updateSabotageCount(sabotageCount - 1);
+    setPowerUpsVisible(false);
+    notify("Successful Sabotage", "successful");
+  };
+
+  const notify = (msg, type) => {
+    const existingToastId = toast.isActive("notification");
+
+    if (existingToastId) {
+      toast.update(existingToastId, {
+        render: msg,
+        type: type === "error" ? toast.TYPE.ERROR : toast.TYPE.SUCCESS,
+      });
+    } else {
+      if (type === "error") {
+        toast.error(msg, {
+          position: "top-center",
+          autoClose: 2000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+          transition: Bounce,
+          toastId: "notification", // Set a specific toastId
+        });
+      } else {
+        toast.success(msg, {
+          position: "top-center",
+          autoClose: 2000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+          transition: Bounce,
+          toastId: "notification", // Set a specific toastId
+        });
+      }
     }
   };
 
   return (
     <div>
-       { transition && (
-        <TransitionToPrompts />
-      )}
-
+      {transition && <TransitionToPrompts />}
       <div className="h-screen w-screen items-center flex-col flex">
+        {role === "Traitor" && (
+          <>
+            <button
+              className="min-w-14 overflow-hidden absolute left-4 mt-2 top-1/3 text-center w-[10%] bg-red-400 hover:bg-red-600 font-bold py-2 px-4 rounded-lg border-b-4 border-l-2 border-red-700 shadow-md transform transition-all hover:scale-105 active:border-red-600 nowrap"
+              style={{ zIndex: 1 }}
+              onClick={togglePowerPanel}
+            >
+              <p>Sabotage x{sabotageCount}</p>
+            </button>
+            <PowerUps visible={powerUpsVisible} onSabotage={handleSabotage} />
+          </>
+        )}
         <PromptBanner time={animDuration} animate={true} />
-
-        <div className="h-[30%] w-full flex flex-col justify-center "></div> {/*Dummy div*/}
-
+        <div className="h-[30%] w-full flex flex-col justify-center "></div>{" "}
+        {/*Dummy div*/}
         <div className="w-screen flex-grow flex flex-col items-center overflow-hidden">
-        <AnimatePresence>
-          {!transitionOut && (
-            <motion.div className="w-screen flex-grow flex flex-col items-center"
+          <AnimatePresence>
+            {!transitionOut && (
+              <motion.div
+                className="w-screen flex-grow flex flex-col items-center"
                 key={0}
-                animate={{ y: '0' }} 
-                exit={{y: '100vh' }}
-                transition={{ duration: 1, bounce: 0.2, delay: 0, type: 'spring' }} 
-                >
-              {role === "Innocent" && (
-              <span className="font-gameFont mt-2">Answer honestly! The {selectedChar} will translate for you.</span>
-              )}
+                animate={{ y: "0" }}
+                exit={{ y: "100vh" }}
+                transition={{
+                  duration: 1,
+                  bounce: 0.2,
+                  delay: 0,
+                  type: "spring",
+                }}
+              >
+                {role === "Innocent" && (
+                  <span className="mt-2">
+                    Answer honestly! The {selectedChar} will translate for you.
+                  </span>
+                )}
 
-              {role === "Traitor" && (
-              <span className="font-gameFont mt-2">Try to deceive the others into thinking you're an AI!</span>
-              )}
-              <ResponseBox time={animDuration}/>
-            </motion.div>
-          )}
-        </AnimatePresence>
+                {role === "Traitor" && (
+                  <span className="mt-2">
+                    Try to deceive the others into thinking you're an AI!
+                  </span>
+                )}
 
+                <ResponseBox time={animDuration} />
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </div>
+
+      <ToastContainer
+        position="top-center"
+        autoClose={2000}
+        hideProgressBar
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss={false}
+        draggable
+        pauseOnHover={false}
+        theme="colored"
+        transition={Bounce}
+      />
     </div>
   );
 }
