@@ -44,7 +44,7 @@ function ResponseBox(props) {
   const [filteredAnswer, setFilteredAnswer] = useState("");
   const [filteredAnswerText, setFilteredAnswerText] = useState("");
   const [submitted, setSubmitted] = useState(false);
-  const [regenCount, setRegenCount] = useState(3);
+  const [regenCount, setRegenCount] = useState(5);
   const [updatingResponse, setUpdatingResponse] = useState(false);
   const [split, setSplit] = useState(false);
   const [answer, setAnswer] = useState("");

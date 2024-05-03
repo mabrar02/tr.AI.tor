@@ -144,9 +144,12 @@ function Voting() {
   };
 
   const sendVote = () => {
-    setSubmittedVote(true);
     play();
-    socket?.emit("send_vote", { roomId: joinCode, vote: selected });
+    if (selected.length > 0) {
+      setSubmittedVote(true);
+
+      socket?.emit("send_vote", { roomId: joinCode, vote: selected });
+    }
   };
 
   const containerVariants = {
