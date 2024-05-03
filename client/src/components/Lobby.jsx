@@ -414,6 +414,12 @@ function Lobby() {
               <button
                 className="rounded-full"
                 onMouseEnter={() => playHoverSoundFX()}
+                onClick={() => {
+                  window.open(
+                    "https://www.youtube.com/watch?v=9ipUW5M91sE",
+                    "_blank"
+                  );
+                }}
               >
                 <FaInfoCircle
                   size={55}
