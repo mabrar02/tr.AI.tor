@@ -2,8 +2,13 @@ import React, { useEffect, useState } from "react";
 import { useGameRoom } from "../contexts/GameRoomContext";
 import PromptBanner from "./PromptBanner";
 import { AnimatePresence, motion } from "framer-motion";
+import useSound from "use-sound";
+
+import wooshSoundFile from "../assets/sfx/wooshSFX.mp3";
 
 function SeeResponses() {
+  const [playWooshSound] = useSound(wooshSoundFile, { volume: 0.02 });
+
   const {
     gamePhase,
     transitionToGamePhase,
@@ -81,35 +86,38 @@ function SeeResponses() {
 
           <div className="w-screen h-full justify-center flex flex-grow overflow-hidden pt-5">
             <AnimatePresence>
-              {showResponse && currentResIndex < players.length && (
-                <motion.div
-                  className="flex-1 p-4 text-black absolute w-[65%]"
-                  key={currentResIndex}
-                  initial={{ x: "-100vw" }}
-                  animate={{ x: "0" }}
-                  exit={{ x: "100vw" }}
-                  transition={{
-                    duration: 1,
-                    bounce: 0.2,
-                    delay: 0,
-                    type: "spring",
-                  }}
-                >
-                  <div
-                    className="font-bold py-2 px-5 border border-black shadow shadow-lg mb-4 mx-1 wx-5 rounded-tr-xl rounded-br-xl rounded-tl-md w-[100%] relative"
-                    style={{ backgroundColor: "white" }}
+              {showResponse &&
+                currentResIndex < players.length &&
+                (playWooshSound(),
+                (
+                  <motion.div
+                    className="flex-1 p-4 text-black absolute w-[65%]"
+                    key={currentResIndex}
+                    initial={{ x: "-100vw" }}
+                    animate={{ x: "0" }}
+                    exit={{ x: "100vw" }}
+                    transition={{
+                      duration: 1,
+                      bounce: 0.2,
+                      delay: 0,
+                      type: "spring",
+                    }}
                   >
-                    <p className="mb-5">
-                      {players[currentResIndex]?.username}:
-                    </p>
-                    <p>
-                      {players[currentResIndex]?.sab
-                        ? players[currentResIndex]?.answers
-                        : players[currentResIndex]?.filteredAnswer}
-                    </p>
-                  </div>
-                </motion.div>
-              )}
+                    <div
+                      className="font-bold py-2 px-5 border border-black shadow shadow-lg mb-4 mx-1 wx-5 rounded-tr-xl rounded-br-xl rounded-tl-md w-[100%] relative"
+                      style={{ backgroundColor: "white" }}
+                    >
+                      <p className="mb-5">
+                        {players[currentResIndex]?.username}:
+                      </p>
+                      <p>
+                        {players[currentResIndex]?.sab
+                          ? players[currentResIndex]?.answers
+                          : players[currentResIndex]?.filteredAnswer}
+                      </p>
+                    </div>
+                  </motion.div>
+                ))}
             </AnimatePresence>
           </div>
         </div>

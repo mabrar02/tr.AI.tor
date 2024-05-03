@@ -3,8 +3,27 @@ import { useGameRoom } from "../contexts/GameRoomContext";
 import { motion } from "framer-motion";
 import "./css/styles.css";
 import refresh from "./css/refresh.svg";
+import useSound from "use-sound";
+
+import soundFile from "../assets/sfx/clickSFX.wav";
+import hoverSoundFile from "../assets/sfx/hoverSFX.wav";
+import errorSoundFile from "../assets/sfx/errorSFX.mp3";
 
 function ResponseBox(props) {
+  // Hook for playing sound
+  const [play] = useSound(soundFile, { volume: 0.1 });
+  const [playHoverSound] = useSound(hoverSoundFile, { volume: 0.05 });
+  const [playErrorSound] = useSound(errorSoundFile, { volume: 0.1 });
+
+  // Function to play sound effect
+  const soundFX = () => {
+    play();
+  };
+
+  const playHoverSoundFX = () => {
+    playHoverSound();
+  };
+
   const {
     isHost,
     players,
@@ -48,6 +67,7 @@ function ResponseBox(props) {
   }, [socket]);
 
   const submitAnswer = () => {
+    soundFX();
     console.log(answer);
     setSplit(true);
     socket?.emit("submit_answer", { roomId: joinCode, answer });
@@ -56,6 +76,7 @@ function ResponseBox(props) {
 
   const regenerateAnswer = () => {
     if (regenCount > 0) {
+      soundFX();
       socket?.emit("regenerate_answer", { roomId: joinCode });
       setRegenCount(regenCount - 1);
       setUpdatingResponse(true);
@@ -144,6 +165,7 @@ function ResponseBox(props) {
           {!submitted && (
             <button
               onClick={submitAnswer}
+              onMouseEnter={() => playHoverSoundFX()}
               className="bg-yellow-400 hover:bg-yellow-600 font-bold py-2 px-4 rounded-lg border-b-4 border-l-2 border-yellow-700 shadow-md transform transition-all hover:scale-105 active:border-yellow-600 "
             >
               Submit Answer
@@ -153,6 +175,7 @@ function ResponseBox(props) {
           {submitted && role === "Innocent" && timer > 5 && (
             <button
               onClick={regenerateAnswer}
+              onMouseEnter={() => playHoverSoundFX()}
               className={`${
                 regenCount == 0 || updatingResponse
                   ? "bg-yellow-600"
@@ -182,3 +205,5 @@ function ResponseBox(props) {
 }
 
 export default ResponseBox;
+
+// bg-gradient-to-b from-blue-400 to-blue-500 border-8 border-blue-900

@@ -2,8 +2,14 @@ import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useGameRoom } from "../contexts/GameRoomContext";
 import './css/styles.css';
+import useSound from "use-sound";
+
+import roundSoundFile from "../assets/sfx/roundSFX.wav"
 
 function TransitionToPrompts() {
+
+  const [playRoundSound] = useSound(roundSoundFile, {volume: 0.02});
+
   const {
     isHost,
     players,
@@ -24,13 +30,16 @@ function TransitionToPrompts() {
       <div className="sliding-word">
         <p><i>Round {roundNum}!</i></p>
         {roundNum == 1 && (
-          <p>Try and get a feel for who's the traitor... 🕵️</p>
+          playRoundSound(),
+          <p className="font-gameFont">Try and get a feel for who's the traitor... 🕵️</p>
         )}
         {roundNum == 2 && (
-          <p>The traitor is stil at large! Try and narrow down the suspects...</p>
+          playRoundSound(),
+          <p className="font-gameFont">The traitor is stil at large! Try and narrow down the suspects...</p>
         )}
         {roundNum == 3 && (
-          <p>Last chance! If you don't catch the traitor this round, they will win!</p>
+          playRoundSound(),
+          <p className="font-gameFont">Last chance! If you don't catch the traitor this round, they will win!</p>
         )}
       </div>
     </div>

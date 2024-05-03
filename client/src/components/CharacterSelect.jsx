@@ -2,9 +2,37 @@ import React, { useState, useEffect } from "react";
 import { useGameRoom } from "../contexts/GameRoomContext";
 import { motion } from "framer-motion";
 import { Bounce, ToastContainer, toast } from "react-toastify";
+import useSound from "use-sound";
+
+import soundFile from "../assets/sfx/clickSFX.wav";
+import hoverSoundFile from "../assets/sfx/hoverSFX.wav";
+import errorSoundFile from "../assets/sfx/errorSFX.mp3";
+import selectSoundFile from "../assets/sfx/selectSFX.wav";
+import traitorSoundFile from "../assets/sfx/traitorSFX.wav";
+
 import "react-toastify/dist/ReactToastify.css";
 
 function CharacterSelect() {
+  // Hook for playing sound
+  const [play] = useSound(soundFile, { volume: 0.1 });
+  const [playHoverSound] = useSound(hoverSoundFile, { volume: 0.05 });
+  const [playErrorSound] = useSound(errorSoundFile, { volume: 0.1 });
+  const [playSelectSound] = useSound(selectSoundFile, { volume: 0.1 });
+  const [playTraitorSound] = useSound(traitorSoundFile, { volume: 0.2 });
+
+  // Function to play sound effect
+  const soundFX = () => {
+    play();
+  };
+
+  const playHoverSoundFX = () => {
+    playHoverSound();
+  };
+
+  const playTraitorSoundFX = () => {
+    playTraitorSound();
+  };
+
   const {
     isHost,
     players,
@@ -26,7 +54,7 @@ function CharacterSelect() {
   const [transition, setTransition] = useState(false);
 
   useEffect(() => {
-    if(timer == 1 && selectedChar === null && role === "Innocent") {
+    if (timer == 1 && selectedChar === null && role === "Innocent") {
       setSelectedChar(charOptions[0]);
     }
   }, [timer, selectedChar, charOptions]);
@@ -66,6 +94,12 @@ function CharacterSelect() {
       socket?.off("start_timer");
     };
   }, []);
+
+  useEffect(() => {
+    if (role === "Traitor") {
+      playTraitorSoundFX();
+    }
+  }, [role]);
 
   const selectChar = (character) => {
     socket?.emit("select_char", { character: character, roomId: joinCode });
@@ -124,11 +158,10 @@ function CharacterSelect() {
                     alt={"AI Icons"}
                   />
                 </div>
-
-                <p className="font-bold  text-3xl xl:text-5xl text-white text-center mt-6 transition-all">
+                <p className="font-gameFont font-bold  text-3xl xl:text-5xl text-white text-center mt-6 transition-all">
                   You are the Traitor! Try to blend in...
                 </p>
-                <p className="text-white text-center italic">
+                <p className="font-gameFont text-white text-center italic">
                   You don't get an AI character, so... Pretend!
                 </p>
               </div>
@@ -173,7 +206,7 @@ function CharacterSelect() {
             }}
           >
             <div className="min-h-72 min-w-96 bg-gray-800 p-4 rounded-lg border-b-8 border-l-8 border-gray-900  flex flex-col justify-center items-center w-[70%] h-[60%]">
-              <p className="text-white font-semibold lg:text-xl xl:text-2xl text-center my-2">
+              <p className="font-gameFont text-white font-semibold lg:text-xl xl:text-2xl text-center my-2">
                 {submitted
                   ? `You've chosen to be a`
                   : "Choose your AI Character. This will be how your answers are translated!"}
@@ -189,14 +222,20 @@ function CharacterSelect() {
                             ? "bg-blue-200 border-blue-500 scale-105"
                             : "bg-white"
                         } hover:shadow-lg active:border-blue-400`}
-                        onClick={() => setSelectedChar(charOptions[index])}
+                        onClick={() => {
+                          playSelectSound();
+                          setSelectedChar(charOptions[index]);
+                        }}
                       >
                         <div className="justify-center h-full">
                           <div className="flex flex-col items-center justify-center py-10 space-y-6">
                             <div className="rounded-full overflow-hidden w-14 h-14 lg:w-20 lg:h-20 transition-all flex">
                               <img
                                 className="w-full h-full object-cover"
-                                src={`/charIcons/` + `${charOptions[index]}.jpg`.toLowerCase()}
+                                src={
+                                  `/charIcons/` +
+                                  `${charOptions[index]}.jpg`.toLowerCase()
+                                }
                                 alt={"AI Icons"}
                               />
                             </div>
@@ -228,11 +267,14 @@ function CharacterSelect() {
                         <div className="rounded-full overflow-hidden w-24 h-24 lg:w-32 lg:h-32 transition-all flex">
                           <img
                             className="w-full h-full object-cover"
-                            src={`/charIcons/` + `${selectedChar}.jpg`.toLowerCase()}
+                            src={
+                              `/charIcons/` +
+                              `${selectedChar}.jpg`.toLowerCase()
+                            }
                             alt={"AI Icons"}
                           />
                         </div>
-                        <span className="lg:text-2xl text-center transition-all text-wrap line-clamp-1">
+                        <span className="font-gameFont lg:text-2xl text-center transition-all text-wrap line-clamp-1">
                           {selectedChar}
                         </span>
                         <span>Waiting for others...</span>
@@ -244,15 +286,18 @@ function CharacterSelect() {
 
               {!submitted && (
                 <button
-                  className="bg-yellow-400 hover:bg-yellow-600 font-bold py-2 px-12 my-2 rounded-lg shadow-md border border-black transform transition-all hover:scale-105"
+                  className="font-gameFont bg-yellow-400 hover:bg-yellow-600 font-bold py-2 px-12 my-2 rounded-lg shadow-md border border-black transform transition-all hover:scale-105"
                   onClick={() => {
                     if (selectedChar !== null) {
                       setSubmitted(true);
                       selectChar(selectedChar);
+                      soundFX();
                     } else {
+                      playErrorSound();
                       notify("Select a character before submitting!");
                     }
                   }}
+                  onMouseEnter={playHoverSoundFX}
                 >
                   Submit
                 </button>
