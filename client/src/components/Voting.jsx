@@ -66,7 +66,7 @@ function Voting() {
           setGameOver({ innowin: true });
           setNextPhase("ending");
         } else {
-          if (roundNum == 1) {
+          if (roundNum == 3) {
             setPrompt("The Traitor was not found... game over.");
             setGameOver({ innowin: false });
             setNextPhase("ending");
