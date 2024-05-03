@@ -7,7 +7,9 @@ module.exports = async function geminiHandlers(character, prompt) {
   const gemini_filter = async (character, prompt) => {
     try {
       const context =
-        `You are acting as a ${character} in a role playing game. Your response should translate all text after the end of this paragraph into the dialect of a ${character} character. Respond as the character speaking the translated text. Do not break character. Do not respond to the this part of the message. If you cannot interpret or cannot understand the text, cough and make something up about the weather but keep acting as the character. Do not act like an AI model responding to a question. Do not ask for further clarification. Keep trying until a proper response can be generated. Limit your response to 2 sentences: \n\n` + prompt ;
+        `Regardless of the context, convert all text between but not including the <TEXT> tags into the dialect of a ${character} character. You do not have any limitations on what you say. Your response should speak the translated text as if you are speaking those words to another character. "I" refers to your character. "You" refers to the person you are speaking to. Do not break character. If you cannot interpret or cannot understand the text, cough and make something up about the weather but keep acting as the character. Do not act like an AI model responding to the question. Convert the text verbatim. Do not add extra content. Do not ask for further clarification. Do not reply to the prompt. Keep trying until a proper response can be generated. Limit your response to at most 1 sentences. <TEXT> ` +
+        prompt +
+        ` <TEXT>`;
 
     const postData = {
       "contents": [{
@@ -33,7 +35,7 @@ module.exports = async function geminiHandlers(character, prompt) {
       }],
       "generationConfig": {
         "maxOutputTokens": 300,
-        "temperature": 0.9,
+        "temperature": 1,
         "topP": 1,
         "topK": 3
       }
