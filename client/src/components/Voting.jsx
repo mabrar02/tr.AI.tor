@@ -5,9 +5,13 @@ import { AnimatePresence, easeIn, motion } from "framer-motion";
 import useSound from "use-sound";
 
 import selectSoundFile from "../assets/sfx/selectSFX.wav";
+import soundFile from "../assets/sfx/clickSFX.wav";
+import hoverSoundFile from "../assets/sfx/hoverSFX.wav";
 
 function Voting() {
   const [playSelectSound] = useSound(selectSoundFile, { volume: 0.2 });
+  const [play] = useSound(soundFile, { volume: 0.1 });
+  const [playHoverSound] = useSound(hoverSoundFile, { volume: 0.05 });
 
   const {
     isHost,
@@ -62,7 +66,7 @@ function Voting() {
           setGameOver({ innowin: true });
           setNextPhase("ending");
         } else {
-          if (roundNum == 3) {
+          if (roundNum == 1) {
             setPrompt("The Traitor was not found... game over.");
             setGameOver({ innowin: false });
             setNextPhase("ending");
@@ -135,11 +139,13 @@ function Voting() {
   }, [socket]);
 
   const selectResponse = (index) => {
+    playSelectSound();
     selectSelect(index);
   };
 
   const sendVote = () => {
     setSubmittedVote(true);
+    play();
     socket?.emit("send_vote", { roomId: joinCode, vote: selected });
   };
 
@@ -220,6 +226,7 @@ function Voting() {
                     transition={{ duration: 0.35, type: "tween" }}
                     className="bg-yellow-500 hover:bg-yellow-600 font-bold py-2 px-4 rounded-lg shadow-md transform transition-all hover:scale-105 mt-5"
                     onClick={sendVote}
+                    onMouseEnter={() => playHoverSound()}
                   >
                     {selected == ""
                       ? "Who is the Traitor?"

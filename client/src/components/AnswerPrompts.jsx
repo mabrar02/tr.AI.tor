@@ -8,7 +8,21 @@ import PowerUps from "./PowerUps";
 import { Bounce, ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
+import useSound from "use-sound";
+
+import wooshSoundFile from "../assets/sfx/wooshSFX.mp3";
+import soundFile from "../assets/sfx/clickSFX.wav";
+import hoverSoundFile from "../assets/sfx/hoverSFX.wav";
+import errorSoundFile from "../assets/sfx/errorSFX.mp3";
+import popSoundFile from "../assets/sfx/popSFX.wav";
+
 function AnswerPrompts() {
+  const [playWooshSound] = useSound(wooshSoundFile, { volume: 0.02 });
+  const [play] = useSound(soundFile, { volume: 0.1 });
+  const [playHoverSound] = useSound(hoverSoundFile, { volume: 0.05 });
+  const [playErrorSound] = useSound(errorSoundFile, { volume: 0.1 });
+  const [playPopSound] = useSound(popSoundFile, { volume: 0.1 });
+
   const {
     isHost,
     players,
@@ -92,6 +106,7 @@ function AnswerPrompts() {
     } else if (sabbed) {
       notify("You've already sabotaged this round!", "error");
     } else {
+      playWooshSound();
       setPowerUpsVisible(!powerUpsVisible);
     }
   };
@@ -117,6 +132,7 @@ function AnswerPrompts() {
       });
     } else {
       if (type === "error") {
+        playErrorSound();
         toast.error(msg, {
           position: "top-center",
           autoClose: 2000,
@@ -130,6 +146,7 @@ function AnswerPrompts() {
           toastId: "notification", // Set a specific toastId
         });
       } else {
+        playPopSound();
         toast.success(msg, {
           position: "top-center",
           autoClose: 2000,
@@ -155,6 +172,7 @@ function AnswerPrompts() {
             <button
               className="min-w-14 overflow-hidden absolute left-4 mt-2 top-1/3 text-center w-[10%] bg-red-400 hover:bg-red-600 font-bold py-2 px-4 rounded-lg border-b-4 border-l-2 border-red-700 shadow-md transform transition-all hover:scale-105 active:border-red-600 nowrap"
               style={{ zIndex: 1 }}
+              onMouseEnter={() => playHoverSound()}
               onClick={togglePowerPanel}
             >
               <p>Sabotage x{sabotageCount}</p>

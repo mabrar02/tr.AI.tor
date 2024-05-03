@@ -411,7 +411,10 @@ function Lobby() {
             )}
 
             <div className="mt-8">
-              <button className="rounded-full">
+              <button
+                className="rounded-full"
+                onMouseEnter={() => playHoverSoundFX()}
+              >
                 <FaInfoCircle
                   size={55}
                   color="#facc15"

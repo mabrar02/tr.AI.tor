@@ -2,27 +2,25 @@ import React, { useState, useEffect } from "react";
 import { useGameRoom } from "../contexts/GameRoomContext";
 import { motion } from "framer-motion";
 import { Bounce, ToastContainer, toast } from "react-toastify";
-import useSound from 'use-sound';
+import useSound from "use-sound";
 
-import soundFile from "../assets/sfx/clickSFX.wav"
-import hoverSoundFile from "../assets/sfx/hoverSFX.wav"
-import errorSoundFile from "../assets/sfx/errorSFX.mp3"
-import selectSoundFile from "../assets/sfx/selectSFX.wav"
-import traitorSoundFile from "../assets/sfx/traitorSFX.wav"
-
+import soundFile from "../assets/sfx/clickSFX.wav";
+import hoverSoundFile from "../assets/sfx/hoverSFX.wav";
+import errorSoundFile from "../assets/sfx/errorSFX.mp3";
+import selectSoundFile from "../assets/sfx/selectSFX.wav";
+import traitorSoundFile from "../assets/sfx/traitorSFX.wav";
 
 import "react-toastify/dist/ReactToastify.css";
 
 function CharacterSelect() {
+  // Hook for playing sound
+  const [play] = useSound(soundFile, { volume: 0.1 });
+  const [playHoverSound] = useSound(hoverSoundFile, { volume: 0.05 });
+  const [playErrorSound] = useSound(errorSoundFile, { volume: 0.1 });
+  const [playSelectSound] = useSound(selectSoundFile, { volume: 0.1 });
+  const [playTraitorSound] = useSound(traitorSoundFile, { volume: 0.2 });
 
-    // Hook for playing sound
-    const [play] = useSound(soundFile, {volume: 0.8});
-    const [playHoverSound] = useSound(hoverSoundFile, {volume: 0.1});
-    const [playErrorSound] = useSound(errorSoundFile, {volume: 0.3});
-    const [playSelectSound] = useSound(selectSoundFile, {volume: 0.1});
-    const [playTraitorSound] = useSound(traitorSoundFile, {volume: 0.2});
-
-      // Function to play sound effect
+  // Function to play sound effect
   const soundFX = () => {
     play();
   };
@@ -31,6 +29,9 @@ function CharacterSelect() {
     playHoverSound();
   };
 
+  const playTraitorSoundFX = () => {
+    playTraitorSound();
+  };
 
   const {
     isHost,
@@ -53,7 +54,7 @@ function CharacterSelect() {
   const [transition, setTransition] = useState(false);
 
   useEffect(() => {
-    if(timer == 1 && selectedChar === null && role === "Innocent") {
+    if (timer == 1 && selectedChar === null && role === "Innocent") {
       setSelectedChar(charOptions[0]);
     }
   }, [timer, selectedChar, charOptions]);
@@ -94,6 +95,12 @@ function CharacterSelect() {
     };
   }, []);
 
+  useEffect(() => {
+    if (role === "Traitor") {
+      playTraitorSoundFX();
+    }
+  }, [role]);
+
   const selectChar = (character) => {
     socket?.emit("select_char", { character: character, roomId: joinCode });
   };
@@ -129,7 +136,6 @@ function CharacterSelect() {
       )}
 
       {role === "Traitor" && (
-      
         <div className="overflow-hidden">
           <motion.div
             className="w-screen h-screen justify-center items-center flex "
@@ -153,7 +159,6 @@ function CharacterSelect() {
                   />
                 </div>
                 <p className="font-gameFont font-bold  text-3xl xl:text-5xl text-white text-center mt-6 transition-all">
-                  
                   You are the Traitor! Try to blend in...
                 </p>
                 <p className="font-gameFont text-white text-center italic">
@@ -218,7 +223,7 @@ function CharacterSelect() {
                             : "bg-white"
                         } hover:shadow-lg active:border-blue-400`}
                         onClick={() => {
-                          playSelectSound(); 
+                          playSelectSound();
                           setSelectedChar(charOptions[index]);
                         }}
                       >
@@ -227,7 +232,10 @@ function CharacterSelect() {
                             <div className="rounded-full overflow-hidden w-14 h-14 lg:w-20 lg:h-20 transition-all flex">
                               <img
                                 className="w-full h-full object-cover"
-                                src={`/charIcons/` + `${charOptions[index]}.jpg`.toLowerCase()}
+                                src={
+                                  `/charIcons/` +
+                                  `${charOptions[index]}.jpg`.toLowerCase()
+                                }
                                 alt={"AI Icons"}
                               />
                             </div>
@@ -259,7 +267,10 @@ function CharacterSelect() {
                         <div className="rounded-full overflow-hidden w-24 h-24 lg:w-32 lg:h-32 transition-all flex">
                           <img
                             className="w-full h-full object-cover"
-                            src={`/charIcons/` + `${selectedChar}.jpg`.toLowerCase()}
+                            src={
+                              `/charIcons/` +
+                              `${selectedChar}.jpg`.toLowerCase()
+                            }
                             alt={"AI Icons"}
                           />
                         </div>
