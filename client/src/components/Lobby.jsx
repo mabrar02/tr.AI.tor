@@ -69,6 +69,7 @@ function Lobby() {
 
   useEffect(() => {
     if (enableBtns && timer > 0) {
+      playcountdownSound();
       setEnableBtns(false);
     }
   }, [timer]);
@@ -131,7 +132,6 @@ function Lobby() {
       notify("Require at least 4 players!", "error");
       playErrorSound();
     } else {
-      playcountdownSound();
       socket?.emit("start_timer", { roomId: joinCode, phase: gamePhase });
     }
   };
