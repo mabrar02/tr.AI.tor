@@ -100,7 +100,11 @@ function Lobby() {
   };
 
   const handleStartGame = () => {
+    if (players.length < 4) {
+      notify("Require at least 4 players!", "error");
+    } else {
       socket?.emit("start_timer", { roomId: joinCode, phase: gamePhase });
+    }
   };
 
   const copyJoinCode = () => {

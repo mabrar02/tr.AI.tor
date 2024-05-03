@@ -126,13 +126,14 @@ function ResponseBox(props) {
                   className="px-4 py-2 border bg-slate-200 border-gray-300 rounded-2xl resize-none w-[100%] h-[100%] focus:outline-none mt-2 animate-left"
                   placeholder="Enter your answer..."
                   value={answer}
-                  onChange={(e) => setAnswer(e.target.value)}
+                  readOnly
                 />
 
                 <textarea
                   className="px-4 py-2 border border-gray-300 rounded-2xl resize-none w-[100%] h-[100%] focus:outline-none mt-2 animate-right"
                   placeholder=""
                   value={filteredAnswerText}
+                  readOnly
                 />
               </>
             )}
@@ -140,13 +141,40 @@ function ResponseBox(props) {
         </div>
 
         <div className="w-[90%] h-[20%] flex-col flex items-center justify-center ">
+          {!submitted && (
             <button
               onClick={submitAnswer}
               className="bg-yellow-400 hover:bg-yellow-600 font-bold py-2 px-4 rounded-lg border-b-4 border-l-2 border-yellow-700 shadow-md transform transition-all hover:scale-105 active:border-yellow-600 "
             >
               Submit Answer
             </button>
+          )}
 
+          {submitted && role === "Innocent" && timer > 5 && (
+            <button
+              onClick={regenerateAnswer}
+              className={`${
+                regenCount == 0 || updatingResponse
+                  ? "bg-yellow-600"
+                  : "bg-yellow-400"
+              } bg-yellow-400 hover:bg-yellow-600 font-bold py-2 px-4 rounded-lg border-b-4 border-l-2 border-yellow-700 shadow-md transform transition-all hover:scale-105 active:border-yellow-600 nowrap`}
+            >
+              <motion.img
+                className="inline mr-2 h-[80%]"
+                src={refresh}
+                key={updatingResponse ? 1 : 0}
+                initial={{ rotate: 0 }}
+                animate={{ rotate: 360 }}
+                transition={{
+                  duration: 1,
+                  repeat: updatingResponse ? Infinity : 0,
+                  repeatType: "loop",
+                  ease: "linear",
+                }}
+              />
+              Regenerate (x{regenCount})
+            </button>
+          )}
         </div>
       </motion.div>
     </div>

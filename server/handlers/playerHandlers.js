@@ -69,20 +69,19 @@ module.exports = function playerHandlers(socket, io, rooms) {
         rooms[roomId].players[socket.id].character,
         answer
       );
-      console.log(content);
       rooms[roomId].players[socket.id].filteredAnswer = content;
       io.to(socket.id).emit("answer_submitted", content);
     }
 
     updatePlayers(roomId);
 
-    //if (
-    //  rooms[roomId].numSubmitted == rooms[roomId].numPlayers &&
-    //  rooms[roomId].timer > 12
-    //) {
-    //  rooms[roomId].timer = 10;
-    //  io.to(roomId).emit("timer_update", rooms[roomId].timer);
-    //}
+    if (
+      rooms[roomId].numSubmitted == rooms[roomId].numPlayers &&
+      rooms[roomId].timer > 12
+    ) {
+      rooms[roomId].timer = 10;
+      io.to(roomId).emit("timer_update", rooms[roomId].timer);
+    }
   });
 
   socket.on("regenerate_answer", async ({ roomId }) => {
